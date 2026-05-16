@@ -5,4 +5,4 @@ export default function App() {
       <p>App funcionando ✅</p>
     </div>
   )
-}}
+}

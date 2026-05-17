@@ -1,113 +1,191 @@
 import React, { useState, useEffect } from 'react';
 
 export default function App() {
-  const [salario,setSalario]=useState(localStorage.getItem('salario')||'');
-  const [extra,setExtra]=useState(localStorage.getItem('extra')||'');
-  const [contas,setContas]=useState(localStorage.getItem('contas')||'');
-  const [diaadia,setDiaadia]=useState(localStorage.getItem('diaadia')||'');
-  const [guardar,setGuardar]=useState(localStorage.getItem('guardar')||'');
-  const [mes,setMes]=useState(localStorage.getItem('mes')||'Maio');
-  const [meta,setMeta]=useState(localStorage.getItem('meta')||'500');
+const [loading,setLoading]=useState(true)
 
-  const [historico,setHistorico]=useState(
-    JSON.parse(localStorage.getItem('historico'))||[]
-  );
+const [salario,setSalario]=useState(localStorage.getItem('salario')||'');
+const [extra,setExtra]=useState(localStorage.getItem('extra')||'');
+const [contas,setContas]=useState(localStorage.getItem('contas')||'');
+const [diaadia,setDiaadia]=useState(localStorage.getItem('diaadia')||'');
+const [guardar,setGuardar]=useState(localStorage.getItem('guardar')||'');
+const [mes,setMes]=useState(localStorage.getItem('mes')||'Maio');
+const [meta,setMeta]=useState(localStorage.getItem('meta')||'500');
 
-  useEffect(()=>{
-    localStorage.setItem('salario',salario);
-    localStorage.setItem('extra',extra);
-    localStorage.setItem('contas',contas);
-    localStorage.setItem('diaadia',diaadia);
-    localStorage.setItem('guardar',guardar);
-    localStorage.setItem('mes',mes);
-    localStorage.setItem('meta',meta);
-    localStorage.setItem(
-      'historico',
-      JSON.stringify(historico)
-    );
-  },[
-    salario,extra,contas,
-    diaadia,guardar,
-    mes,meta,historico
-  ]);
+const [historico,setHistorico]=useState(
+JSON.parse(localStorage.getItem('historico'))||[]
+);
 
-  const entrada=
-  (Number(salario)||0)+
-  (Number(extra)||0);
+const [installPrompt,setInstallPrompt]=useState(null)
 
-  const saida=
-  (Number(contas)||0)+
-  (Number(diaadia)||0)+
-  (Number(guardar)||0);
+useEffect(()=>{
+setTimeout(()=>{
+setLoading(false)
+},1800)
+},[])
 
-  const saldo=entrada-saida;
+useEffect(()=>{
+const handler=(e)=>{
+e.preventDefault()
+setInstallPrompt(e)
+}
 
-  const progresso=
-  entrada>0
-  ?Math.min((saida/entrada)*100,100)
-  :0;
+window.addEventListener(
+'beforeinstallprompt',
+handler
+)
 
-  const alerta=
-  progresso>=80
-  ?'⚠ Atenção: já usou mais de 80%'
-  :'✅ Salário sob controle';
+return()=>{
+window.removeEventListener(
+'beforeinstallprompt',
+handler
+)
+}
+},[])
 
-  let status='🟢 Sobrou dinheiro';
-  let cor='#dcfce7';
+useEffect(()=>{
+localStorage.setItem('salario',salario);
+localStorage.setItem('extra',extra);
+localStorage.setItem('contas',contas);
+localStorage.setItem('diaadia',diaadia);
+localStorage.setItem('guardar',guardar);
+localStorage.setItem('mes',mes);
+localStorage.setItem('meta',meta);
 
-  if(saldo<0){
-    status='🔴 Gastou mais que recebeu';
-    cor='#fee2e2';
-  } else if(saldo<=300){
-    status='🟡 Mês apertado';
-    cor='#fef3c7';
-  }
+localStorage.setItem(
+'historico',
+JSON.stringify(historico)
+)
 
-  const limpar=()=>{
+},[
+salario,
+extra,
+contas,
+diaadia,
+guardar,
+mes,
+meta,
+historico
+])
 
-    const novoHistorico=[
-      ...historico,
-      {
-        mes,
-        saldo:`R$ ${saldo.toFixed(2)}`
-      }
-    ];
+if(loading){
+return(
+<div style={{
+background:'#111827',
+height:'100vh',
+display:'flex',
+alignItems:'center',
+justifyContent:'center',
+color:'white'
+}}>
+<div style={{textAlign:'center'}}>
+<div style={{
+width:'110px',
+height:'110px',
+background:'#1d4ed8',
+borderRadius:'30px',
+border:'5px solid #facc15',
+fontSize:'55px',
+display:'flex',
+alignItems:'center',
+justifyContent:'center',
+margin:'auto'
+}}>
+💰
+</div>
 
-    setHistorico(novoHistorico);
+<h1>Meu Salário</h1>
+<p style={{opacity:.7}}>
+Organizado
+</p>
+</div>
+</div>
+)
+}
 
-    setSalario('');
-    setExtra('');
-    setContas('');
-    setDiaadia('');
-    setGuardar('');
-  }
+const entrada=
+(Number(salario)||0)+
+(Number(extra)||0)
 
-  const campo={
-    width:'100%',
-    padding:'14px',
-    marginBottom:'12px',
-    borderRadius:'12px',
-    border:'1px solid #ccc'
-  }
+const saida=
+(Number(contas)||0)+
+(Number(diaadia)||0)+
+(Number(guardar)||0)
 
-  return(
-  <div style={{
-  minHeight:'100vh',
-  background:'#f3f4f6',
-  padding:'20px'
-  }}>
+const saldo=entrada-saida
+
+const progresso=
+entrada>0
+?Math.min((saida/entrada)*100,100)
+:0
+
+let status='🟢 Sobrou dinheiro'
+let cor='#dcfce7'
+
+if(saldo<0){
+status='🔴 Gastou mais que recebeu'
+cor='#fee2e2'
+}else if(saldo<=300){
+status='🟡 Mês apertado'
+cor='#fef3c7'
+}
+
+const limpar=()=>{
+setHistorico([
+...historico,
+{
+mes,
+saldo
+}
+])
+
+setSalario('')
+setExtra('')
+setContas('')
+setDiaadia('')
+setGuardar('')
+}
+
+const instalar=async()=>{
+if(installPrompt){
+await installPrompt.prompt()
+}
+}
+
+const campo={
+width:'100%',
+padding:'14px',
+marginBottom:'12px',
+borderRadius:'12px',
+border:'1px solid #ddd'
+}
+
+return(
+<div style={{
+background:'#f3f4f6',
+minHeight:'100vh',
+padding:'20px'
+}}>
 
 <div style={{
 maxWidth:'430px',
-margin:'0 auto',
+margin:'auto',
 background:'white',
 padding:'24px',
 borderRadius:'24px'
 }}>
 
 <div style={{textAlign:'center'}}>
-<div style={{fontSize:'60px'}}>💰</div>
-<h1>Meu Salário Organizado</h1>
+
+<div style={{
+fontSize:'55px'
+}}>
+💰
+</div>
+
+<h1>
+Meu Salário Organizado
+</h1>
+
 </div>
 
 <select
@@ -123,62 +201,48 @@ style={campo}
 
 <input
 type='number'
-placeholder='Meta do mês'
 value={meta}
 onChange={(e)=>setMeta(e.target.value)}
+placeholder='Meta'
 style={campo}
 />
 
 <div style={{
 background:'#dcfce7',
 padding:'10px',
-borderRadius:'10px',
-marginBottom:'15px',
+borderRadius:'12px',
+marginBottom:'10px',
 textAlign:'center'
 }}>
-🎯 Meta: guardar R$ {meta}
+🎯 Meta: R$ {meta}
 </div>
 
-<input type='number'
-placeholder='Salário'
-value={salario}
+<input placeholder='Salário' value={salario}
 onChange={(e)=>setSalario(e.target.value)}
-style={campo}
-/>
+style={campo}/>
 
-<input type='number'
-placeholder='Extra/Bico'
+<input placeholder='Extra/Bico'
 value={extra}
 onChange={(e)=>setExtra(e.target.value)}
-style={campo}
-/>
+style={campo}/>
 
-<input type='number'
-placeholder='Contas'
+<input placeholder='Contas'
 value={contas}
 onChange={(e)=>setContas(e.target.value)}
-style={campo}
-/>
+style={campo}/>
 
-<input type='number'
-placeholder='Dia a dia'
+<input placeholder='Dia a dia'
 value={diaadia}
 onChange={(e)=>setDiaadia(e.target.value)}
-style={campo}
-/>
+style={campo}/>
 
-<input type='number'
-placeholder='Guardar'
+<input placeholder='Guardar'
 value={guardar}
 onChange={(e)=>setGuardar(e.target.value)}
-style={campo}
-/>
+style={campo}/>
 
 <div>
-<div>
-Uso do salário {progresso.toFixed(0)}%
-</div>
-
+Uso salário {progresso.toFixed(0)}%
 <div style={{
 height:'15px',
 background:'#ddd',
@@ -191,63 +255,89 @@ background:'black',
 borderRadius:'999px'
 }}/>
 </div>
-
-<div style={{
-textAlign:'center',
-marginTop:'10px'
-}}>
-{alerta}
-</div>
 </div>
 
 <div style={{
 background:cor,
-padding:'20px',
+padding:'18px',
 marginTop:'20px',
 borderRadius:'20px',
 textAlign:'center'
 }}>
-<div>STATUS DO MÊS</div>
 <h2>{status}</h2>
 <h1>R$ {saldo.toFixed(2)}</h1>
 </div>
 
 <div style={{
-marginTop:'20px',
+marginTop:'15px',
 padding:'15px',
-border:'1px solid #ddd',
+border:'1px solid #eee',
 borderRadius:'15px'
 }}>
 <h3>📅 Histórico</h3>
 
-{historico.length===0
-?
-<p>Sem histórico ainda</p>
+{
+historico.length===0
+?<p>Sem histórico</p>
 :
 historico.map((h,i)=>(
-<div key={i}>
-{h.mes}: {h.saldo}
+<div
+key={i}
+style={{
+color:
+h.saldo>=0
+?'green'
+:'red'
+}}
+>
+{h.mes}:
+R$ {h.saldo}
 </div>
 ))
 }
 </div>
 
+<div style={{
+background:'#ede9fe',
+padding:'15px',
+marginTop:'15px',
+borderRadius:'15px',
+textAlign:'center'
+}}>
+👨‍👩‍👧 Modo Família em breve
+</div>
+
+<button
+onClick={instalar}
+style={{
+width:'100%',
+padding:'16px',
+marginTop:'15px',
+background:'#16a34a',
+color:'white',
+border:'none',
+borderRadius:'15px'
+}}
+>
+📲 Instalar App
+</button>
+
 <button
 onClick={limpar}
 style={{
 width:'100%',
-marginTop:'20px',
 padding:'16px',
+marginTop:'10px',
 background:'black',
 color:'white',
 border:'none',
-borderRadius:'16px'
+borderRadius:'15px'
 }}
 >
-Salvar mês / Novo mês
+Salvar mês
 </button>
 
 </div>
 </div>
 )
-        }
+  }

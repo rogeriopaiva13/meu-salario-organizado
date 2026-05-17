@@ -5,19 +5,12 @@ export default function App() {
   const [contas,setContas]=useState('')
 
   const saldo =
-    (Number(salario) || 0) -
-    (Number(contas) || 0)
+    (Number(salario)||0) -
+    (Number(contas)||0)
 
   return (
-    <div style={{
-      maxWidth:'400px',
-      margin:'40px auto',
-      padding:'20px',
-      fontFamily:'Arial'
-    }}>
+    <div style={{padding:20}}>
       <h1>💰 Meu Salário Organizado</h1>
-
-      <p>Digite seus valores:</p>
 
       <input
         type="number"
@@ -26,7 +19,7 @@ export default function App() {
         onChange={(e)=>setSalario(e.target.value)}
       />
 
-      <br /><br />
+      <br/><br/>
 
       <input
         type="number"

@@ -1,5 +1,5 @@
+import React, { useState, useEffect } from 'react';
 import { useState } from 'react'
-
 export default function App() {
   const [salario,setSalario]=useState('')
   const [contas,setContas]=useState('')

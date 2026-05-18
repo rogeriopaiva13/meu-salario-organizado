@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 
 export default function App() {
+  const mesAgora = () => new Date().toISOString().slice(0, 7);
+
   const [loading, setLoading] = useState(true);
   const [tela, setTela] = useState("inicio");
 
@@ -14,6 +16,14 @@ export default function App() {
   const [valorGasto, setValorGasto] = useState("");
   const [categoriaGasto, setCategoriaGasto] = useState("Alimentação");
 
+  const [gastos, setGastos] = useState(
+    JSON.parse(localStorage.getItem("gastos")) || []
+  );
+
+  const [historico, setHistorico] = useState(
+    JSON.parse(localStorage.getItem("historico")) || []
+  );
+
   const categorias = {
     Alimentação: { icone: "🍔", cor: "#fff3e0", texto: "#e65100" },
     Transporte: { icone: "🚗", cor: "#e3f2fd", texto: "#0D47A1" },
@@ -24,13 +34,60 @@ export default function App() {
     Outros: { icone: "🛒", cor: "#e0f2f1", texto: "#00695c" },
   };
 
-  const [gastos, setGastos] = useState(
-    JSON.parse(localStorage.getItem("gastos")) || []
-  );
-
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 1400);
     return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    const mesSalvo = localStorage.getItem("mesReferencia");
+    const mesAtual = mesAgora();
+
+    if (!mesSalvo) {
+      localStorage.setItem("mesReferencia", mesAtual);
+      return;
+    }
+
+    if (mesSalvo !== mesAtual) {
+      const salarioAntigo = Number(localStorage.getItem("salario") || 0);
+      const extraAntigo = Number(localStorage.getItem("extra") || 0);
+      const contasAntigas = Number(localStorage.getItem("contas") || 0);
+      const gastosAntigos = JSON.parse(localStorage.getItem("gastos")) || [];
+
+      const receitasAntigas = salarioAntigo + extraAntigo;
+      const totalGastosAntigos = gastosAntigos.reduce(
+        (acc, item) => acc + Number(item.valor || 0),
+        0
+      );
+      const saidasAntigas = contasAntigas + totalGastosAntigos;
+      const saldoAntigo = receitasAntigas - saidasAntigas;
+
+      if (receitasAntigas > 0 || saidasAntigas > 0) {
+        const novoRegistro = {
+          mes: mesSalvo,
+          receitas: receitasAntigas,
+          saidas: saidasAntigas,
+          saldo: saldoAntigo,
+        };
+
+        const historicoAtual = JSON.parse(localStorage.getItem("historico")) || [];
+        const atualizado = [novoRegistro, ...historicoAtual];
+
+        localStorage.setItem("historico", JSON.stringify(atualizado));
+        setHistorico(atualizado);
+      }
+
+      localStorage.setItem("salario", "");
+      localStorage.setItem("extra", "");
+      localStorage.setItem("contas", "");
+      localStorage.setItem("gastos", JSON.stringify([]));
+      localStorage.setItem("mesReferencia", mesAtual);
+
+      setSalario("");
+      setExtra("");
+      setContas("");
+      setGastos([]);
+    }
   }, []);
 
   useEffect(() => localStorage.setItem("nome", nome), [nome]);
@@ -39,6 +96,7 @@ export default function App() {
   useEffect(() => localStorage.setItem("contas", contas), [contas]);
   useEffect(() => localStorage.setItem("meta", meta), [meta]);
   useEffect(() => localStorage.setItem("gastos", JSON.stringify(gastos)), [gastos]);
+  useEffect(() => localStorage.setItem("historico", JSON.stringify(historico)), [historico]);
 
   const moeda = (valor) =>
     Number(valor || 0).toLocaleString("pt-BR", {
@@ -373,7 +431,24 @@ export default function App() {
         {tela === "historico" && (
           <div style={card}>
             <h3>📅 Histórico</h3>
-            <p>Em breve vamos salvar o fechamento de cada mês aqui.</p>
+
+            {historico.length === 0 && (
+              <p>Nenhum mês fechado ainda.</p>
+            )}
+
+            {historico.map((item, index) => (
+              <div key={index} style={{
+                borderBottom: "1px solid #eee",
+                padding: "12px 0",
+              }}>
+                <strong>📆 {item.mes}</strong>
+                <p>Receitas: {moeda(item.receitas)}</p>
+                <p>Saídas: {moeda(item.saidas)}</p>
+                <p>
+                  Saldo final: <strong>{moeda(item.saldo)}</strong>
+                </p>
+              </div>
+            ))}
           </div>
         )}
 
@@ -407,4 +482,4 @@ export default function App() {
       </div>
     </div>
   );
-            }
+    }

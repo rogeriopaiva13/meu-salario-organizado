@@ -28,7 +28,6 @@ export default function App() {
 
   const [nomeGasto, setNomeGasto] = useState("");
   const [valorGasto, setValorGasto] = useState("");
-
   const [categoriaGasto, setCategoriaGasto] =
     useState("Alimentação");
 
@@ -491,9 +490,13 @@ https://meu-salario-organizado.vercel.app/`;
 
           <input
             style={inputStyle}
-            type="number"
+            type="text"
             inputMode="decimal"
-            value={salario}
+            value={
+              ocultarValores
+                ? "•••••"
+                : salario
+            }
             onChange={(e) =>
               setSalario(e.target.value)
             }
@@ -506,9 +509,13 @@ https://meu-salario-organizado.vercel.app/`;
 
           <input
             style={inputStyle}
-            type="number"
+            type="text"
             inputMode="decimal"
-            value={extra}
+            value={
+              ocultarValores
+                ? "•••••"
+                : extra
+            }
             onChange={(e) =>
               setExtra(e.target.value)
             }
@@ -521,9 +528,13 @@ https://meu-salario-organizado.vercel.app/`;
 
           <input
             style={inputStyle}
-            type="number"
+            type="text"
             inputMode="decimal"
-            value={contas}
+            value={
+              ocultarValores
+                ? "•••••"
+                : contas
+            }
             onChange={(e) =>
               setContas(e.target.value)
             }
@@ -532,227 +543,23 @@ https://meu-salario-organizado.vercel.app/`;
         </div>
 
         <div style={card}>
-          <h3>🎯 Meta do mês</h3>
+          <p style={label}>🎯 Meta do mês</p>
 
           <input
             style={inputStyle}
-            type="number"
-            value={meta}
+            type="text"
+            value={
+              ocultarValores
+                ? "•••••"
+                : meta
+            }
             onChange={(e) =>
               setMeta(e.target.value)
             }
             placeholder="500"
           />
         </div>
-
-        <div style={card}>
-          <h3>🛒 Adicionar gasto</h3>
-
-          <input
-            style={inputStyle}
-            value={nomeGasto}
-            onChange={(e) =>
-              setNomeGasto(e.target.value)
-            }
-            placeholder="Nome do gasto"
-          />
-
-          <div style={{ height: "12px" }} />
-
-          <input
-            style={inputStyle}
-            type="number"
-            inputMode="decimal"
-            value={valorGasto}
-            onChange={(e) =>
-              setValorGasto(e.target.value)
-            }
-            placeholder="Valor"
-          />
-
-          <div style={{ height: "12px" }} />
-
-          <select
-            style={inputStyle}
-            value={categoriaGasto}
-            onChange={(e) =>
-              setCategoriaGasto(e.target.value)
-            }
-          >
-            {Object.keys(categorias).map(
-              (cat) => (
-                <option key={cat}>
-                  {cat}
-                </option>
-              )
-            )}
-          </select>
-
-          <div style={{ height: "14px" }} />
-
-          <button
-            onClick={adicionarGasto}
-            style={{
-              width: "100%",
-              padding: "15px",
-              borderRadius: "18px",
-              border: "none",
-              background: "#0D47A1",
-              color: "white",
-              fontWeight: "bold",
-              fontSize: "16px",
-            }}
-          >
-            ➕ Adicionar gasto
-          </button>
-        </div>
-
-        <div style={card}>
-          <h3>📊 Gastos do mês</h3>
-
-          {gastos.length === 0 ? (
-            <p>Nenhum gasto cadastrado.</p>
-          ) : (
-            gastos.map((item, index) => (
-              <div
-                key={index}
-                style={{
-                  background:
-                    categorias[item.categoria]
-                      ?.cor,
-                  padding: "14px",
-                  borderRadius: "18px",
-                  marginBottom: "10px",
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent:
-                      "space-between",
-                    alignItems: "center",
-                  }}
-                >
-                  <div>
-                    <strong>
-                      {
-                        categorias[item.categoria]
-                          ?.icone
-                      }{" "}
-                      {item.nome}
-                    </strong>
-
-                    <p>
-                      {moeda(item.valor)}
-                    </p>
-                  </div>
-
-                  <button
-                    onClick={() =>
-                      removerGasto(index)
-                    }
-                    style={{
-                      border: "none",
-                      background:
-                        "transparent",
-                      fontSize: "20px",
-                    }}
-                  >
-                    ❌
-                  </button>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-
-        <div style={card}>
-          <h3>📈 Resumo</h3>
-
-          <p>
-            Receitas: {moeda(receitas)}
-          </p>
-
-          <p>Saídas: {moeda(saidas)}</p>
-
-          <p>Meta: {moeda(meta)}</p>
-
-          <div
-            style={{
-              background: "#dbeafe",
-              height: "14px",
-              borderRadius: "999px",
-              overflow: "hidden",
-              marginTop: "12px",
-            }}
-          >
-            <div
-              style={{
-                width: `${progresso}%`,
-                background: "#0D47A1",
-                height: "100%",
-              }}
-            />
-          </div>
-        </div>
-
-        {historico.length > 0 && (
-          <div style={card}>
-            <h3>🗂 Histórico</h3>
-
-            {historico.map((item, index) => (
-              <div
-                key={index}
-                style={{
-                  padding: "12px 0",
-                  borderBottom:
-                    "1px solid #eee",
-                }}
-              >
-                <strong>{item.mes}</strong>
-
-                <p>
-                  Saldo:{" "}
-                  {moeda(item.saldo)}
-                </p>
-              </div>
-            ))}
-          </div>
-        )}
-
-        <button
-          onClick={compartilharProgresso}
-          style={{
-            width: "100%",
-            padding: "16px",
-            borderRadius: "18px",
-            border: "none",
-            background: "#FDD835",
-            color: "#0D47A1",
-            fontWeight: "bold",
-            fontSize: "16px",
-            marginBottom: "12px",
-          }}
-        >
-          📤 Compartilhar progresso
-        </button>
-
-        <button
-          onClick={limparMes}
-          style={{
-            width: "100%",
-            padding: "16px",
-            borderRadius: "18px",
-            border: "none",
-            background: "#ef4444",
-            color: "white",
-            fontWeight: "bold",
-            fontSize: "16px",
-          }}
-        >
-          🗑 Limpar mês
-        </button>
       </div>
     </div>
   );
-  }
+}

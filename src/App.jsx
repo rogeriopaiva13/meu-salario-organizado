@@ -4,18 +4,33 @@ export default function App() {
   const mesAgora = () => new Date().toISOString().slice(0, 7);
 
   const [loading, setLoading] = useState(true);
-  const [tela, setTela] = useState("inicio");
   const [ocultarValores, setOcultarValores] = useState(false);
 
-  const [nome, setNome] = useState(localStorage.getItem("nome") || "Rogério");
-  const [salario, setSalario] = useState(localStorage.getItem("salario") || "");
-  const [extra, setExtra] = useState(localStorage.getItem("extra") || "");
-  const [contas, setContas] = useState(localStorage.getItem("contas") || "");
-  const [meta, setMeta] = useState(localStorage.getItem("meta") || "500");
+  const [nome, setNome] = useState(
+    localStorage.getItem("nome") || "Rogério"
+  );
+
+  const [salario, setSalario] = useState(
+    localStorage.getItem("salario") || ""
+  );
+
+  const [extra, setExtra] = useState(
+    localStorage.getItem("extra") || ""
+  );
+
+  const [contas, setContas] = useState(
+    localStorage.getItem("contas") || ""
+  );
+
+  const [meta, setMeta] = useState(
+    localStorage.getItem("meta") || "500"
+  );
 
   const [nomeGasto, setNomeGasto] = useState("");
   const [valorGasto, setValorGasto] = useState("");
-  const [categoriaGasto, setCategoriaGasto] = useState("Alimentação");
+
+  const [categoriaGasto, setCategoriaGasto] =
+    useState("Alimentação");
 
   const [gastos, setGastos] = useState(
     JSON.parse(localStorage.getItem("gastos")) || []
@@ -26,42 +41,99 @@ export default function App() {
   );
 
   const categorias = {
-    Alimentação: { icone: "🍔", cor: "#fff3e0", texto: "#e65100" },
-    Transporte: { icone: "🚗", cor: "#e3f2fd", texto: "#0D47A1" },
-    Casa: { icone: "🏠", cor: "#fff8e1", texto: "#8a6d00" },
-    Saúde: { icone: "💊", cor: "#e8f5e9", texto: "#1b5e20" },
-    Lazer: { icone: "🎮", cor: "#f3e5f5", texto: "#6a1b9a" },
-    Contas: { icone: "📄", cor: "#eeeeee", texto: "#333333" },
-    Outros: { icone: "🛒", cor: "#e0f2f1", texto: "#00695c" },
+    Alimentação: {
+      icone: "🍔",
+      cor: "#fff3e0",
+      texto: "#e65100",
+    },
+
+    Transporte: {
+      icone: "🚗",
+      cor: "#e3f2fd",
+      texto: "#0D47A1",
+    },
+
+    Casa: {
+      icone: "🏠",
+      cor: "#fff8e1",
+      texto: "#8a6d00",
+    },
+
+    Saúde: {
+      icone: "💊",
+      cor: "#e8f5e9",
+      texto: "#1b5e20",
+    },
+
+    Lazer: {
+      icone: "🎮",
+      cor: "#f3e5f5",
+      texto: "#6a1b9a",
+    },
+
+    Contas: {
+      icone: "📄",
+      cor: "#eeeeee",
+      texto: "#333333",
+    },
+
+    Outros: {
+      icone: "🛒",
+      cor: "#e0f2f1",
+      texto: "#00695c",
+    },
   };
 
   useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 1400);
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1400);
+
     return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {
-    const mesSalvo = localStorage.getItem("mesReferencia");
+    const mesSalvo =
+      localStorage.getItem("mesReferencia");
+
     const mesAtual = mesAgora();
 
     if (!mesSalvo) {
-      localStorage.setItem("mesReferencia", mesAtual);
+      localStorage.setItem(
+        "mesReferencia",
+        mesAtual
+      );
+
       return;
     }
 
     if (mesSalvo !== mesAtual) {
-      const salarioAntigo = Number(localStorage.getItem("salario") || 0);
-      const extraAntigo = Number(localStorage.getItem("extra") || 0);
-      const contasAntigas = Number(localStorage.getItem("contas") || 0);
-      const gastosAntigos =
-        JSON.parse(localStorage.getItem("gastos")) || [];
-
-      const receitasAntigas = salarioAntigo + extraAntigo;
-
-      const totalGastosAntigos = gastosAntigos.reduce(
-        (acc, item) => acc + Number(item.valor || 0),
-        0
+      const salarioAntigo = Number(
+        localStorage.getItem("salario") || 0
       );
+
+      const extraAntigo = Number(
+        localStorage.getItem("extra") || 0
+      );
+
+      const contasAntigas = Number(
+        localStorage.getItem("contas") || 0
+      );
+
+      const gastosAntigos =
+        JSON.parse(
+          localStorage.getItem("gastos")
+        ) || [];
+
+      const receitasAntigas =
+        salarioAntigo + extraAntigo;
+
+      const totalGastosAntigos =
+        gastosAntigos.reduce(
+          (acc, item) =>
+            acc + Number(item.valor || 0),
+          0
+        );
 
       const saidasAntigas =
         contasAntigas + totalGastosAntigos;
@@ -69,7 +141,10 @@ export default function App() {
       const saldoAntigo =
         receitasAntigas - saidasAntigas;
 
-      if (receitasAntigas > 0 || saidasAntigas > 0) {
+      if (
+        receitasAntigas > 0 ||
+        saidasAntigas > 0
+      ) {
         const novoRegistro = {
           mes: mesSalvo,
           receitas: receitasAntigas,
@@ -78,7 +153,9 @@ export default function App() {
         };
 
         const historicoAtual =
-          JSON.parse(localStorage.getItem("historico")) || [];
+          JSON.parse(
+            localStorage.getItem("historico")
+          ) || [];
 
         const atualizado = [
           novoRegistro,
@@ -96,8 +173,16 @@ export default function App() {
       localStorage.setItem("salario", "");
       localStorage.setItem("extra", "");
       localStorage.setItem("contas", "");
-      localStorage.setItem("gastos", JSON.stringify([]));
-      localStorage.setItem("mesReferencia", mesAtual);
+
+      localStorage.setItem(
+        "gastos",
+        JSON.stringify([])
+      );
+
+      localStorage.setItem(
+        "mesReferencia",
+        mesAtual
+      );
 
       setSalario("");
       setExtra("");
@@ -106,14 +191,31 @@ export default function App() {
     }
   }, []);
 
-  useEffect(() => localStorage.setItem("nome", nome), [nome]);
-  useEffect(() => localStorage.setItem("salario", salario), [salario]);
-  useEffect(() => localStorage.setItem("extra", extra), [extra]);
-  useEffect(() => localStorage.setItem("contas", contas), [contas]);
-  useEffect(() => localStorage.setItem("meta", meta), [meta]);
+  useEffect(() => {
+    localStorage.setItem("nome", nome);
+  }, [nome]);
 
   useEffect(() => {
-    localStorage.setItem("gastos", JSON.stringify(gastos));
+    localStorage.setItem("salario", salario);
+  }, [salario]);
+
+  useEffect(() => {
+    localStorage.setItem("extra", extra);
+  }, [extra]);
+
+  useEffect(() => {
+    localStorage.setItem("contas", contas);
+  }, [contas]);
+
+  useEffect(() => {
+    localStorage.setItem("meta", meta);
+  }, [meta]);
+
+  useEffect(() => {
+    localStorage.setItem(
+      "gastos",
+      JSON.stringify(gastos)
+    );
   }, [gastos]);
 
   useEffect(() => {
@@ -128,10 +230,13 @@ export default function App() {
       return "R$ •••••";
     }
 
-    return Number(valor || 0).toLocaleString("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    });
+    return Number(valor || 0).toLocaleString(
+      "pt-BR",
+      {
+        style: "currency",
+        currency: "BRL",
+      }
+    );
   };
 
   const receitas =
@@ -139,7 +244,8 @@ export default function App() {
     (Number(extra) || 0);
 
   const totalGastos = gastos.reduce(
-    (acc, item) => acc + Number(item.valor || 0),
+    (acc, item) =>
+      acc + Number(item.valor || 0),
     0
   );
 
@@ -159,24 +265,6 @@ export default function App() {
       : saldo <= 300
       ? "🟡 Mês apertado"
       : "🟢 Salário sob controle";
-
-  const gastosPorCategoria = gastos.reduce(
-    (acc, item) => {
-      const categoria = item.categoria || "Outros";
-
-      acc[categoria] =
-        (acc[categoria] || 0) +
-        Number(item.valor || 0);
-
-      return acc;
-    },
-    {}
-  );
-
-  const maiorGastoCategoria = Math.max(
-    ...Object.values(gastosPorCategoria),
-    1
-  );
 
   function adicionarGasto() {
     if (!nomeGasto || !valorGasto) return;
@@ -204,7 +292,10 @@ export default function App() {
   function compartilharProgresso() {
     const percentualMeta =
       Number(meta) > 0
-        ? Math.min((saldo / Number(meta)) * 100, 100)
+        ? Math.min(
+            (saldo / Number(meta)) * 100,
+            100
+          )
         : 0;
 
     const mensagem = `🎯 Meu progresso no Meu Salário Organizado
@@ -224,9 +315,13 @@ https://meu-salario-organizado.vercel.app/`;
         text: mensagem,
       });
     } else {
-      navigator.clipboard.writeText(mensagem);
+      navigator.clipboard.writeText(
+        mensagem
+      );
 
-      alert("Mensagem copiada para compartilhar!");
+      alert(
+        "Mensagem copiada para compartilhar!"
+      );
     }
   }
 
@@ -286,12 +381,11 @@ https://meu-salario-organizado.vercel.app/`;
         <div style={{ textAlign: "center" }}>
           <img
             src="/logo.png"
+            alt="logo"
             style={{ width: "125px" }}
           />
 
-          <h1 style={{ marginBottom: "5px" }}>
-            Meu Salário Organizado
-          </h1>
+          <h1>Meu Salário Organizado</h1>
 
           <p style={{ color: "#FDD835" }}>
             Organize hoje, realize amanhã
@@ -322,6 +416,7 @@ https://meu-salario-organizado.vercel.app/`;
       >
         <img
           src="/logo-horizontal.png"
+          alt="logo"
           style={{
             width: "225px",
             display: "block",
@@ -329,13 +424,9 @@ https://meu-salario-organizado.vercel.app/`;
           }}
         />
 
-        <h2 style={{ margin: "0 0 6px" }}>
-          👋 Olá, {nome}
-        </h2>
+        <h2>👋 Olá, {nome}</h2>
 
-        <p style={{ opacity: 0.9, margin: 0 }}>
-          Vamos organizar seu mês?
-        </p>
+        <p>Vamos organizar seu mês?</p>
 
         <button
           onClick={() =>
@@ -364,47 +455,33 @@ https://meu-salario-organizado.vercel.app/`;
             borderRadius: "22px",
             padding: "16px",
             marginTop: "22px",
-            border:
-              "1px solid rgba(255,255,255,0.20)",
           }}
         >
-          <p
-            style={{
-              margin: 0,
-              fontSize: "13px",
-              opacity: 0.85,
-            }}
-          >
-            Saldo disponível
-          </p>
+          <p>Saldo disponível</p>
 
-          <h1
-            style={{
-              margin: "6px 0",
-              color: "#FDD835",
-            }}
-          >
+          <h1 style={{ color: "#FDD835" }}>
             {moeda(saldo)}
           </h1>
 
-          <p
-            style={{
-              margin: 0,
-              fontSize: "14px",
-            }}
-          >
-            {status}
-          </p>
+          <p>{status}</p>
         </div>
       </div>
-<div style={{ padding: "20px", marginTop: "-10px" }}>
+
+      <div
+        style={{
+          padding: "20px",
+          marginTop: "-10px",
+        }}
+      >
         <div style={card}>
           <p style={label}>👤 Seu nome</p>
 
           <input
             style={inputStyle}
             value={nome}
-            onChange={(e) => setNome(e.target.value)}
+            onChange={(e) =>
+              setNome(e.target.value)
+            }
             placeholder="Digite seu nome"
           />
         </div>
@@ -415,8 +492,11 @@ https://meu-salario-organizado.vercel.app/`;
           <input
             style={inputStyle}
             type="number"
+            inputMode="decimal"
             value={salario}
-            onChange={(e) => setSalario(e.target.value)}
+            onChange={(e) =>
+              setSalario(e.target.value)
+            }
             placeholder="0,00"
           />
 
@@ -427,8 +507,11 @@ https://meu-salario-organizado.vercel.app/`;
           <input
             style={inputStyle}
             type="number"
+            inputMode="decimal"
             value={extra}
-            onChange={(e) => setExtra(e.target.value)}
+            onChange={(e) =>
+              setExtra(e.target.value)
+            }
             placeholder="0,00"
           />
 
@@ -439,9 +522,26 @@ https://meu-salario-organizado.vercel.app/`;
           <input
             style={inputStyle}
             type="number"
+            inputMode="decimal"
             value={contas}
-            onChange={(e) => setContas(e.target.value)}
+            onChange={(e) =>
+              setContas(e.target.value)
+            }
             placeholder="0,00"
+          />
+        </div>
+
+        <div style={card}>
+          <h3>🎯 Meta do mês</h3>
+
+          <input
+            style={inputStyle}
+            type="number"
+            value={meta}
+            onChange={(e) =>
+              setMeta(e.target.value)
+            }
+            placeholder="500"
           />
         </div>
 
@@ -462,6 +562,7 @@ https://meu-salario-organizado.vercel.app/`;
           <input
             style={inputStyle}
             type="number"
+            inputMode="decimal"
             value={valorGasto}
             onChange={(e) =>
               setValorGasto(e.target.value)
@@ -478,9 +579,13 @@ https://meu-salario-organizado.vercel.app/`;
               setCategoriaGasto(e.target.value)
             }
           >
-            {Object.keys(categorias).map((cat) => (
-              <option key={cat}>{cat}</option>
-            ))}
+            {Object.keys(categorias).map(
+              (cat) => (
+                <option key={cat}>
+                  {cat}
+                </option>
+              )
+            )}
           </select>
 
           <div style={{ height: "14px" }} />
@@ -513,7 +618,8 @@ https://meu-salario-organizado.vercel.app/`;
                 key={index}
                 style={{
                   background:
-                    categorias[item.categoria]?.cor,
+                    categorias[item.categoria]
+                      ?.cor,
                   padding: "14px",
                   borderRadius: "18px",
                   marginBottom: "10px",
@@ -536,14 +642,7 @@ https://meu-salario-organizado.vercel.app/`;
                       {item.nome}
                     </strong>
 
-                    <p
-                      style={{
-                        margin: "5px 0 0",
-                        color:
-                          categorias[item.categoria]
-                            ?.texto,
-                      }}
-                    >
+                    <p>
                       {moeda(item.valor)}
                     </p>
                   </div>
@@ -554,7 +653,8 @@ https://meu-salario-organizado.vercel.app/`;
                     }
                     style={{
                       border: "none",
-                      background: "transparent",
+                      background:
+                        "transparent",
                       fontSize: "20px",
                     }}
                   >
@@ -569,13 +669,13 @@ https://meu-salario-organizado.vercel.app/`;
         <div style={card}>
           <h3>📈 Resumo</h3>
 
-          <p>Receitas: {moeda(receitas)}</p>
+          <p>
+            Receitas: {moeda(receitas)}
+          </p>
 
           <p>Saídas: {moeda(saidas)}</p>
 
-          <p>
-            Meta: {moeda(meta)}
-          </p>
+          <p>Meta: {moeda(meta)}</p>
 
           <div
             style={{
@@ -595,6 +695,30 @@ https://meu-salario-organizado.vercel.app/`;
             />
           </div>
         </div>
+
+        {historico.length > 0 && (
+          <div style={card}>
+            <h3>🗂 Histórico</h3>
+
+            {historico.map((item, index) => (
+              <div
+                key={index}
+                style={{
+                  padding: "12px 0",
+                  borderBottom:
+                    "1px solid #eee",
+                }}
+              >
+                <strong>{item.mes}</strong>
+
+                <p>
+                  Saldo:{" "}
+                  {moeda(item.saldo)}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
 
         <button
           onClick={compartilharProgresso}
@@ -631,4 +755,4 @@ https://meu-salario-organizado.vercel.app/`;
       </div>
     </div>
   );
-            }
+  }

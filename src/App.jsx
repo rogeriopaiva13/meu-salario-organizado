@@ -64,8 +64,13 @@ export default function App() {
         <div style={{textAlign:"center"}}>
           <img
             src="/logo.png"
-            style={{width:"120px"}}
+            alt="logo"
+            style={{
+              width:"120px",
+              marginBottom:"20px"
+            }}
           />
+
           <h1>Meu Salário Organizado</h1>
           <p>Organize hoje, realize amanhã</p>
         </div>
@@ -88,32 +93,92 @@ export default function App() {
         borderBottomLeftRadius:"30px",
         borderBottomRightRadius:"30px"
       }}>
+
+        <img
+          src="/logo-horizontal.png"
+          alt="logo"
+          style={{
+            width:"220px",
+            display:"block",
+            margin:"0 auto 20px"
+          }}
+        />
+
         <h2>👋 Olá Rogério</h2>
+        <p>Vamos organizar seu mês?</p>
+
       </div>
 
       <div style={{padding:"15px"}}>
 
         {tela==="inicio" && (
-          <div style={{
-            background:"white",
-            padding:"20px",
-            borderRadius:"20px"
-          }}>
-            <h3>💰 Saldo</h3>
-            <h1>R$ {saldo.toFixed(2)}</h1>
+          <>
+            <div style={{
+              background:"white",
+              borderRadius:"20px",
+              padding:"20px",
+              marginBottom:"15px"
+            }}>
+              <h3>🎯 Meta do mês</h3>
 
-            <p>Receitas: R$ {receitas}</p>
-            <p>Gastos: R$ {totalGastos}</p>
-          </div>
+              <input
+                value={meta}
+                onChange={(e)=>setMeta(e.target.value)}
+                style={{
+                  width:"100%",
+                  padding:"12px"
+                }}
+              />
+
+              <p>Guardar: R$ {meta}</p>
+            </div>
+
+            <div style={{
+              background:"white",
+              borderRadius:"20px",
+              padding:"20px"
+            }}>
+              <h3>💰 Resumo</h3>
+
+              <input
+                type="number"
+                placeholder="Salário"
+                value={salario}
+                onChange={(e)=>setSalario(e.target.value)}
+              />
+
+              <br/><br/>
+
+              <input
+                type="number"
+                placeholder="Extra / Bico"
+                value={extra}
+                onChange={(e)=>setExtra(e.target.value)}
+              />
+
+              <br/><br/>
+
+              <input
+                type="number"
+                placeholder="Contas"
+                value={contas}
+                onChange={(e)=>setContas(e.target.value)}
+              />
+
+              <h2>
+                💰 Saldo: R$ {saldo.toFixed(2)}
+              </h2>
+            </div>
+          </>
         )}
 
         {tela==="gastos" && (
           <div style={{
             background:"white",
-            padding:"20px",
-            borderRadius:"20px"
+            borderRadius:"20px",
+            padding:"20px"
           }}>
-            <h3>💸 Adicionar gasto</h3>
+            <h3>💸 Gastos</h3>
 
             <input
               placeholder="Nome"
@@ -139,7 +204,7 @@ export default function App() {
 
             {gastos.map((item,index)=>(
               <p key={index}>
-                {item.nome} — R$ {item.valor}
+                {item.nome} - R$ {item.valor}
               </p>
             ))}
           </div>
@@ -151,16 +216,8 @@ export default function App() {
             padding:"20px",
             borderRadius:"20px"
           }}>
-            <h3>🎯 Meta</h3>
-
-            <input
-              value={meta}
-              onChange={(e)=>setMeta(e.target.value)}
-            />
-
-            <p>
-              Guardar: R$ {meta}
-            </p>
+            <h3>🎯 Metas</h3>
+            <p>Guardar R$ {meta}</p>
           </div>
         )}
 
@@ -171,7 +228,7 @@ export default function App() {
             borderRadius:"20px"
           }}>
             <h3>📅 Histórico</h3>
-            <p>Maio em desenvolvimento...</p>
+            <p>Em desenvolvimento...</p>
           </div>
         )}
 
@@ -194,6 +251,7 @@ export default function App() {
         left:0,
         width:"100%",
         background:"white",
+        borderTop:"1px solid #ddd",
         display:"flex",
         justifyContent:"space-around",
         padding:"12px"
@@ -207,4 +265,4 @@ export default function App() {
 
     </div>
   );
-              }
+                }

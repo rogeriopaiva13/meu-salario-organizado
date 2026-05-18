@@ -27,10 +27,7 @@ export default function App() {
   useEffect(() => localStorage.setItem("extra", extra), [extra]);
   useEffect(() => localStorage.setItem("contas", contas), [contas]);
   useEffect(() => localStorage.setItem("meta", meta), [meta]);
-
-  useEffect(() => {
-    localStorage.setItem("gastos", JSON.stringify(gastos));
-  }, [gastos]);
+  useEffect(() => localStorage.setItem("gastos", JSON.stringify(gastos)), [gastos]);
 
   const moeda = (valor) =>
     Number(valor || 0).toLocaleString("pt-BR", {
@@ -39,22 +36,12 @@ export default function App() {
     });
 
   const receitas = (Number(salario) || 0) + (Number(extra) || 0);
-
-  const totalGastos = gastos.reduce(
-    (acc, item) => acc + item.valor,
-    0
-  );
-
-  const saidas =
-    (Number(contas) || 0) +
-    totalGastos;
-
+  const totalGastos = gastos.reduce((acc, item) => acc + item.valor, 0);
+  const saidas = (Number(contas) || 0) + totalGastos;
   const saldo = receitas - saidas;
 
   const progresso =
-    receitas > 0
-      ? Math.min((saidas / receitas) * 100, 100)
-      : 0;
+    receitas > 0 ? Math.min((saidas / receitas) * 100, 100) : 0;
 
   const status =
     saldo < 0
@@ -120,13 +107,8 @@ export default function App() {
         }}
       >
         <div style={{ textAlign: "center" }}>
-          <img
-            src="/logo.png"
-            style={{ width: "120px" }}
-          />
-
+          <img src="/logo.png" style={{ width: "120px" }} />
           <h1>Meu Salário Organizado</h1>
-
           <p>Organize hoje, realize amanhã</p>
         </div>
       </div>
@@ -161,10 +143,7 @@ export default function App() {
         />
 
         <h2>👋 Olá, {nome}</h2>
-
-        <p style={{ opacity: 0.85 }}>
-          Vamos organizar seu mês?
-        </p>
+        <p style={{ opacity: 0.85 }}>Vamos organizar seu mês?</p>
       </div>
 
       <div style={{ padding: "15px" }}>
@@ -174,94 +153,122 @@ export default function App() {
               <h3>💰 Resumo do mês</h3>
 
               <p>
-                Receitas:
-                <strong> {moeda(receitas)}</strong>
+                Receitas: <strong>{moeda(receitas)}</strong>
               </p>
 
               <p>
-                Saídas:
-                <strong> {moeda(saidas)}</strong>
+                Saídas: <strong>{moeda(saidas)}</strong>
               </p>
 
-              <h2>
-                Saldo: {moeda(saldo)}
-              </h2>
+              <h2>Saldo: {moeda(saldo)}</h2>
+
+              <div style={{ marginTop: "20px" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    marginBottom: "6px",
+                    fontSize: "14px",
+                  }}
+                >
+                  <span>Entrou</span>
+                  <strong>{moeda(receitas)}</strong>
+                </div>
+
+                <div
+                  style={{
+                    background: "#dfe7fd",
+                    height: "14px",
+                    borderRadius: "20px",
+                    overflow: "hidden",
+                    marginBottom: "12px",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: "100%",
+                      background: "#0D47A1",
+                      height: "14px",
+                    }}
+                  />
+                </div>
+
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    marginBottom: "6px",
+                    fontSize: "14px",
+                  }}
+                >
+                  <span>Saiu</span>
+                  <strong>{moeda(saidas)}</strong>
+                </div>
+
+                <div
+                  style={{
+                    background: "#eee",
+                    height: "14px",
+                    borderRadius: "20px",
+                    overflow: "hidden",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: `${progresso}%`,
+                      background: progresso > 80 ? "#d32f2f" : "#fbc02d",
+                      height: "14px",
+                    }}
+                  />
+                </div>
+              </div>
 
               <p>{status}</p>
 
-              <div
-                style={{
-                  background: "#ddd",
-                  borderRadius: "20px",
-                  height: "14px",
-                }}
-              >
-                <div
-                  style={{
-                    width: `${progresso}%`,
-                    height: "14px",
-                    borderRadius: "20px",
-                    background:
-                      progresso > 80
-                        ? "#d32f2f"
-                        : "#fbc02d",
-                  }}
-                />
-              </div>
-
               <p style={{ fontSize: "13px" }}>
-                Você já usou{" "}
-                {progresso.toFixed(0)}%
-                do dinheiro do mês.
+                Você já usou {progresso.toFixed(0)}% do dinheiro do mês.
               </p>
             </div>
 
             <div style={card}>
               <h3>📥 Entradas e contas</h3>
 
-              <p style={{
-                marginBottom:"6px",
-                fontWeight:"bold"
-              }}>
+              <p style={{ marginBottom: "6px", fontWeight: "bold" }}>
                 💰 Salário
               </p>
 
               <input
                 type="number"
                 value={salario}
-                onChange={(e)=>setSalario(e.target.value)}
+                onChange={(e) => setSalario(e.target.value)}
                 style={inputStyle}
               />
 
-              <br/><br/>
+              <br />
+              <br />
 
-              <p style={{
-                marginBottom:"6px",
-                fontWeight:"bold"
-              }}>
+              <p style={{ marginBottom: "6px", fontWeight: "bold" }}>
                 💵 Extra / Bico
               </p>
 
               <input
                 type="number"
                 value={extra}
-                onChange={(e)=>setExtra(e.target.value)}
+                onChange={(e) => setExtra(e.target.value)}
                 style={inputStyle}
               />
 
-              <br/><br/>
+              <br />
+              <br />
 
-              <p style={{
-                marginBottom:"6px",
-                fontWeight:"bold"
-              }}>
+              <p style={{ marginBottom: "6px", fontWeight: "bold" }}>
                 📄 Contas Fixas
               </p>
 
               <input
                 type="number"
                 value={contas}
-                onChange={(e)=>setContas(e.target.value)}
+                onChange={(e) => setContas(e.target.value)}
                 style={inputStyle}
               />
             </div>
@@ -272,13 +279,12 @@ export default function App() {
               <input
                 type="number"
                 value={meta}
-                onChange={(e)=>setMeta(e.target.value)}
+                onChange={(e) => setMeta(e.target.value)}
                 style={inputStyle}
               />
 
               <p>
-                Guardar:
-                <strong> {moeda(meta)}</strong>
+                Guardar: <strong>{moeda(meta)}</strong>
               </p>
             </div>
 
@@ -306,21 +312,23 @@ export default function App() {
             <input
               placeholder="Nome do gasto"
               value={nomeGasto}
-              onChange={(e)=>setNomeGasto(e.target.value)}
+              onChange={(e) => setNomeGasto(e.target.value)}
               style={inputStyle}
             />
 
-            <br/><br/>
+            <br />
+            <br />
 
             <input
               type="number"
               placeholder="Valor"
               value={valorGasto}
-              onChange={(e)=>setValorGasto(e.target.value)}
+              onChange={(e) => setValorGasto(e.target.value)}
               style={inputStyle}
             />
 
-            <br/><br/>
+            <br />
+            <br />
 
             <button
               onClick={adicionarGasto}
@@ -337,41 +345,35 @@ export default function App() {
               Adicionar gasto
             </button>
 
-            <hr/>
+            <hr />
 
-            {gastos.length === 0 && (
-              <p>
-                Nenhum gasto cadastrado ainda.
-              </p>
-            )}
+            {gastos.length === 0 && <p>Nenhum gasto cadastrado ainda.</p>}
 
-            {gastos.map((item,index)=>(
+            {gastos.map((item, index) => (
               <div
                 key={index}
                 style={{
-                  display:"flex",
-                  justifyContent:"space-between",
-                  alignItems:"center",
-                  borderBottom:"1px solid #eee",
-                  padding:"10px 0"
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  borderBottom: "1px solid #eee",
+                  padding: "10px 0",
                 }}
               >
                 <span>
                   {item.nome}
-                  <br/>
-                  <strong>
-                    {moeda(item.valor)}
-                  </strong>
+                  <br />
+                  <strong>{moeda(item.valor)}</strong>
                 </span>
 
                 <button
-                  onClick={()=>removerGasto(index)}
+                  onClick={() => removerGasto(index)}
                   style={{
-                    border:"none",
-                    background:"#ffebee",
-                    color:"#c62828",
-                    borderRadius:"10px",
-                    padding:"8px"
+                    border: "none",
+                    background: "#ffebee",
+                    color: "#c62828",
+                    borderRadius: "10px",
+                    padding: "8px",
                   }}
                 >
                   Excluir
@@ -384,11 +386,7 @@ export default function App() {
         {tela === "metas" && (
           <div style={card}>
             <h3>🎯 Metas</h3>
-
-            <p>
-              Sua meta atual é guardar:
-            </p>
-
+            <p>Sua meta atual é guardar:</p>
             <h2>{moeda(meta)}</h2>
           </div>
         )}
@@ -396,11 +394,7 @@ export default function App() {
         {tela === "historico" && (
           <div style={card}>
             <h3>📅 Histórico</h3>
-
-            <p>
-              Em breve vamos salvar o fechamento
-              de cada mês aqui.
-            </p>
+            <p>Em breve vamos salvar o fechamento de cada mês aqui.</p>
           </div>
         )}
 
@@ -410,7 +404,7 @@ export default function App() {
 
             <input
               value={nome}
-              onChange={(e)=>setNome(e.target.value)}
+              onChange={(e) => setNome(e.target.value)}
               style={inputStyle}
             />
           </div>
@@ -419,47 +413,47 @@ export default function App() {
 
       <div
         style={{
-          position:"fixed",
-          bottom:0,
-          left:0,
-          right:0,
-          background:"white",
-          display:"flex",
-          justifyContent:"space-around",
-          padding:"10px",
-          borderTop:"1px solid #ddd"
+          position: "fixed",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          background: "white",
+          display: "flex",
+          justifyContent: "space-around",
+          padding: "10px",
+          borderTop: "1px solid #ddd",
         }}
       >
-        <div onClick={()=>setTela("inicio")}>
+        <div onClick={() => setTela("inicio")}>
           🏠
-          <br/>
+          <br />
           <small>Início</small>
         </div>
 
-        <div onClick={()=>setTela("gastos")}>
+        <div onClick={() => setTela("gastos")}>
           💸
-          <br/>
+          <br />
           <small>Gastos</small>
         </div>
 
-        <div onClick={()=>setTela("metas")}>
+        <div onClick={() => setTela("metas")}>
           🎯
-          <br/>
+          <br />
           <small>Metas</small>
         </div>
 
-        <div onClick={()=>setTela("historico")}>
+        <div onClick={() => setTela("historico")}>
           📅
-          <br/>
+          <br />
           <small>Histórico</small>
         </div>
 
-        <div onClick={()=>setTela("perfil")}>
+        <div onClick={() => setTela("perfil")}>
           ⚙️
-          <br/>
+          <br />
           <small>Perfil</small>
         </div>
       </div>
     </div>
   );
-}
+                             }

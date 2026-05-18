@@ -4,6 +4,7 @@ export default function App() {
   const mesAgora = () => new Date().toISOString().slice(0, 7);
 
   const [loading, setLoading] = useState(true);
+  const [tela, setTela] = useState("inicio");
   const [ocultarValores, setOcultarValores] = useState(false);
 
   const [nome, setNome] = useState(
@@ -33,10 +34,6 @@ export default function App() {
 
   const [gastos, setGastos] = useState(
     JSON.parse(localStorage.getItem("gastos")) || []
-  );
-
-  const [historico, setHistorico] = useState(
-    JSON.parse(localStorage.getItem("historico")) || []
   );
 
   const categorias = {
@@ -92,105 +89,6 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    const mesSalvo =
-      localStorage.getItem("mesReferencia");
-
-    const mesAtual = mesAgora();
-
-    if (!mesSalvo) {
-      localStorage.setItem(
-        "mesReferencia",
-        mesAtual
-      );
-
-      return;
-    }
-
-    if (mesSalvo !== mesAtual) {
-      const salarioAntigo = Number(
-        localStorage.getItem("salario") || 0
-      );
-
-      const extraAntigo = Number(
-        localStorage.getItem("extra") || 0
-      );
-
-      const contasAntigas = Number(
-        localStorage.getItem("contas") || 0
-      );
-
-      const gastosAntigos =
-        JSON.parse(
-          localStorage.getItem("gastos")
-        ) || [];
-
-      const receitasAntigas =
-        salarioAntigo + extraAntigo;
-
-      const totalGastosAntigos =
-        gastosAntigos.reduce(
-          (acc, item) =>
-            acc + Number(item.valor || 0),
-          0
-        );
-
-      const saidasAntigas =
-        contasAntigas + totalGastosAntigos;
-
-      const saldoAntigo =
-        receitasAntigas - saidasAntigas;
-
-      if (
-        receitasAntigas > 0 ||
-        saidasAntigas > 0
-      ) {
-        const novoRegistro = {
-          mes: mesSalvo,
-          receitas: receitasAntigas,
-          saidas: saidasAntigas,
-          saldo: saldoAntigo,
-        };
-
-        const historicoAtual =
-          JSON.parse(
-            localStorage.getItem("historico")
-          ) || [];
-
-        const atualizado = [
-          novoRegistro,
-          ...historicoAtual,
-        ];
-
-        localStorage.setItem(
-          "historico",
-          JSON.stringify(atualizado)
-        );
-
-        setHistorico(atualizado);
-      }
-
-      localStorage.setItem("salario", "");
-      localStorage.setItem("extra", "");
-      localStorage.setItem("contas", "");
-
-      localStorage.setItem(
-        "gastos",
-        JSON.stringify([])
-      );
-
-      localStorage.setItem(
-        "mesReferencia",
-        mesAtual
-      );
-
-      setSalario("");
-      setExtra("");
-      setContas("");
-      setGastos([]);
-    }
-  }, []);
-
-  useEffect(() => {
     localStorage.setItem("nome", nome);
   }, [nome]);
 
@@ -216,13 +114,6 @@ export default function App() {
       JSON.stringify(gastos)
     );
   }, [gastos]);
-
-  useEffect(() => {
-    localStorage.setItem(
-      "historico",
-      JSON.stringify(historico)
-    );
-  }, [historico]);
 
   const moeda = (valor) => {
     if (ocultarValores) {
@@ -288,55 +179,6 @@ export default function App() {
     );
   }
 
-  function compartilharProgresso() {
-    const percentualMeta =
-      Number(meta) > 0
-        ? Math.min(
-            (saldo / Number(meta)) * 100,
-            100
-          )
-        : 0;
-
-    const mensagem = `🎯 Meu progresso no Meu Salário Organizado
-
-${status}
-
-🏆 Meta do mês:
-${percentualMeta.toFixed(0)}% concluída
-
-🚀 Organize hoje, realize amanhã.
-
-https://meu-salario-organizado.vercel.app/`;
-
-    if (navigator.share) {
-      navigator.share({
-        title: "Meu Salário Organizado",
-        text: mensagem,
-      });
-    } else {
-      navigator.clipboard.writeText(
-        mensagem
-      );
-
-      alert(
-        "Mensagem copiada para compartilhar!"
-      );
-    }
-  }
-
-  function limparMes() {
-    const confirmar = window.confirm(
-      "Tem certeza que deseja apagar os dados do mês?"
-    );
-
-    if (!confirmar) return;
-
-    setSalario("");
-    setExtra("");
-    setContas("");
-    setGastos([]);
-  }
-
   const inputStyle = {
     width: "100%",
     padding: "15px",
@@ -399,7 +241,7 @@ https://meu-salario-organizado.vercel.app/`;
       style={{
         background: "#eef3fb",
         minHeight: "100vh",
-        paddingBottom: "95px",
+        paddingBottom: "120px",
         fontFamily: "Arial",
       }}
     >
@@ -559,6 +401,217 @@ https://meu-salario-organizado.vercel.app/`;
             placeholder="500"
           />
         </div>
+
+        <div style={card}>
+          <h3>🛒 Adicionar gasto</h3>
+
+          <input
+            style={inputStyle}
+            value={nomeGasto}
+            onChange={(e) =>
+              setNomeGasto(e.target.value)
+            }
+            placeholder="Nome do gasto"
+          />
+
+          <div style={{ height: "12px" }} />
+
+          <input
+            style={inputStyle}
+            type="number"
+            inputMode="decimal"
+            value={valorGasto}
+            onChange={(e) =>
+              setValorGasto(e.target.value)
+            }
+            placeholder="Valor"
+          />
+
+          <div style={{ height: "12px" }} />
+
+          <select
+            style={inputStyle}
+            value={categoriaGasto}
+            onChange={(e) =>
+              setCategoriaGasto(e.target.value)
+            }
+          >
+            {Object.keys(categorias).map(
+              (cat) => (
+                <option key={cat}>
+                  {cat}
+                </option>
+              )
+            )}
+          </select>
+
+          <div style={{ height: "14px" }} />
+
+          <button
+            onClick={adicionarGasto}
+            style={{
+              width: "100%",
+              padding: "15px",
+              borderRadius: "18px",
+              border: "none",
+              background: "#0D47A1",
+              color: "white",
+              fontWeight: "bold",
+              fontSize: "16px",
+            }}
+          >
+            ➕ Adicionar gasto
+          </button>
+        </div>
+
+        <div style={card}>
+          <h3>📊 Gastos do mês</h3>
+
+          {gastos.length === 0 ? (
+            <p>Nenhum gasto cadastrado.</p>
+          ) : (
+            gastos.map((item, index) => (
+              <div
+                key={index}
+                style={{
+                  background:
+                    categorias[item.categoria]
+                      ?.cor,
+                  padding: "14px",
+                  borderRadius: "18px",
+                  marginBottom: "10px",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent:
+                      "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <div>
+                    <strong>
+                      {
+                        categorias[item.categoria]
+                          ?.icone
+                      }{" "}
+                      {item.nome}
+                    </strong>
+
+                    <p>
+                      {moeda(item.valor)}
+                    </p>
+                  </div>
+
+                  <button
+                    onClick={() =>
+                      removerGasto(index)
+                    }
+                    style={{
+                      border: "none",
+                      background:
+                        "transparent",
+                      fontSize: "20px",
+                    }}
+                  >
+                    ❌
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+
+      <div
+        style={{
+          position: "fixed",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          background: "white",
+          display: "flex",
+          justifyContent: "space-around",
+          alignItems: "center",
+          padding: "12px 0",
+          borderTop: "1px solid #dbe3f1",
+          boxShadow:
+            "0 -5px 20px rgba(0,0,0,0.06)",
+          zIndex: 999,
+        }}
+      >
+        <button
+          onClick={() => setTela("inicio")}
+          style={{
+            background: "transparent",
+            border: "none",
+            color:
+              tela === "inicio"
+                ? "#0D47A1"
+                : "#7b8794",
+            fontWeight: "bold",
+            fontSize: "13px",
+          }}
+        >
+          🏠
+          <br />
+          Início
+        </button>
+
+        <button
+          onClick={() => setTela("gastos")}
+          style={{
+            background: "transparent",
+            border: "none",
+            color:
+              tela === "gastos"
+                ? "#0D47A1"
+                : "#7b8794",
+            fontWeight: "bold",
+            fontSize: "13px",
+          }}
+        >
+          💸
+          <br />
+          Gastos
+        </button>
+
+        <button
+          onClick={() => setTela("metas")}
+          style={{
+            background: "transparent",
+            border: "none",
+            color:
+              tela === "metas"
+                ? "#0D47A1"
+                : "#7b8794",
+            fontWeight: "bold",
+            fontSize: "13px",
+          }}
+        >
+          🎯
+          <br />
+          Metas
+        </button>
+
+        <button
+          onClick={() => setTela("perfil")}
+          style={{
+            background: "transparent",
+            border: "none",
+            color:
+              tela === "perfil"
+                ? "#0D47A1"
+                : "#7b8794",
+            fontWeight: "bold",
+            fontSize: "13px",
+          }}
+        >
+          👤
+          <br />
+          Perfil
+        </button>
       </div>
     </div>
   );

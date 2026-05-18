@@ -397,3 +397,238 @@ https://meu-salario-organizado.vercel.app/`;
           </p>
         </div>
       </div>
+<div style={{ padding: "20px", marginTop: "-10px" }}>
+        <div style={card}>
+          <p style={label}>👤 Seu nome</p>
+
+          <input
+            style={inputStyle}
+            value={nome}
+            onChange={(e) => setNome(e.target.value)}
+            placeholder="Digite seu nome"
+          />
+        </div>
+
+        <div style={card}>
+          <p style={label}>💰 Salário</p>
+
+          <input
+            style={inputStyle}
+            type="number"
+            value={salario}
+            onChange={(e) => setSalario(e.target.value)}
+            placeholder="0,00"
+          />
+
+          <div style={{ height: "14px" }} />
+
+          <p style={label}>✨ Extra</p>
+
+          <input
+            style={inputStyle}
+            type="number"
+            value={extra}
+            onChange={(e) => setExtra(e.target.value)}
+            placeholder="0,00"
+          />
+
+          <div style={{ height: "14px" }} />
+
+          <p style={label}>📄 Contas Fixas</p>
+
+          <input
+            style={inputStyle}
+            type="number"
+            value={contas}
+            onChange={(e) => setContas(e.target.value)}
+            placeholder="0,00"
+          />
+        </div>
+
+        <div style={card}>
+          <h3>🛒 Adicionar gasto</h3>
+
+          <input
+            style={inputStyle}
+            value={nomeGasto}
+            onChange={(e) =>
+              setNomeGasto(e.target.value)
+            }
+            placeholder="Nome do gasto"
+          />
+
+          <div style={{ height: "12px" }} />
+
+          <input
+            style={inputStyle}
+            type="number"
+            value={valorGasto}
+            onChange={(e) =>
+              setValorGasto(e.target.value)
+            }
+            placeholder="Valor"
+          />
+
+          <div style={{ height: "12px" }} />
+
+          <select
+            style={inputStyle}
+            value={categoriaGasto}
+            onChange={(e) =>
+              setCategoriaGasto(e.target.value)
+            }
+          >
+            {Object.keys(categorias).map((cat) => (
+              <option key={cat}>{cat}</option>
+            ))}
+          </select>
+
+          <div style={{ height: "14px" }} />
+
+          <button
+            onClick={adicionarGasto}
+            style={{
+              width: "100%",
+              padding: "15px",
+              borderRadius: "18px",
+              border: "none",
+              background: "#0D47A1",
+              color: "white",
+              fontWeight: "bold",
+              fontSize: "16px",
+            }}
+          >
+            ➕ Adicionar gasto
+          </button>
+        </div>
+
+        <div style={card}>
+          <h3>📊 Gastos do mês</h3>
+
+          {gastos.length === 0 ? (
+            <p>Nenhum gasto cadastrado.</p>
+          ) : (
+            gastos.map((item, index) => (
+              <div
+                key={index}
+                style={{
+                  background:
+                    categorias[item.categoria]?.cor,
+                  padding: "14px",
+                  borderRadius: "18px",
+                  marginBottom: "10px",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent:
+                      "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <div>
+                    <strong>
+                      {
+                        categorias[item.categoria]
+                          ?.icone
+                      }{" "}
+                      {item.nome}
+                    </strong>
+
+                    <p
+                      style={{
+                        margin: "5px 0 0",
+                        color:
+                          categorias[item.categoria]
+                            ?.texto,
+                      }}
+                    >
+                      {moeda(item.valor)}
+                    </p>
+                  </div>
+
+                  <button
+                    onClick={() =>
+                      removerGasto(index)
+                    }
+                    style={{
+                      border: "none",
+                      background: "transparent",
+                      fontSize: "20px",
+                    }}
+                  >
+                    ❌
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        <div style={card}>
+          <h3>📈 Resumo</h3>
+
+          <p>Receitas: {moeda(receitas)}</p>
+
+          <p>Saídas: {moeda(saidas)}</p>
+
+          <p>
+            Meta: {moeda(meta)}
+          </p>
+
+          <div
+            style={{
+              background: "#dbeafe",
+              height: "14px",
+              borderRadius: "999px",
+              overflow: "hidden",
+              marginTop: "12px",
+            }}
+          >
+            <div
+              style={{
+                width: `${progresso}%`,
+                background: "#0D47A1",
+                height: "100%",
+              }}
+            />
+          </div>
+        </div>
+
+        <button
+          onClick={compartilharProgresso}
+          style={{
+            width: "100%",
+            padding: "16px",
+            borderRadius: "18px",
+            border: "none",
+            background: "#FDD835",
+            color: "#0D47A1",
+            fontWeight: "bold",
+            fontSize: "16px",
+            marginBottom: "12px",
+          }}
+        >
+          📤 Compartilhar progresso
+        </button>
+
+        <button
+          onClick={limparMes}
+          style={{
+            width: "100%",
+            padding: "16px",
+            borderRadius: "18px",
+            border: "none",
+            background: "#ef4444",
+            color: "white",
+            fontWeight: "bold",
+            fontSize: "16px",
+          }}
+        >
+          🗑 Limpar mês
+        </button>
+      </div>
+    </div>
+  );
+            }

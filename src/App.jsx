@@ -18,7 +18,7 @@ export default function App() {
   );
 
   useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 1500);
+    const timer = setTimeout(() => setLoading(false), 1400);
     return () => clearTimeout(timer);
   }, []);
 
@@ -39,9 +39,7 @@ export default function App() {
   const totalGastos = gastos.reduce((acc, item) => acc + item.valor, 0);
   const saidas = (Number(contas) || 0) + totalGastos;
   const saldo = receitas - saidas;
-
-  const progresso =
-    receitas > 0 ? Math.min((saidas / receitas) * 100, 100) : 0;
+  const progresso = receitas > 0 ? Math.min((saidas / receitas) * 100, 100) : 0;
 
   const status =
     saldo < 0
@@ -55,10 +53,7 @@ export default function App() {
 
     setGastos([
       ...gastos,
-      {
-        nome: nomeGasto,
-        valor: Number(valorGasto),
-      },
+      { nome: nomeGasto, valor: Number(valorGasto) },
     ]);
 
     setNomeGasto("");
@@ -78,26 +73,34 @@ export default function App() {
 
   const inputStyle = {
     width: "100%",
-    padding: "14px",
-    borderRadius: "14px",
-    border: "1px solid #ddd",
+    padding: "15px",
+    borderRadius: "16px",
+    border: "1px solid #d9e2f3",
     fontSize: "16px",
     boxSizing: "border-box",
+    outline: "none",
+    background: "#f9fbff",
   };
 
   const card = {
     background: "white",
     padding: "20px",
-    borderRadius: "22px",
-    marginBottom: "15px",
-    boxShadow: "0 8px 20px rgba(0,0,0,0.06)",
+    borderRadius: "24px",
+    marginBottom: "16px",
+    boxShadow: "0 10px 25px rgba(13,71,161,0.10)",
+  };
+
+  const label = {
+    marginBottom: "6px",
+    fontWeight: "bold",
+    color: "#1f2937",
   };
 
   if (loading) {
     return (
       <div
         style={{
-          background: "#0D47A1",
+          background: "linear-gradient(180deg, #0D47A1, #06306f)",
           minHeight: "100vh",
           display: "flex",
           justifyContent: "center",
@@ -107,9 +110,9 @@ export default function App() {
         }}
       >
         <div style={{ textAlign: "center" }}>
-          <img src="/logo.png" style={{ width: "120px" }} />
-          <h1>Meu Salário Organizado</h1>
-          <p>Organize hoje, realize amanhã</p>
+          <img src="/logo.png" style={{ width: "125px" }} />
+          <h1 style={{ marginBottom: "5px" }}>Meu Salário Organizado</h1>
+          <p style={{ color: "#FDD835" }}>Organize hoje, realize amanhã</p>
         </div>
       </div>
     );
@@ -118,114 +121,92 @@ export default function App() {
   return (
     <div
       style={{
-        background: "#f5f7fb",
+        background: "#eef3fb",
         minHeight: "100vh",
-        paddingBottom: "90px",
+        paddingBottom: "95px",
         fontFamily: "Arial",
       }}
     >
       <div
         style={{
-          background: "#0D47A1",
+          background: "linear-gradient(180deg, #0D47A1, #063B88)",
           color: "white",
-          padding: "25px",
-          borderBottomLeftRadius: "30px",
-          borderBottomRightRadius: "30px",
+          padding: "28px 22px 34px",
+          borderBottomLeftRadius: "34px",
+          borderBottomRightRadius: "34px",
         }}
       >
         <img
           src="/logo-horizontal.png"
           style={{
-            width: "220px",
+            width: "225px",
             display: "block",
-            margin: "0 auto 20px",
+            margin: "0 auto 22px",
           }}
         />
 
-        <h2>👋 Olá, {nome}</h2>
-        <p style={{ opacity: 0.85 }}>Vamos organizar seu mês?</p>
+        <h2 style={{ margin: "0 0 6px" }}>👋 Olá, {nome}</h2>
+        <p style={{ opacity: 0.9, margin: 0 }}>Vamos organizar seu mês?</p>
+
+        <div
+          style={{
+            background: "rgba(255,255,255,0.14)",
+            borderRadius: "22px",
+            padding: "16px",
+            marginTop: "22px",
+            border: "1px solid rgba(255,255,255,0.20)",
+          }}
+        >
+          <p style={{ margin: 0, fontSize: "13px", opacity: 0.85 }}>
+            Saldo disponível
+          </p>
+          <h1 style={{ margin: "6px 0", color: "#FDD835" }}>
+            {moeda(saldo)}
+          </h1>
+          <p style={{ margin: 0, fontSize: "14px" }}>{status}</p>
+        </div>
       </div>
 
-      <div style={{ padding: "15px" }}>
+      <div style={{ padding: "16px", marginTop: "-10px" }}>
         {tela === "inicio" && (
           <>
             <div style={card}>
               <h3>💰 Resumo do mês</h3>
 
-              <p>
-                Receitas: <strong>{moeda(receitas)}</strong>
-              </p>
-
-              <p>
-                Saídas: <strong>{moeda(saidas)}</strong>
-              </p>
-
-              <h2>Saldo: {moeda(saldo)}</h2>
-
-              <div style={{ marginTop: "20px" }}>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    marginBottom: "6px",
-                    fontSize: "14px",
-                  }}
-                >
-                  <span>Entrou</span>
-                  <strong>{moeda(receitas)}</strong>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+                <div style={{ background: "#e8f1ff", padding: "14px", borderRadius: "18px" }}>
+                  <small>Entrou</small>
+                  <strong style={{ display: "block", color: "#0D47A1" }}>
+                    {moeda(receitas)}
+                  </strong>
                 </div>
 
-                <div
-                  style={{
-                    background: "#dfe7fd",
-                    height: "14px",
-                    borderRadius: "20px",
-                    overflow: "hidden",
-                    marginBottom: "12px",
-                  }}
-                >
-                  <div
-                    style={{
-                      width: "100%",
-                      background: "#0D47A1",
-                      height: "14px",
-                    }}
-                  />
+                <div style={{ background: "#fff8d6", padding: "14px", borderRadius: "18px" }}>
+                  <small>Saiu</small>
+                  <strong style={{ display: "block", color: "#8a6d00" }}>
+                    {moeda(saidas)}
+                  </strong>
+                </div>
+              </div>
+
+              <div style={{ marginTop: "18px" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: "14px" }}>
+                  <span>Uso do salário</span>
+                  <strong>{progresso.toFixed(0)}%</strong>
                 </div>
 
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    marginBottom: "6px",
-                    fontSize: "14px",
-                  }}
-                >
-                  <span>Saiu</span>
-                  <strong>{moeda(saidas)}</strong>
-                </div>
-
-                <div
-                  style={{
-                    background: "#eee",
-                    height: "14px",
-                    borderRadius: "20px",
-                    overflow: "hidden",
-                  }}
-                >
+                <div style={{ background: "#e5e7eb", height: "15px", borderRadius: "20px", overflow: "hidden", marginTop: "8px" }}>
                   <div
                     style={{
                       width: `${progresso}%`,
-                      background: progresso > 80 ? "#d32f2f" : "#fbc02d",
-                      height: "14px",
+                      height: "15px",
+                      background: progresso > 80 ? "#d32f2f" : "#FDD835",
                     }}
                   />
                 </div>
               </div>
 
-              <p>{status}</p>
-
-              <p style={{ fontSize: "13px" }}>
+              <p style={{ fontSize: "13px", color: "#555" }}>
                 Você já usou {progresso.toFixed(0)}% do dinheiro do mês.
               </p>
             </div>
@@ -233,71 +214,42 @@ export default function App() {
             <div style={card}>
               <h3>📥 Entradas e contas</h3>
 
-              <p style={{ marginBottom: "6px", fontWeight: "bold" }}>
-                💰 Salário
-              </p>
+              <p style={label}>💰 Salário</p>
+              <input type="number" value={salario} onChange={(e) => setSalario(e.target.value)} style={inputStyle} />
 
-              <input
-                type="number"
-                value={salario}
-                onChange={(e) => setSalario(e.target.value)}
-                style={inputStyle}
-              />
+              <br /><br />
 
-              <br />
-              <br />
+              <p style={label}>💵 Extra / Bico</p>
+              <input type="number" value={extra} onChange={(e) => setExtra(e.target.value)} style={inputStyle} />
 
-              <p style={{ marginBottom: "6px", fontWeight: "bold" }}>
-                💵 Extra / Bico
-              </p>
+              <br /><br />
 
-              <input
-                type="number"
-                value={extra}
-                onChange={(e) => setExtra(e.target.value)}
-                style={inputStyle}
-              />
-
-              <br />
-              <br />
-
-              <p style={{ marginBottom: "6px", fontWeight: "bold" }}>
-                📄 Contas Fixas
-              </p>
-
-              <input
-                type="number"
-                value={contas}
-                onChange={(e) => setContas(e.target.value)}
-                style={inputStyle}
-              />
+              <p style={label}>📄 Contas Fixas</p>
+              <input type="number" value={contas} onChange={(e) => setContas(e.target.value)} style={inputStyle} />
             </div>
 
             <div style={card}>
               <h3>🎯 Meta do mês</h3>
 
-              <input
-                type="number"
-                value={meta}
-                onChange={(e) => setMeta(e.target.value)}
-                style={inputStyle}
-              />
+              <p style={label}>Quanto deseja guardar?</p>
+              <input type="number" value={meta} onChange={(e) => setMeta(e.target.value)} style={inputStyle} />
 
-              <p>
+              <div style={{ marginTop: "14px", background: "#e8f5e9", padding: "14px", borderRadius: "16px", color: "#1b5e20" }}>
                 Guardar: <strong>{moeda(meta)}</strong>
-              </p>
+              </div>
             </div>
 
             <button
               onClick={limparMes}
               style={{
                 width: "100%",
-                padding: "15px",
-                borderRadius: "18px",
+                padding: "16px",
+                borderRadius: "20px",
                 border: "none",
-                background: "#111",
+                background: "#111827",
                 color: "white",
                 fontWeight: "bold",
+                fontSize: "15px",
               }}
             >
               Começar novo mês
@@ -309,33 +261,22 @@ export default function App() {
           <div style={card}>
             <h3>💸 Gastos do mês</h3>
 
-            <input
-              placeholder="Nome do gasto"
-              value={nomeGasto}
-              onChange={(e) => setNomeGasto(e.target.value)}
-              style={inputStyle}
-            />
+            <p style={label}>Nome do gasto</p>
+            <input value={nomeGasto} onChange={(e) => setNomeGasto(e.target.value)} style={inputStyle} />
 
-            <br />
-            <br />
+            <br /><br />
 
-            <input
-              type="number"
-              placeholder="Valor"
-              value={valorGasto}
-              onChange={(e) => setValorGasto(e.target.value)}
-              style={inputStyle}
-            />
+            <p style={label}>Valor</p>
+            <input type="number" value={valorGasto} onChange={(e) => setValorGasto(e.target.value)} style={inputStyle} />
 
-            <br />
-            <br />
+            <br /><br />
 
             <button
               onClick={adicionarGasto}
               style={{
                 width: "100%",
-                padding: "14px",
-                borderRadius: "16px",
+                padding: "15px",
+                borderRadius: "18px",
                 border: "none",
                 background: "#0D47A1",
                 color: "white",
@@ -357,7 +298,7 @@ export default function App() {
                   justifyContent: "space-between",
                   alignItems: "center",
                   borderBottom: "1px solid #eee",
-                  padding: "10px 0",
+                  padding: "12px 0",
                 }}
               >
                 <span>
@@ -372,8 +313,8 @@ export default function App() {
                     border: "none",
                     background: "#ffebee",
                     color: "#c62828",
-                    borderRadius: "10px",
-                    padding: "8px",
+                    borderRadius: "12px",
+                    padding: "9px",
                   }}
                 >
                   Excluir
@@ -387,7 +328,7 @@ export default function App() {
           <div style={card}>
             <h3>🎯 Metas</h3>
             <p>Sua meta atual é guardar:</p>
-            <h2>{moeda(meta)}</h2>
+            <h2 style={{ color: "#0D47A1" }}>{moeda(meta)}</h2>
           </div>
         )}
 
@@ -402,11 +343,8 @@ export default function App() {
           <div style={card}>
             <h3>⚙️ Perfil</h3>
 
-            <input
-              value={nome}
-              onChange={(e) => setNome(e.target.value)}
-              style={inputStyle}
-            />
+            <p style={label}>Seu nome</p>
+            <input value={nome} onChange={(e) => setNome(e.target.value)} style={inputStyle} />
           </div>
         )}
       </div>
@@ -422,38 +360,15 @@ export default function App() {
           justifyContent: "space-around",
           padding: "10px",
           borderTop: "1px solid #ddd",
+          boxShadow: "0 -6px 18px rgba(0,0,0,0.06)",
         }}
       >
-        <div onClick={() => setTela("inicio")}>
-          🏠
-          <br />
-          <small>Início</small>
-        </div>
-
-        <div onClick={() => setTela("gastos")}>
-          💸
-          <br />
-          <small>Gastos</small>
-        </div>
-
-        <div onClick={() => setTela("metas")}>
-          🎯
-          <br />
-          <small>Metas</small>
-        </div>
-
-        <div onClick={() => setTela("historico")}>
-          📅
-          <br />
-          <small>Histórico</small>
-        </div>
-
-        <div onClick={() => setTela("perfil")}>
-          ⚙️
-          <br />
-          <small>Perfil</small>
-        </div>
+        <div onClick={() => setTela("inicio")}>🏠<br /><small>Início</small></div>
+        <div onClick={() => setTela("gastos")}>💸<br /><small>Gastos</small></div>
+        <div onClick={() => setTela("metas")}>🎯<br /><small>Metas</small></div>
+        <div onClick={() => setTela("historico")}>📅<br /><small>Histórico</small></div>
+        <div onClick={() => setTela("perfil")}>⚙️<br /><small>Perfil</small></div>
       </div>
     </div>
   );
-                             }
+}

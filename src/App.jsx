@@ -6,7 +6,7 @@ export default function App() {
   const [ocultarValores, setOcultarValores] = useState(false);
 
   const [nome, setNome] = useState(
-    localStorage.getItem("nome") || "Rogério"
+    localStorage.getItem("nome") || ""
   );
 
   const [salario, setSalario] = useState(
@@ -81,7 +81,7 @@ export default function App() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 1400);
+    }, 1200);
 
     return () => clearTimeout(timer);
   }, []);
@@ -175,7 +175,7 @@ export default function App() {
   const inputStyle = {
     width: "100%",
     padding: "15px",
-    borderRadius: "16px",
+    borderRadius: "18px",
     border: "1px solid #d9e2f3",
     fontSize: "16px",
     boxSizing: "border-box",
@@ -185,17 +185,18 @@ export default function App() {
 
   const card = {
     background: "white",
-    padding: "20px",
-    borderRadius: "24px",
-    marginBottom: "16px",
+    padding: "22px",
+    borderRadius: "28px",
+    marginBottom: "18px",
     boxShadow:
-      "0 10px 25px rgba(13,71,161,0.10)",
+      "0 10px 30px rgba(13,71,161,0.10)",
   };
 
   const label = {
-    marginBottom: "6px",
+    marginBottom: "8px",
     fontWeight: "bold",
     color: "#1f2937",
+    fontSize: "15px",
   };
 
   if (loading) {
@@ -203,7 +204,7 @@ export default function App() {
       <div
         style={{
           background:
-            "linear-gradient(180deg, #0D47A1, #06306f)",
+            "linear-gradient(180deg,#0D47A1,#06306f)",
           minHeight: "100vh",
           display: "flex",
           justifyContent: "center",
@@ -216,7 +217,7 @@ export default function App() {
           <img
             src="/logo.png"
             alt="logo"
-            style={{ width: "125px" }}
+            style={{ width: "120px" }}
           />
 
           <h1>Meu Salário Organizado</h1>
@@ -241,40 +242,50 @@ export default function App() {
       <div
         style={{
           background:
-            "linear-gradient(180deg, #0D47A1, #063B88)",
+            "linear-gradient(180deg,#0D47A1,#063B88)",
           color: "white",
           padding: "28px 22px 34px",
-          borderBottomLeftRadius: "34px",
-          borderBottomRightRadius: "34px",
+          borderBottomLeftRadius: "38px",
+          borderBottomRightRadius: "38px",
         }}
       >
         <img
           src="/logo-horizontal.png"
           alt="logo"
           style={{
-            width: "225px",
+            width: "220px",
             display: "block",
             margin: "0 auto 22px",
           }}
         />
 
-        <h2>👋 Olá, {nome}</h2>
+        <h2 style={{ fontSize: "38px" }}>
+          👋 Olá!
+        </h2>
 
-        <p>Vamos organizar seu mês?</p>
+        <p
+          style={{
+            fontSize: "18px",
+            opacity: 0.9,
+          }}
+        >
+          Vamos organizar seu mês?
+        </p>
 
         <button
           onClick={() =>
             setOcultarValores(!ocultarValores)
           }
           style={{
-            marginTop: "14px",
-            padding: "10px 14px",
-            borderRadius: "14px",
+            marginTop: "18px",
+            padding: "14px 18px",
+            borderRadius: "18px",
             border: "none",
             background:
               "rgba(255,255,255,0.18)",
             color: "white",
             fontWeight: "bold",
+            fontSize: "16px",
           }}
         >
           {ocultarValores
@@ -286,236 +297,289 @@ export default function App() {
           style={{
             background:
               "rgba(255,255,255,0.14)",
-            borderRadius: "22px",
-            padding: "16px",
-            marginTop: "22px",
+            borderRadius: "28px",
+            padding: "22px",
+            marginTop: "24px",
           }}
         >
-          <p>Saldo disponível</p>
+          <p style={{ fontSize: "16px" }}>
+            Saldo disponível
+          </p>
 
-          <h1 style={{ color: "#FDD835" }}>
+          <h1
+            style={{
+              color: "#FDD835",
+              fontSize: "56px",
+            }}
+          >
             {moeda(saldo)}
           </h1>
 
-          <p>{status}</p>
-        </div>
-      </div>
-
-      <div
-        style={{
-          padding: "20px",
-          marginTop: "-10px",
-        }}
-      >
-        <div style={card}>
-          <p style={label}>👤 Seu nome</p>
-
-          <input
-            style={inputStyle}
-            value={nome}
-            onChange={(e) =>
-              setNome(e.target.value)
-            }
-            placeholder="Digite seu nome"
-          />
-        </div>
-
-        <div style={card}>
-          <p style={label}>💰 Salário</p>
-
-          <input
-            style={inputStyle}
-            type="text"
-            inputMode="decimal"
-            value={
-              ocultarValores
-                ? "•••••"
-                : salario
-            }
-            onChange={(e) =>
-              setSalario(e.target.value)
-            }
-            placeholder="0,00"
-          />
-
-          <div style={{ height: "14px" }} />
-
-          <p style={label}>✨ Extra</p>
-
-          <input
-            style={inputStyle}
-            type="text"
-            inputMode="decimal"
-            value={
-              ocultarValores
-                ? "•••••"
-                : extra
-            }
-            onChange={(e) =>
-              setExtra(e.target.value)
-            }
-            placeholder="0,00"
-          />
-
-          <div style={{ height: "14px" }} />
-
-          <p style={label}>📄 Contas Fixas</p>
-
-          <input
-            style={inputStyle}
-            type="text"
-            inputMode="decimal"
-            value={
-              ocultarValores
-                ? "•••••"
-                : contas
-            }
-            onChange={(e) =>
-              setContas(e.target.value)
-            }
-            placeholder="0,00"
-          />
-        </div>
-
-        <div style={card}>
-          <p style={label}>🎯 Meta do mês</p>
-
-          <input
-            style={inputStyle}
-            type="text"
-            value={
-              ocultarValores
-                ? "•••••"
-                : meta
-            }
-            onChange={(e) =>
-              setMeta(e.target.value)
-            }
-            placeholder="500"
-          />
-        </div>
-
-        <div style={card}>
-          <h3>🛒 Adicionar gasto</h3>
-
-          <input
-            style={inputStyle}
-            value={nomeGasto}
-            onChange={(e) =>
-              setNomeGasto(e.target.value)
-            }
-            placeholder="Nome do gasto"
-          />
-
-          <div style={{ height: "12px" }} />
-
-          <input
-            style={inputStyle}
-            type="number"
-            inputMode="decimal"
-            value={valorGasto}
-            onChange={(e) =>
-              setValorGasto(e.target.value)
-            }
-            placeholder="Valor"
-          />
-
-          <div style={{ height: "12px" }} />
-
-          <select
-            style={inputStyle}
-            value={categoriaGasto}
-            onChange={(e) =>
-              setCategoriaGasto(e.target.value)
-            }
-          >
-            {Object.keys(categorias).map(
-              (cat) => (
-                <option key={cat}>
-                  {cat}
-                </option>
-              )
-            )}
-          </select>
-
-          <div style={{ height: "14px" }} />
-
-          <button
-            onClick={adicionarGasto}
+          <p
             style={{
-              width: "100%",
-              padding: "15px",
-              borderRadius: "18px",
-              border: "none",
-              background: "#0D47A1",
-              color: "white",
-              fontWeight: "bold",
-              fontSize: "16px",
+              fontSize: "22px",
             }}
           >
-            ➕ Adicionar gasto
-          </button>
-        </div>
-
-        <div style={card}>
-          <h3>📊 Gastos do mês</h3>
-
-          {gastos.length === 0 ? (
-            <p>Nenhum gasto cadastrado.</p>
-          ) : (
-            gastos.map((item, index) => (
-              <div
-                key={index}
-                style={{
-                  background:
-                    categorias[item.categoria]
-                      ?.cor,
-                  padding: "14px",
-                  borderRadius: "18px",
-                  marginBottom: "10px",
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent:
-                      "space-between",
-                    alignItems: "center",
-                  }}
-                >
-                  <div>
-                    <strong>
-                      {
-                        categorias[item.categoria]
-                          ?.icone
-                      }{" "}
-                      {item.nome}
-                    </strong>
-
-                    <p>
-                      {moeda(item.valor)}
-                    </p>
-                  </div>
-
-                  <button
-                    onClick={() =>
-                      removerGasto(index)
-                    }
-                    style={{
-                      border: "none",
-                      background:
-                        "transparent",
-                      fontSize: "20px",
-                    }}
-                  >
-                    ❌
-                  </button>
-                </div>
-              </div>
-            ))
-          )}
+            {status}
+          </p>
         </div>
       </div>
+
+      {tela === "inicio" && (
+        <div
+          style={{
+            padding: "20px",
+            marginTop: "-10px",
+          }}
+        >
+          <div style={card}>
+            <p style={label}>👤 Seu nome</p>
+
+            <input
+              style={inputStyle}
+              value={nome}
+              onChange={(e) =>
+                setNome(e.target.value)
+              }
+              placeholder="Digite seu nome"
+            />
+          </div>
+
+          <div style={card}>
+            <p style={label}>💰 Salário</p>
+
+            <input
+              style={inputStyle}
+              type="text"
+              inputMode="decimal"
+              value={
+                ocultarValores
+                  ? "•••••"
+                  : salario
+              }
+              onChange={(e) =>
+                setSalario(e.target.value)
+              }
+              placeholder="0,00"
+            />
+
+            <div style={{ height: "16px" }} />
+
+            <p style={label}>✨ Extra</p>
+
+            <input
+              style={inputStyle}
+              type="text"
+              inputMode="decimal"
+              value={
+                ocultarValores
+                  ? "•••••"
+                  : extra
+              }
+              onChange={(e) =>
+                setExtra(e.target.value)
+              }
+              placeholder="0,00"
+            />
+
+            <div style={{ height: "16px" }} />
+
+            <p style={label}>📄 Contas Fixas</p>
+
+            <input
+              style={inputStyle}
+              type="text"
+              inputMode="decimal"
+              value={
+                ocultarValores
+                  ? "•••••"
+                  : contas
+              }
+              onChange={(e) =>
+                setContas(e.target.value)
+              }
+              placeholder="0,00"
+            />
+          </div>
+
+          <div style={card}>
+            <p style={label}>🎯 Meta do mês</p>
+
+            <input
+              style={inputStyle}
+              type="text"
+              value={
+                ocultarValores
+                  ? "•••••"
+                  : meta
+              }
+              onChange={(e) =>
+                setMeta(e.target.value)
+              }
+              placeholder="500"
+            />
+          </div>
+        </div>
+      )}
+
+      {tela === "gastos" && (
+        <div style={{ padding: "20px" }}>
+          <div style={card}>
+            <h2>💸 Gastos</h2>
+
+            <input
+              style={inputStyle}
+              value={nomeGasto}
+              onChange={(e) =>
+                setNomeGasto(e.target.value)
+              }
+              placeholder="Nome do gasto"
+            />
+
+            <div style={{ height: "12px" }} />
+
+            <input
+              style={inputStyle}
+              type="number"
+              inputMode="decimal"
+              value={valorGasto}
+              onChange={(e) =>
+                setValorGasto(e.target.value)
+              }
+              placeholder="Valor"
+            />
+
+            <div style={{ height: "12px" }} />
+
+            <select
+              style={inputStyle}
+              value={categoriaGasto}
+              onChange={(e) =>
+                setCategoriaGasto(e.target.value)
+              }
+            >
+              {Object.keys(categorias).map(
+                (cat) => (
+                  <option key={cat}>
+                    {cat}
+                  </option>
+                )
+              )}
+            </select>
+
+            <div style={{ height: "16px" }} />
+
+            <button
+              onClick={adicionarGasto}
+              style={{
+                width: "100%",
+                padding: "16px",
+                borderRadius: "18px",
+                border: "none",
+                background: "#0D47A1",
+                color: "white",
+                fontWeight: "bold",
+                fontSize: "16px",
+              }}
+            >
+              ➕ Adicionar gasto
+            </button>
+          </div>
+
+          {gastos.map((item, index) => (
+            <div
+              key={index}
+              style={{
+                ...card,
+                background:
+                  categorias[item.categoria]
+                    ?.cor,
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent:
+                    "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <div>
+                  <h3>
+                    {
+                      categorias[item.categoria]
+                        ?.icone
+                    }{" "}
+                    {item.nome}
+                  </h3>
+
+                  <p
+                    style={{
+                      color:
+                        categorias[item.categoria]
+                          ?.texto,
+                      fontWeight: "bold",
+                    }}
+                  >
+                    {moeda(item.valor)}
+                  </p>
+                </div>
+
+                <button
+                  onClick={() =>
+                    removerGasto(index)
+                  }
+                  style={{
+                    border: "none",
+                    background:
+                      "transparent",
+                    fontSize: "22px",
+                  }}
+                >
+                  ❌
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {tela === "metas" && (
+        <div style={{ padding: "20px" }}>
+          <div style={card}>
+            <h2>🎯 Metas</h2>
+
+            <p
+              style={{
+                fontSize: "18px",
+              }}
+            >
+              Sua meta atual é:
+            </p>
+
+            <h1
+              style={{
+                color: "#0D47A1",
+                fontSize: "42px",
+              }}
+            >
+              {moeda(meta)}
+            </h1>
+          </div>
+        </div>
+      )}
+
+      {tela === "perfil" && (
+        <div style={{ padding: "20px" }}>
+          <div style={card}>
+            <h2>👤 Perfil</h2>
+
+            <p>Nome:</p>
+
+            <h3>{nome || "Usuário"}</h3>
+          </div>
+        </div>
+      )}
 
       <div
         style={{
@@ -527,7 +591,7 @@ export default function App() {
           display: "flex",
           justifyContent: "space-around",
           alignItems: "center",
-          padding: "12px 0",
+          padding: "14px 0",
           borderTop: "1px solid #dbe3f1",
           boxShadow:
             "0 -5px 20px rgba(0,0,0,0.06)",
@@ -544,7 +608,7 @@ export default function App() {
                 ? "#0D47A1"
                 : "#7b8794",
             fontWeight: "bold",
-            fontSize: "13px",
+            fontSize: "14px",
           }}
         >
           🏠
@@ -562,7 +626,7 @@ export default function App() {
                 ? "#0D47A1"
                 : "#7b8794",
             fontWeight: "bold",
-            fontSize: "13px",
+            fontSize: "14px",
           }}
         >
           💸
@@ -580,7 +644,7 @@ export default function App() {
                 ? "#0D47A1"
                 : "#7b8794",
             fontWeight: "bold",
-            fontSize: "13px",
+            fontSize: "14px",
           }}
         >
           🎯
@@ -598,7 +662,7 @@ export default function App() {
                 ? "#0D47A1"
                 : "#7b8794",
             fontWeight: "bold",
-            fontSize: "13px",
+            fontSize: "14px",
           }}
         >
           👤
@@ -608,4 +672,4 @@ export default function App() {
       </div>
     </div>
   );
-      }
+}

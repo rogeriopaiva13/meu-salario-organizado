@@ -4,10 +4,25 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [tela, setTela] = useState("inicio");
 
-  const [salario, setSalario] = useState(localStorage.getItem("salario") || "");
-  const [extra, setExtra] = useState(localStorage.getItem("extra") || "");
-  const [contas, setContas] = useState(localStorage.getItem("contas") || "");
-  const [meta, setMeta] = useState(localStorage.getItem("meta") || "500");
+  const [nome, setNome] = useState(
+    localStorage.getItem("nome") || "Rogério"
+  );
+
+  const [salario, setSalario] = useState(
+    localStorage.getItem("salario") || ""
+  );
+
+  const [extra, setExtra] = useState(
+    localStorage.getItem("extra") || ""
+  );
+
+  const [contas, setContas] = useState(
+    localStorage.getItem("contas") || ""
+  );
+
+  const [meta, setMeta] = useState(
+    localStorage.getItem("meta") || "500"
+  );
 
   const [nomeGasto, setNomeGasto] = useState("");
   const [valorGasto, setValorGasto] = useState("");
@@ -17,14 +32,32 @@ export default function App() {
   );
 
   useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 1800);
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1800);
+
     return () => clearTimeout(timer);
   }, []);
 
-  useEffect(() => localStorage.setItem("salario", salario), [salario]);
-  useEffect(() => localStorage.setItem("extra", extra), [extra]);
-  useEffect(() => localStorage.setItem("contas", contas), [contas]);
-  useEffect(() => localStorage.setItem("meta", meta), [meta]);
+  useEffect(() => {
+    localStorage.setItem("nome", nome);
+  }, [nome]);
+
+  useEffect(() => {
+    localStorage.setItem("salario", salario);
+  }, [salario]);
+
+  useEffect(() => {
+    localStorage.setItem("extra", extra);
+  }, [extra]);
+
+  useEffect(() => {
+    localStorage.setItem("contas", contas);
+  }, [contas]);
+
+  useEffect(() => {
+    localStorage.setItem("meta", meta);
+  }, [meta]);
 
   useEffect(() => {
     localStorage.setItem(
@@ -48,7 +81,7 @@ export default function App() {
     (Number(contas)||0) -
     totalGastos;
 
-  function adicionarGasto(){
+  function adicionarGasto() {
     if(!nomeGasto || !valorGasto) return;
 
     setGastos([
@@ -63,8 +96,8 @@ export default function App() {
     setValorGasto("");
   }
 
-  if(loading){
-    return(
+  if (loading) {
+    return (
       <div style={{
         background:"#0D47A1",
         minHeight:"100vh",
@@ -79,12 +112,13 @@ export default function App() {
             style={{width:"120px"}}
           />
           <h1>Meu Salário Organizado</h1>
+          <p>Organize hoje, realize amanhã</p>
         </div>
       </div>
-    )
+    );
   }
 
-  return(
+  return (
     <div style={{
       background:"#f5f7fb",
       minHeight:"100vh",
@@ -104,25 +138,68 @@ export default function App() {
           style={{
             width:"220px",
             display:"block",
-            margin:"0 auto"
+            margin:"0 auto 20px"
           }}
         />
-        <h2>👋 Olá Rogério</h2>
+
+        <h2>👋 Olá {nome}</h2>
       </div>
 
       <div style={{padding:"15px"}}>
 
         {tela==="inicio" && (
-          <div style={{
-            background:"white",
-            padding:"20px",
-            borderRadius:"20px"
-          }}>
-            <h3>💰 Resumo</h3>
-            <p>Receitas: R$ {receitas}</p>
-            <p>Gastos: R$ {totalGastos}</p>
-            <h2>Saldo: R$ {saldo.toFixed(2)}</h2>
-          </div>
+          <>
+            <div style={{
+              background:"white",
+              padding:"20px",
+              borderRadius:"20px",
+              marginBottom:"15px"
+            }}>
+              <h3>🎯 Meta do mês</h3>
+
+              <input
+                value={meta}
+                onChange={(e)=>setMeta(e.target.value)}
+              />
+
+              <p>Guardar: R$ {meta}</p>
+            </div>
+
+            <div style={{
+              background:"white",
+              padding:"20px",
+              borderRadius:"20px"
+            }}>
+              <h3>💰 Resumo</h3>
+
+              <input
+                placeholder="Salário"
+                value={salario}
+                onChange={(e)=>setSalario(e.target.value)}
+              />
+
+              <br/><br/>
+
+              <input
+                placeholder="Extra / Bico"
+                value={extra}
+                onChange={(e)=>setExtra(e.target.value)}
+              />
+
+              <br/><br/>
+
+              <input
+                placeholder="Contas"
+                value={contas}
+                onChange={(e)=>setContas(e.target.value)}
+              />
+
+              <h2>
+                Saldo:
+                R$ {saldo.toFixed(2)}
+              </h2>
+            </div>
+          </>
         )}
 
         {tela==="gastos" && (
@@ -131,8 +208,10 @@ export default function App() {
             padding:"20px",
             borderRadius:"20px"
           }}>
+            <h3>💸 Gastos</h3>
+
             <input
-              placeholder="Nome"
+              placeholder="Nome do gasto"
               value={nomeGasto}
               onChange={(e)=>setNomeGasto(e.target.value)}
             />
@@ -167,14 +246,8 @@ export default function App() {
             padding:"20px",
             borderRadius:"20px"
           }}>
-            <h3>🎯 Meta</h3>
-
-            <input
-              value={meta}
-              onChange={(e)=>setMeta(e.target.value)}
-            />
-
-            <p>Guardar R$ {meta}</p>
+            <h3>🎯 Metas</h3>
+            <p>Meta atual: R$ {meta}</p>
           </div>
         )}
 
@@ -196,7 +269,11 @@ export default function App() {
             borderRadius:"20px"
           }}>
             <h3>⚙️ Perfil</h3>
-            <p>Rogério</p>
+
+            <input
+              value={nome}
+              onChange={(e)=>setNome(e.target.value)}
+            />
           </div>
         )}
 
@@ -209,7 +286,8 @@ export default function App() {
         background:"white",
         display:"flex",
         justifyContent:"space-around",
-        padding:"12px"
+        padding:"12px",
+        borderTop:"1px solid #ddd"
       }}>
         <div onClick={()=>setTela("inicio")}>🏠</div>
         <div onClick={()=>setTela("gastos")}>💸</div>
@@ -219,5 +297,5 @@ export default function App() {
       </div>
 
     </div>
-  )
+  );
 }

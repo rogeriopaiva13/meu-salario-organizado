@@ -1,151 +1,133 @@
 import React, { useState } from "react";
 
 export default function App() {
-  const [mes, setMes] = useState("Maio");
-  const [meta, setMeta] = useState("500");
   const [salario, setSalario] = useState("");
   const [extra, setExtra] = useState("");
   const [contas, setContas] = useState("");
+  const [meta, setMeta] = useState("500");
 
   const receitas =
-    (Number(salario) || 0) +
-    (Number(extra) || 0);
+    (Number(salario)||0) +
+    (Number(extra)||0);
 
   const saldo =
     receitas -
-    (Number(contas) || 0);
+    (Number(contas)||0);
 
   return (
-    <div
-      style={{
-        background:"#f3f4f6",
-        minHeight:"100vh",
-        fontFamily:"Arial",
-        paddingBottom:"30px"
-      }}
-    >
-      <div
-        style={{
-          background:"#0D47A1",
-          color:"white",
-          padding:"25px",
-          borderBottomLeftRadius:"25px",
-          borderBottomRightRadius:"25px"
-        }}
-      >
-        <h2>👋 Olá, Rogério!</h2>
-        <p>Vamos organizar seu mês?</p>
+    <div style={{
+      minHeight:"100vh",
+      background:"#f5f7fb",
+      fontFamily:"Arial"
+    }}>
+
+      <div style={{
+        background:"#0D47A1",
+        color:"white",
+        padding:"30px",
+        borderBottomLeftRadius:"30px",
+        borderBottomRightRadius:"30px"
+      }}>
+
+        <img
+          src="/logo-horizontal.png"
+          style={{
+            width:"220px",
+            display:"block",
+            margin:"0 auto 20px"
+          }}
+        />
+
+        <h2>👋 Olá Rogério</h2>
+
+        <p>
+          Organize hoje, realize amanhã
+        </p>
+
       </div>
 
-      <div
-        style={{
-          margin:"15px",
+      <div style={{
+        padding:"15px"
+      }}>
+
+        <div style={{
           background:"white",
-          borderRadius:"20px",
           padding:"20px",
-          boxShadow:"0 2px 10px rgba(0,0,0,.1)"
-        }}
-      >
-        <h3>Mês atual</h3>
+          borderRadius:"20px",
+          marginBottom:"15px"
+        }}>
+          <h3>🎯 Meta do mês</h3>
 
-        <select
-          value={mes}
-          onChange={(e)=>setMes(e.target.value)}
-          style={{
-            width:"100%",
-            padding:"12px",
-            borderRadius:"10px",
-            marginBottom:"15px"
-          }}
-        >
-          <option>Janeiro</option>
-          <option>Fevereiro</option>
-          <option>Março</option>
-          <option>Abril</option>
-          <option>Maio</option>
-          <option>Junho</option>
-          <option>Julho</option>
-          <option>Agosto</option>
-          <option>Setembro</option>
-          <option>Outubro</option>
-          <option>Novembro</option>
-          <option>Dezembro</option>
-        </select>
+          <input
+            value={meta}
+            onChange={(e)=>
+            setMeta(e.target.value)}
+            style={{
+              width:"100%",
+              padding:"12px"
+            }}
+          />
 
-        <input
-          placeholder="🎯 Meta do mês"
-          value={meta}
-          onChange={(e)=>setMeta(e.target.value)}
-          style={{
-            width:"100%",
-            padding:"12px",
-            marginBottom:"15px"
-          }}
-        />
-
-        <div
-          style={{
-            background:"#e8f0fe",
-            padding:"15px",
-            borderRadius:"15px",
-            textAlign:"center",
-            marginBottom:"15px"
-          }}
-        >
-          🎯 Meta: guardar R$ {meta}
+          <p>
+            Guardar:
+            R$ {meta}
+          </p>
         </div>
 
-        <input
-          type="number"
-          placeholder="Salário"
-          value={salario}
-          onChange={(e)=>setSalario(e.target.value)}
-          style={{
-            width:"100%",
-            padding:"12px",
-            marginBottom:"10px"
-          }}
-        />
+        <div style={{
+          background:"white",
+          padding:"20px",
+          borderRadius:"20px",
+          marginBottom:"15px"
+        }}>
+          <h3>💵 Receitas</h3>
 
-        <input
-          type="number"
-          placeholder="Extra / Bico"
-          value={extra}
-          onChange={(e)=>setExtra(e.target.value)}
-          style={{
-            width:"100%",
-            padding:"12px",
-            marginBottom:"10px"
-          }}
-        />
+          <input
+            placeholder="Salário"
+            value={salario}
+            onChange={(e)=>
+            setSalario(
+            e.target.value
+            )}
+          />
 
-        <input
-          type="number"
-          placeholder="Contas"
-          value={contas}
-          onChange={(e)=>setContas(e.target.value)}
-          style={{
-            width:"100%",
-            padding:"12px"
-          }}
-        />
+          <br/><br/>
 
-        <div
-          style={{
-            background:"#0D47A1",
-            color:"white",
-            borderRadius:"15px",
-            marginTop:"20px",
-            padding:"20px"
-          }}
-        >
-          <h3>Resumo</h3>
-
-          <p>💵 Receitas: R$ {receitas}</p>
-
-          <p>💰 Saldo: R$ {saldo}</p>
+          <input
+            placeholder="Extra"
+            value={extra}
+            onChange={(e)=>
+            setExtra(
+            e.target.value
+            )}
+          />
         </div>
+
+        <div style={{
+          background:"white",
+          padding:"20px",
+          borderRadius:"20px"
+        }}>
+          <h3>💳 Contas</h3>
+
+          <input
+            placeholder="Contas"
+            value={contas}
+            onChange={(e)=>
+            setContas(
+            e.target.value
+            )}
+          />
+
+          <h2>
+            Saldo:
+            R$ {saldo}
+          </h2>
+
+        </div>
+
       </div>
+
     </div>
   );
-}
+              }

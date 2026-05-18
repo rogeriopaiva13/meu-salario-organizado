@@ -171,10 +171,19 @@ export default function App() {
             </div>
 
             <div style={card}>
-              <h3>🎯 Meta do mês</h3>
-              <input type="number" value={meta} onChange={(e)=>setMeta(e.target.value)} style={inputStyle}/>
-              <p>Guardar: <strong>{moeda(meta)}</strong></p>
-            </div>
+  <h3>📥 Entradas e contas</h3>
+
+  <input ... />
+
+  <br/><br/>
+
+  <input ... />
+
+  <br/><br/>
+
+  <input ... />
+
+</div>
 
             <button onClick={limparMes} style={{
               width:"100%",

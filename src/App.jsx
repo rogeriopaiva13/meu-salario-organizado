@@ -4,66 +4,27 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [tela, setTela] = useState("inicio");
 
-  const [salario, setSalario] = useState(
-    localStorage.getItem("salario") || ""
-  );
-
-  const [extra, setExtra] = useState(
-    localStorage.getItem("extra") || ""
-  );
-
-  const [contas, setContas] = useState(
-    localStorage.getItem("contas") || ""
-  );
-
-  const [meta, setMeta] = useState(
-    localStorage.getItem("meta") || "500"
-  );
+  const [salario, setSalario] = useState(localStorage.getItem("salario") || "");
+  const [extra, setExtra] = useState(localStorage.getItem("extra") || "");
+  const [contas, setContas] = useState(localStorage.getItem("contas") || "");
+  const [meta, setMeta] = useState(localStorage.getItem("meta") || "500");
 
   const [nomeGasto, setNomeGasto] = useState("");
   const [valorGasto, setValorGasto] = useState("");
 
   const [gastos, setGastos] = useState(
-    JSON.parse(
-      localStorage.getItem("gastos")
-    ) || []
+    JSON.parse(localStorage.getItem("gastos")) || []
   );
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 1800);
-
+    const timer = setTimeout(() => setLoading(false), 1800);
     return () => clearTimeout(timer);
   }, []);
 
-  useEffect(() => {
-    localStorage.setItem(
-      "salario",
-      salario
-    );
-  }, [salario]);
-
-  useEffect(() => {
-    localStorage.setItem(
-      "extra",
-      extra
-    );
-  }, [extra]);
-
-  useEffect(() => {
-    localStorage.setItem(
-      "contas",
-      contas
-    );
-  }, [contas]);
-
-  useEffect(() => {
-    localStorage.setItem(
-      "meta",
-      meta
-    );
-  }, [meta]);
+  useEffect(() => localStorage.setItem("salario", salario), [salario]);
+  useEffect(() => localStorage.setItem("extra", extra), [extra]);
+  useEffect(() => localStorage.setItem("contas", contas), [contas]);
+  useEffect(() => localStorage.setItem("meta", meta), [meta]);
 
   useEffect(() => {
     localStorage.setItem(
@@ -73,13 +34,12 @@ export default function App() {
   }, [gastos]);
 
   const receitas =
-    (Number(salario)||0)+
+    (Number(salario)||0) +
     (Number(extra)||0);
 
   const totalGastos =
     gastos.reduce(
-      (acc,item)=>
-      acc+item.valor,
+      (acc,item)=>acc+item.valor,
       0
     );
 
@@ -88,12 +48,8 @@ export default function App() {
     (Number(contas)||0) -
     totalGastos;
 
-  function adicionarGasto() {
-
-    if(
-      !nomeGasto ||
-      !valorGasto
-    ) return;
+  function adicionarGasto(){
+    if(!nomeGasto || !valorGasto) return;
 
     setGastos([
       ...gastos,
@@ -117,20 +73,12 @@ export default function App() {
         alignItems:"center",
         color:"white"
       }}>
-        <div style={{
-          textAlign:"center"
-        }}>
+        <div style={{textAlign:"center"}}>
           <img
             src="/logo.png"
-            style={{
-              width:"120px"
-            }}
+            style={{width:"120px"}}
           />
-
-          <h1>
-            Meu Salário Organizado
-          </h1>
-
+          <h1>Meu Salário Organizado</h1>
         </div>
       </div>
     )
@@ -151,173 +99,123 @@ export default function App() {
         borderBottomLeftRadius:"30px",
         borderBottomRightRadius:"30px"
       }}>
+        <img
+          src="/logo-horizontal.png"
+          style={{
+            width:"220px",
+            display:"block",
+            margin:"0 auto"
+          }}
+        />
+        <h2>👋 Olá Rogério</h2>
+      </div>
 
-      <img
-        src="/logo-horizontal.png"
-        style={{
-          width:"220px",
-          display:"block",
-          margin:"0 auto"
-        }}
-      />
+      <div style={{padding:"15px"}}>
 
-      <h2>
-        👋 Olá Rogério
-      </h2>
+        {tela==="inicio" && (
+          <div style={{
+            background:"white",
+            padding:"20px",
+            borderRadius:"20px"
+          }}>
+            <h3>💰 Resumo</h3>
+            <p>Receitas: R$ {receitas}</p>
+            <p>Gastos: R$ {totalGastos}</p>
+            <h2>Saldo: R$ {saldo.toFixed(2)}</h2>
+          </div>
+        )}
+
+        {tela==="gastos" && (
+          <div style={{
+            background:"white",
+            padding:"20px",
+            borderRadius:"20px"
+          }}>
+            <input
+              placeholder="Nome"
+              value={nomeGasto}
+              onChange={(e)=>setNomeGasto(e.target.value)}
+            />
+
+            <br/><br/>
+
+            <input
+              placeholder="Valor"
+              value={valorGasto}
+              onChange={(e)=>setValorGasto(e.target.value)}
+            />
+
+            <br/><br/>
+
+            <button onClick={adicionarGasto}>
+              Adicionar
+            </button>
+
+            <hr/>
+
+            {gastos.map((item,index)=>(
+              <p key={index}>
+                {item.nome} - R$ {item.valor}
+              </p>
+            ))}
+          </div>
+        )}
+
+        {tela==="metas" && (
+          <div style={{
+            background:"white",
+            padding:"20px",
+            borderRadius:"20px"
+          }}>
+            <h3>🎯 Meta</h3>
+
+            <input
+              value={meta}
+              onChange={(e)=>setMeta(e.target.value)}
+            />
+
+            <p>Guardar R$ {meta}</p>
+          </div>
+        )}
+
+        {tela==="historico" && (
+          <div style={{
+            background:"white",
+            padding:"20px",
+            borderRadius:"20px"
+          }}>
+            <h3>📅 Histórico</h3>
+            <p>Em breve...</p>
+          </div>
+        )}
+
+        {tela==="perfil" && (
+          <div style={{
+            background:"white",
+            padding:"20px",
+            borderRadius:"20px"
+          }}>
+            <h3>⚙️ Perfil</h3>
+            <p>Rogério</p>
+          </div>
+        )}
 
       </div>
 
       <div style={{
-        padding:"15px"
-      }}>
-
-      {tela==="inicio"&&(
-      <>
-
-      <div style={{
+        position:"fixed",
+        bottom:0,
+        width:"100%",
         background:"white",
-        padding:"20px",
-        borderRadius:"20px",
-        marginBottom:"15px"
+        display:"flex",
+        justifyContent:"space-around",
+        padding:"12px"
       }}>
-      <h3>🎯 Meta</h3>
-
-      <input
-      value={meta}
-      onChange={(e)=>
-      setMeta(
-      e.target.value
-      )}
-      />
-
-      <p>
-      Guardar:
-      R$ {meta}
-      </p>
-
-      </div>
-
-      <div style={{
-      background:"white",
-      padding:"20px",
-      borderRadius:"20px"
-      }}>
-
-      <input
-      placeholder="Salário"
-      value={salario}
-      onChange={(e)=>
-      setSalario(
-      e.target.value
-      )}
-      />
-
-      <br/><br/>
-
-      <input
-      placeholder="Extra"
-      value={extra}
-      onChange={(e)=>
-      setExtra(
-      e.target.value
-      )}
-      />
-
-      <br/><br/>
-
-      <input
-      placeholder="Contas"
-      value={contas}
-      onChange={(e)=>
-      setContas(
-      e.target.value
-      )}
-      />
-
-      <h2>
-      💰 R$ {saldo.toFixed(2)}
-      </h2>
-
-      </div>
-
-      </>
-      )}
-
-      {tela==="gastos"&&(
-      <div style={{
-      background:"white",
-      padding:"20px",
-      borderRadius:"20px"
-      }}>
-
-      <input
-      placeholder="Nome"
-      value={nomeGasto}
-      onChange={(e)=>
-      setNomeGasto(
-      e.target.value
-      )}
-      />
-
-      <br/><br/>
-
-      <input
-      placeholder="Valor"
-      value={valorGasto}
-      onChange={(e)=>
-      setValorGasto(
-      e.target.value
-      )}
-      />
-
-      <br/><br/>
-
-      <button
-      onClick={
-      adicionarGasto
-      }>
-      Adicionar
-      </button>
-
-      <hr/>
-
-      {gastos.map(
-      (item,index)=>(
-      <p key={index}>
-      {item.nome}
-      - R$ {item.valor}
-      </p>
-      ))}
-
-      </div>
-      )}
-
-      </div>
-
-      <div style={{
-      position:"fixed",
-      bottom:0,
-      width:"100%",
-      background:"white",
-      display:"flex",
-      justifyContent:"space-around",
-      padding:"12px"
-      }}>
-
-      <div onClick={()=>
-      setTela(
-      "inicio"
-      )}>
-      🏠
-      </div>
-
-      <div onClick={()=>
-      setTela(
-      "gastos"
-      )}>
-      💸
-      </div>
-
+        <div onClick={()=>setTela("inicio")}>🏠</div>
+        <div onClick={()=>setTela("gastos")}>💸</div>
+        <div onClick={()=>setTela("metas")}>🎯</div>
+        <div onClick={()=>setTela("historico")}>📅</div>
+        <div onClick={()=>setTela("perfil")}>⚙️</div>
       </div>
 
     </div>

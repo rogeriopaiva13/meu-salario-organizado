@@ -613,6 +613,79 @@ export default function App() {
           Perfil
         </button>
       </div>
+      <div
+        style={{
+          position: "fixed",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          background: "#ffffff",
+          display: "flex",
+          justifyContent: "space-around",
+          alignItems: "center",
+          padding: "12px 0",
+          borderTop: "1px solid #dbe3f1",
+          boxShadow:
+            "0 -5px 20px rgba(0,0,0,0.06)",
+          zIndex: 9999,
+        }}
+      >
+        <button
+          style={{
+            background: "transparent",
+            border: "none",
+            color: "#0D47A1",
+            fontWeight: "bold",
+            fontSize: "13px",
+          }}
+        >
+          🏠
+          <br />
+          Início
+        </button>
+
+        <button
+          style={{
+            background: "transparent",
+            border: "none",
+            color: "#7b8794",
+            fontWeight: "bold",
+            fontSize: "13px",
+          }}
+        >
+          💸
+          <br />
+          Gastos
+        </button>
+
+        <button
+          style={{
+            background: "transparent",
+            border: "none",
+            color: "#7b8794",
+            fontWeight: "bold",
+            fontSize: "13px",
+          }}
+        >
+          🎯
+          <br />
+          Metas
+        </button>
+
+        <button
+          style={{
+            background: "transparent",
+            border: "none",
+            color: "#7b8794",
+            fontWeight: "bold",
+            fontSize: "13px",
+          }}
+        >
+          👤
+          <br />
+          Perfil
+        </button>
+      </div>
     </div>
   );
 }

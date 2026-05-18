@@ -121,7 +121,7 @@ export default function App() {
       >
 
         <img
-          src="/logo.png"
+          src="/logo-horizontal.png"
           alt="Meu Salário Organizado"
           style={{
             width:'100%',

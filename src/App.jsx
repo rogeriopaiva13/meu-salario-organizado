@@ -25,13 +25,13 @@ export default function App() {
   );
 
   const categorias = {
-    Alimentação: { icone: "🍔", cor: "#ff9800", fundo: "#fff3e0" },
-    Transporte: { icone: "🚗", cor: "#2196f3", fundo: "#e3f2fd" },
-    Casa: { icone: "🏠", cor: "#fbc02d", fundo: "#fff8e1" },
-    Saúde: { icone: "💊", cor: "#43a047", fundo: "#e8f5e9" },
-    Lazer: { icone: "🎮", cor: "#8e24aa", fundo: "#f3e5f5" },
-    Contas: { icone: "📄", cor: "#616161", fundo: "#eeeeee" },
-    Outros: { icone: "🛒", cor: "#00897b", fundo: "#e0f2f1" },
+    Alimentação: { icone: "🍔", cor: "#fff3e0", texto: "#e65100" },
+    Transporte: { icone: "🚗", cor: "#e3f2fd", texto: "#0D47A1" },
+    Casa: { icone: "🏠", cor: "#fff8e1", texto: "#8a6d00" },
+    Saúde: { icone: "💊", cor: "#e8f5e9", texto: "#1b5e20" },
+    Lazer: { icone: "🎮", cor: "#f3e5f5", texto: "#6a1b9a" },
+    Contas: { icone: "📄", cor: "#eeeeee", texto: "#333333" },
+    Outros: { icone: "🛒", cor: "#e0f2f1", texto: "#00695c" },
   };
 
   useEffect(() => {
@@ -55,12 +55,10 @@ export default function App() {
       const gastosAntigos = JSON.parse(localStorage.getItem("gastos")) || [];
 
       const receitasAntigas = salarioAntigo + extraAntigo;
-
       const totalGastosAntigos = gastosAntigos.reduce(
         (acc, item) => acc + Number(item.valor || 0),
         0
       );
-
       const saidasAntigas = contasAntigas + totalGastosAntigos;
       const saldoAntigo = receitasAntigas - saidasAntigas;
 
@@ -72,13 +70,10 @@ export default function App() {
           saldo: saldoAntigo,
         };
 
-        const historicoAtual =
-          JSON.parse(localStorage.getItem("historico")) || [];
-
+        const historicoAtual = JSON.parse(localStorage.getItem("historico")) || [];
         const atualizado = [novoRegistro, ...historicoAtual];
 
         localStorage.setItem("historico", JSON.stringify(atualizado));
-
         setHistorico(atualizado);
       }
 
@@ -110,20 +105,10 @@ export default function App() {
     });
 
   const receitas = (Number(salario) || 0) + (Number(extra) || 0);
-
-  const totalGastos = gastos.reduce(
-    (acc, item) => acc + item.valor,
-    0
-  );
-
+  const totalGastos = gastos.reduce((acc, item) => acc + item.valor, 0);
   const saidas = (Number(contas) || 0) + totalGastos;
-
   const saldo = receitas - saidas;
-
-  const progresso =
-    receitas > 0
-      ? Math.min((saidas / receitas) * 100, 100)
-      : 0;
+  const progresso = receitas > 0 ? Math.min((saidas / receitas) * 100, 100) : 0;
 
   const status =
     saldo < 0
@@ -191,62 +176,40 @@ export default function App() {
     color: "#1f2937",
   };
 
-  const gastosPorCategoria = {};
-
-  gastos.forEach((item) => {
-    if (!gastosPorCategoria[item.categoria]) {
-      gastosPorCategoria[item.categoria] = 0;
-    }
-
-    gastosPorCategoria[item.categoria] += item.valor;
-  });
-
-  const maiorCategoria =
-    Math.max(...Object.values(gastosPorCategoria), 1);
-
   if (loading) {
     return (
-      <div
-        style={{
-          background: "linear-gradient(180deg, #0D47A1, #06306f)",
-          minHeight: "100vh",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          color: "white",
-          fontFamily: "Arial",
-        }}
-      >
+      <div style={{
+        background: "linear-gradient(180deg, #0D47A1, #06306f)",
+        minHeight: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        color: "white",
+        fontFamily: "Arial",
+      }}>
         <div style={{ textAlign: "center" }}>
           <img src="/logo.png" style={{ width: "125px" }} />
-          <h1>Meu Salário Organizado</h1>
-          <p style={{ color: "#FDD835" }}>
-            Organize hoje, realize amanhã
-          </p>
+          <h1 style={{ marginBottom: "5px" }}>Meu Salário Organizado</h1>
+          <p style={{ color: "#FDD835" }}>Organize hoje, realize amanhã</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div
-      style={{
-        background: "#eef3fb",
-        minHeight: "100vh",
-        paddingBottom: "95px",
-        fontFamily: "Arial",
-      }}
-    >
-      <div
-        style={{
-          background:
-            "linear-gradient(180deg, #0D47A1, #063B88)",
-          color: "white",
-          padding: "28px 22px 34px",
-          borderBottomLeftRadius: "34px",
-          borderBottomRightRadius: "34px",
-        }}
-      >
+    <div style={{
+      background: "#eef3fb",
+      minHeight: "100vh",
+      paddingBottom: "95px",
+      fontFamily: "Arial",
+    }}>
+      <div style={{
+        background: "linear-gradient(180deg, #0D47A1, #063B88)",
+        color: "white",
+        padding: "28px 22px 34px",
+        borderBottomLeftRadius: "34px",
+        borderBottomRightRadius: "34px",
+      }}>
         <img
           src="/logo-horizontal.png"
           style={{
@@ -256,326 +219,212 @@ export default function App() {
           }}
         />
 
-        <h2>👋 Olá, {nome}</h2>
+        <h2 style={{ margin: "0 0 6px" }}>👋 Olá, {nome}</h2>
+        <p style={{ opacity: 0.9, margin: 0 }}>Vamos organizar seu mês?</p>
 
-        <div
-          style={{
-            background: "rgba(255,255,255,0.14)",
-            borderRadius: "22px",
-            padding: "16px",
-            marginTop: "22px",
-          }}
-        >
-          <p style={{ margin: 0, fontSize: "13px" }}>
+        <div style={{
+          background: "rgba(255,255,255,0.14)",
+          borderRadius: "22px",
+          padding: "16px",
+          marginTop: "22px",
+          border: "1px solid rgba(255,255,255,0.20)",
+        }}>
+          <p style={{ margin: 0, fontSize: "13px", opacity: 0.85 }}>
             Saldo disponível
           </p>
-
-          <h1
-            style={{
-              margin: "6px 0",
-              color: "#FDD835",
-            }}
-          >
+          <h1 style={{ margin: "6px 0", color: "#FDD835" }}>
             {moeda(saldo)}
           </h1>
-
-          <p>{status}</p>
+          <p style={{ margin: 0, fontSize: "14px" }}>{status}</p>
         </div>
       </div>
 
-      <div style={{ padding: "16px" }}>
+      <div style={{ padding: "16px", marginTop: "-10px" }}>
         {tela === "inicio" && (
           <>
             <div style={card}>
               <h3>💰 Resumo do mês</h3>
 
-              <p>
-                Entradas: <strong>{moeda(receitas)}</strong>
-              </p>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+                <div style={{ background: "#e8f1ff", padding: "14px", borderRadius: "18px" }}>
+                  <small>Entrou</small>
+                  <strong style={{ display: "block", color: "#0D47A1" }}>
+                    {moeda(receitas)}
+                  </strong>
+                </div>
 
-              <p>
-                Saídas: <strong>{moeda(saidas)}</strong>
-              </p>
+                <div style={{ background: "#fff8d6", padding: "14px", borderRadius: "18px" }}>
+                  <small>Saiu</small>
+                  <strong style={{ display: "block", color: "#8a6d00" }}>
+                    {moeda(saidas)}
+                  </strong>
+                </div>
+              </div>
 
-              <div
-                style={{
-                  background: "#e5e7eb",
-                  height: "15px",
-                  borderRadius: "20px",
-                  overflow: "hidden",
-                  marginTop: "12px",
-                }}
-              >
-                <div
-                  style={{
+              <div style={{ marginTop: "18px" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: "14px" }}>
+                  <span>Uso do salário</span>
+                  <strong>{progresso.toFixed(0)}%</strong>
+                </div>
+
+                <div style={{ background: "#e5e7eb", height: "15px", borderRadius: "20px", overflow: "hidden", marginTop: "8px" }}>
+                  <div style={{
                     width: `${progresso}%`,
                     height: "15px",
-                    background:
-                      progresso > 80
-                        ? "#d32f2f"
-                        : "#FDD835",
-                  }}
-                />
+                    background: progresso > 80 ? "#d32f2f" : "#FDD835",
+                  }} />
+                </div>
+              </div>
+
+              <p style={{ fontSize: "13px", color: "#555" }}>
+                Você já usou {progresso.toFixed(0)}% do dinheiro do mês.
+              </p>
+            </div>
+
+            <div style={card}>
+              <h3>📥 Entradas e contas</h3>
+
+              <p style={label}>💰 Salário</p>
+              <input type="number" value={salario} onChange={(e) => setSalario(e.target.value)} style={inputStyle} />
+
+              <br /><br />
+
+              <p style={label}>💵 Extra / Bico</p>
+              <input type="number" value={extra} onChange={(e) => setExtra(e.target.value)} style={inputStyle} />
+
+              <br /><br />
+
+              <p style={label}>📄 Contas Fixas</p>
+              <input type="number" value={contas} onChange={(e) => setContas(e.target.value)} style={inputStyle} />
+            </div>
+
+            <div style={card}>
+              <h3>🎯 Meta do mês</h3>
+
+              <p style={label}>Quanto deseja guardar?</p>
+              <input type="number" value={meta} onChange={(e) => setMeta(e.target.value)} style={inputStyle} />
+
+              <div style={{ marginTop: "14px", background: "#e8f5e9", padding: "14px", borderRadius: "16px", color: "#1b5e20" }}>
+                Guardar: <strong>{moeda(meta)}</strong>
               </div>
             </div>
+
+            <button
+              onClick={limparMes}
+              style={{
+                width: "100%",
+                padding: "16px",
+                borderRadius: "20px",
+                border: "none",
+                background: "#111827",
+                color: "white",
+                fontWeight: "bold",
+                fontSize: "15px",
+              }}
+            >
+              🔄 Resetar mês
+            </button>
           </>
         )}
 
         {tela === "gastos" && (
-          <>
-            <div style={card}>
-              <h3>💸 Gastos do mês</h3>
+          <div style={card}>
+            <h3>💸 Gastos do mês</h3>
 
-              <p style={label}>Nome do gasto</p>
+            <p style={label}>Nome do gasto</p>
+            <input value={nomeGasto} onChange={(e) => setNomeGasto(e.target.value)} style={inputStyle} />
 
-              <input
-                value={nomeGasto}
-                onChange={(e) =>
-                  setNomeGasto(e.target.value)
-                }
-                style={inputStyle}
-              />
+            <br /><br />
 
-              <br />
-              <br />
+            <p style={label}>Categoria</p>
+            <select value={categoriaGasto} onChange={(e) => setCategoriaGasto(e.target.value)} style={inputStyle}>
+              {Object.keys(categorias).map((cat) => (
+                <option key={cat} value={cat}>
+                  {categorias[cat].icone} {cat}
+                </option>
+              ))}
+            </select>
 
-              <p style={label}>Categoria</p>
+            <br /><br />
 
-              <select
-                value={categoriaGasto}
-                onChange={(e) =>
-                  setCategoriaGasto(e.target.value)
-                }
-                style={inputStyle}
-              >
-                {Object.keys(categorias).map((cat) => (
-                  <option key={cat} value={cat}>
-                    {categorias[cat].icone} {cat}
-                  </option>
-                ))}
-              </select>
+            <p style={label}>Valor</p>
+            <input type="number" value={valorGasto} onChange={(e) => setValorGasto(e.target.value)} style={inputStyle} />
 
-              <br />
-              <br />
+            <br /><br />
 
-              <p style={label}>Valor</p>
+            <button
+              onClick={adicionarGasto}
+              style={{
+                width: "100%",
+                padding: "15px",
+                borderRadius: "18px",
+                border: "none",
+                background: "#0D47A1",
+                color: "white",
+                fontWeight: "bold",
+              }}
+            >
+              Adicionar gasto
+            </button>
 
-              <input
-                type="number"
-                value={valorGasto}
-                onChange={(e) =>
-                  setValorGasto(e.target.value)
-                }
-                style={inputStyle}
-              />
+            <hr />
 
-              <br />
-              <br />
+            {gastos.length === 0 && <p>Nenhum gasto cadastrado ainda.</p>}
 
-              <button
-                onClick={adicionarGasto}
-                style={{
-                  width: "100%",
-                  padding: "15px",
-                  borderRadius: "18px",
-                  border: "none",
-                  background: "#0D47A1",
-                  color: "white",
-                  fontWeight: "bold",
-                }}
-              >
-                Adicionar gasto
-              </button>
+            {gastos.map((item, index) => {
+              const cat = categorias[item.categoria] || categorias.Outros;
 
-              <hr />
+              return (
+                <div key={index} style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  borderBottom: "1px solid #eee",
+                  padding: "12px 0",
+                }}>
+                  <div>
+                    <span style={{
+                      display: "inline-block",
+                      background: cat.cor,
+                      color: cat.texto,
+                      padding: "5px 10px",
+                      borderRadius: "999px",
+                      fontSize: "12px",
+                      fontWeight: "bold",
+                      marginBottom: "6px",
+                    }}>
+                      {cat.icone} {item.categoria || "Outros"}
+                    </span>
 
-              {gastos.map((item, index) => {
-                const cat =
-                  categorias[item.categoria] ||
-                  categorias.Outros;
+                    <br />
+                    <span>{item.nome}</span>
+                    <br />
+                    <strong>{moeda(item.valor)}</strong>
+                  </div>
 
-                return (
-                  <div
-                    key={index}
+                  <button
+                    onClick={() => removerGasto(index)}
                     style={{
-                      display: "flex",
-                      justifyContent:
-                        "space-between",
-                      alignItems: "center",
-                      borderBottom:
-                        "1px solid #eee",
-                      padding: "12px 0",
+                      border: "none",
+                      background: "#ffebee",
+                      color: "#c62828",
+                      borderRadius: "12px",
+                      padding: "9px",
                     }}
                   >
-                    <div>
-                      <span
-                        style={{
-                          display: "inline-block",
-                          background:
-                            cat.fundo,
-                          color: cat.cor,
-                          padding:
-                            "5px 10px",
-                          borderRadius:
-                            "999px",
-                          fontSize:
-                            "12px",
-                          fontWeight:
-                            "bold",
-                          marginBottom:
-                            "6px",
-                        }}
-                      >
-                        {cat.icone}{" "}
-                        {item.categoria}
-                      </span>
-
-                      <br />
-
-                      <span>
-                        {item.nome}
-                      </span>
-
-                      <br />
-
-                      <strong>
-                        {moeda(
-                          item.valor
-                        )}
-                      </strong>
-                    </div>
-
-                    <button
-                      onClick={() =>
-                        removerGasto(
-                          index
-                        )
-                      }
-                      style={{
-                        border: "none",
-                        background:
-                          "#ffebee",
-                        color:
-                          "#c62828",
-                        borderRadius:
-                          "12px",
-                        padding:
-                          "9px",
-                      }}
-                    >
-                      Excluir
-                    </button>
-                  </div>
-                );
-              })}
-            </div>
-
-            <div style={card}>
-              <h3>📊 Gastos por categoria</h3>
-
-              {Object.keys(gastosPorCategoria).length === 0 && (
-                <p>
-                  Adicione gastos para visualizar o gráfico.
-                </p>
-              )}
-
-              {Object.entries(gastosPorCategoria).map(
-                ([categoria, valor]) => {
-                  const cat =
-                    categorias[categoria];
-
-                  const largura =
-                    (valor /
-                      maiorCategoria) *
-                    100;
-
-                  return (
-                    <div
-                      key={categoria}
-                      style={{
-                        marginBottom:
-                          "18px",
-                      }}
-                    >
-                      <div
-                        style={{
-                          display:
-                            "flex",
-                          justifyContent:
-                            "space-between",
-                          marginBottom:
-                            "6px",
-                          fontSize:
-                            "14px",
-                          fontWeight:
-                            "bold",
-                        }}
-                      >
-                        <span>
-                          {
-                            cat.icone
-                          }{" "}
-                          {categoria}
-                        </span>
-
-                        <span>
-                          {moeda(
-                            valor
-                          )}
-                        </span>
-                      </div>
-
-                      <div
-                        style={{
-                          background:
-                            "#eceff1",
-                          borderRadius:
-                            "20px",
-                          height:
-                            "18px",
-                          overflow:
-                            "hidden",
-                        }}
-                      >
-                        <div
-                          style={{
-                            width: `${largura}%`,
-                            height:
-                              "18px",
-                            background:
-                              cat.cor,
-                            borderRadius:
-                              "20px",
-                          }}
-                        />
-                      </div>
-                    </div>
-                  );
-                }
-              )}
-            </div>
-          </>
+                    Excluir
+                  </button>
+                </div>
+              );
+            })}
+          </div>
         )}
 
         {tela === "metas" && (
           <div style={card}>
             <h3>🎯 Metas</h3>
-
-            <input
-              type="number"
-              value={meta}
-              onChange={(e) =>
-                setMeta(e.target.value)
-              }
-              style={inputStyle}
-            />
-
-            <p>
-              Guardar:{" "}
-              <strong>
-                {moeda(meta)}
-              </strong>
-            </p>
+            <p>Sua meta atual é guardar:</p>
+            <h2 style={{ color: "#0D47A1" }}>{moeda(meta)}</h2>
           </div>
         )}
 
@@ -584,45 +433,19 @@ export default function App() {
             <h3>📅 Histórico</h3>
 
             {historico.length === 0 && (
-              <p>
-                Nenhum mês fechado ainda.
-              </p>
+              <p>Nenhum mês fechado ainda.</p>
             )}
 
             {historico.map((item, index) => (
-              <div
-                key={index}
-                style={{
-                  borderBottom:
-                    "1px solid #eee",
-                  padding: "12px 0",
-                }}
-              >
-                <strong>
-                  📆 {item.mes}
-                </strong>
-
+              <div key={index} style={{
+                borderBottom: "1px solid #eee",
+                padding: "12px 0",
+              }}>
+                <strong>📆 {item.mes}</strong>
+                <p>Receitas: {moeda(item.receitas)}</p>
+                <p>Saídas: {moeda(item.saidas)}</p>
                 <p>
-                  Receitas:{" "}
-                  {moeda(
-                    item.receitas
-                  )}
-                </p>
-
-                <p>
-                  Saídas:{" "}
-                  {moeda(
-                    item.saidas
-                  )}
-                </p>
-
-                <p>
-                  Saldo final:{" "}
-                  <strong>
-                    {moeda(
-                      item.saldo
-                    )}
-                  </strong>
+                  Saldo final: <strong>{moeda(item.saldo)}</strong>
                 </p>
               </div>
             ))}
@@ -633,86 +456,30 @@ export default function App() {
           <div style={card}>
             <h3>⚙️ Perfil</h3>
 
-            <input
-              value={nome}
-              onChange={(e) =>
-                setNome(e.target.value)
-              }
-              style={inputStyle}
-            />
+            <p style={label}>Seu nome</p>
+            <input value={nome} onChange={(e) => setNome(e.target.value)} style={inputStyle} />
           </div>
         )}
       </div>
 
-      <div
-        style={{
-          position: "fixed",
-          bottom: 0,
-          left: 0,
-          right: 0,
-          background: "white",
-          display: "flex",
-          justifyContent: "space-around",
-          padding: "10px",
-          borderTop: "1px solid #ddd",
-          boxShadow:
-            "0 -6px 18px rgba(0,0,0,0.06)",
-        }}
-      >
-        <div
-          onClick={() =>
-            setTela("inicio")
-          }
-        >
-          🏠
-          <br />
-          <small>Início</small>
-        </div>
-
-        <div
-          onClick={() =>
-            setTela("gastos")
-          }
-        >
-          💸
-          <br />
-          <small>Gastos</small>
-        </div>
-
-        <div
-          onClick={() =>
-            setTela("metas")
-          }
-        >
-          🎯
-          <br />
-          <small>Metas</small>
-        </div>
-
-        <div
-          onClick={() =>
-            setTela(
-              "historico"
-            )
-          }
-        >
-          📅
-          <br />
-          <small>
-            Histórico
-          </small>
-        </div>
-
-        <div
-          onClick={() =>
-            setTela("perfil")
-          }
-        >
-          ⚙️
-          <br />
-          <small>Perfil</small>
-        </div>
+      <div style={{
+        position: "fixed",
+        bottom: 0,
+        left: 0,
+        right: 0,
+        background: "white",
+        display: "flex",
+        justifyContent: "space-around",
+        padding: "10px",
+        borderTop: "1px solid #ddd",
+        boxShadow: "0 -6px 18px rgba(0,0,0,0.06)",
+      }}>
+        <div onClick={() => setTela("inicio")}>🏠<br /><small>Início</small></div>
+        <div onClick={() => setTela("gastos")}>💸<br /><small>Gastos</small></div>
+        <div onClick={() => setTela("metas")}>🎯<br /><small>Metas</small></div>
+        <div onClick={() => setTela("historico")}>📅<br /><small>Histórico</small></div>
+        <div onClick={() => setTela("perfil")}>⚙️<br /><small>Perfil</small></div>
       </div>
     </div>
   );
-      }
+                                   }

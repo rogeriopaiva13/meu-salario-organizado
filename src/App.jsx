@@ -12,6 +12,17 @@ export default function App() {
 
   const [nomeGasto, setNomeGasto] = useState("");
   const [valorGasto, setValorGasto] = useState("");
+  const [categoriaGasto, setCategoriaGasto] = useState("Alimentação");
+
+  const categorias = {
+    Alimentação: { icone: "🍔", cor: "#fff3e0", texto: "#e65100" },
+    Transporte: { icone: "🚗", cor: "#e3f2fd", texto: "#0D47A1" },
+    Casa: { icone: "🏠", cor: "#fff8e1", texto: "#8a6d00" },
+    Saúde: { icone: "💊", cor: "#e8f5e9", texto: "#1b5e20" },
+    Lazer: { icone: "🎮", cor: "#f3e5f5", texto: "#6a1b9a" },
+    Contas: { icone: "📄", cor: "#eeeeee", texto: "#333333" },
+    Outros: { icone: "🛒", cor: "#e0f2f1", texto: "#00695c" },
+  };
 
   const [gastos, setGastos] = useState(
     JSON.parse(localStorage.getItem("gastos")) || []
@@ -53,11 +64,16 @@ export default function App() {
 
     setGastos([
       ...gastos,
-      { nome: nomeGasto, valor: Number(valorGasto) },
+      {
+        nome: nomeGasto,
+        valor: Number(valorGasto),
+        categoria: categoriaGasto,
+      },
     ]);
 
     setNomeGasto("");
     setValorGasto("");
+    setCategoriaGasto("Alimentação");
   }
 
   function removerGasto(index) {
@@ -266,6 +282,21 @@ export default function App() {
 
             <br /><br />
 
+            <p style={label}>Categoria</p>
+            <select
+              value={categoriaGasto}
+              onChange={(e) => setCategoriaGasto(e.target.value)}
+              style={inputStyle}
+            >
+              {Object.keys(categorias).map((cat) => (
+                <option key={cat} value={cat}>
+                  {categorias[cat].icone} {cat}
+                </option>
+              ))}
+            </select>
+
+            <br /><br />
+
             <p style={label}>Valor</p>
             <input type="number" value={valorGasto} onChange={(e) => setValorGasto(e.target.value)} style={inputStyle} />
 
@@ -290,37 +321,60 @@ export default function App() {
 
             {gastos.length === 0 && <p>Nenhum gasto cadastrado ainda.</p>}
 
-            {gastos.map((item, index) => (
-              <div
-                key={index}
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  borderBottom: "1px solid #eee",
-                  padding: "12px 0",
-                }}
-              >
-                <span>
-                  {item.nome}
-                  <br />
-                  <strong>{moeda(item.valor)}</strong>
-                </span>
+            {gastos.map((item, index) => {
+              const cat = categorias[item.categoria] || categorias.Outros;
 
-                <button
-                  onClick={() => removerGasto(index)}
+              return (
+                <div
+                  key={index}
                   style={{
-                    border: "none",
-                    background: "#ffebee",
-                    color: "#c62828",
-                    borderRadius: "12px",
-                    padding: "9px",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    borderBottom: "1px solid #eee",
+                    padding: "12px 0",
                   }}
                 >
-                  Excluir
-                </button>
-              </div>
-            ))}
+                  <div>
+                    <span
+                      style={{
+                        display: "inline-block",
+                        background: cat.cor,
+                        color: cat.texto,
+                        padding: "5px 10px",
+                        borderRadius: "999px",
+                        fontSize: "12px",
+                        fontWeight: "bold",
+                        marginBottom: "6px",
+                      }}
+                    >
+                      {cat.icone} {item.categoria || "Outros"}
+                    </span>
+
+                    <br />
+
+                    <span>{item.nome}</span>
+
+                    <br />
+
+                    <strong>{moeda(item.valor)}</strong>
+                  </div>
+
+                  <button
+                    onClick={() => removerGasto(index)}
+                    style={{
+                      border: "none",
+                      background: "#ffebee",
+                      color: "#c62828",
+                      borderRadius: "12px",
+                      padding: "9px",
+                    }}
+                  >
+                    Excluir
+                  </button>
+                </div>
+              );
+            })}
           </div>
         )}
 
@@ -371,4 +425,4 @@ export default function App() {
       </div>
     </div>
   );
-}
+        }

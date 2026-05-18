@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
+  const [tela, setTela] = useState("inicio");
 
   const [salario, setSalario] = useState("");
   const [extra, setExtra] = useState("");
@@ -26,59 +27,46 @@ export default function App() {
 
   if (loading) {
     return (
-      <div
-        style={{
-          background:"#0D47A1",
-          minHeight:"100vh",
-          display:"flex",
-          justifyContent:"center",
-          alignItems:"center",
-          color:"white"
-        }}
-      >
+      <div style={{
+        background:"#0D47A1",
+        minHeight:"100vh",
+        display:"flex",
+        justifyContent:"center",
+        alignItems:"center",
+        color:"white"
+      }}>
         <div style={{textAlign:"center"}}>
           <img
             src="/logo.png"
-            alt="Logo"
             style={{
               width:"120px",
               marginBottom:"20px"
             }}
           />
-
           <h1>Meu Salário Organizado</h1>
-
           <p>Organize hoje, realize amanhã</p>
-
-          <div style={{marginTop:"20px"}}>
-            Carregando...
-          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div
-      style={{
-        background:"#f5f7fb",
-        minHeight:"100vh",
-        paddingBottom:"90px",
-        fontFamily:"Arial"
-      }}
-    >
-      <div
-        style={{
-          background:"#0D47A1",
-          color:"white",
-          padding:"25px",
-          borderBottomLeftRadius:"30px",
-          borderBottomRightRadius:"30px"
-        }}
-      >
+    <div style={{
+      background:"#f5f7fb",
+      minHeight:"100vh",
+      paddingBottom:"90px",
+      fontFamily:"Arial"
+    }}>
+
+      <div style={{
+        background:"#0D47A1",
+        color:"white",
+        padding:"25px",
+        borderBottomLeftRadius:"30px",
+        borderBottomRightRadius:"30px"
+      }}>
         <img
           src="/logo-horizontal.png"
-          alt="Logo"
           style={{
             width:"220px",
             display:"block",
@@ -87,132 +75,119 @@ export default function App() {
         />
 
         <h2>👋 Olá Rogério</h2>
-
-        <p>Vamos organizar seu mês?</p>
       </div>
 
       <div style={{padding:"15px"}}>
 
-        <div
-          style={{
-            background:"white",
-            borderRadius:"20px",
-            padding:"20px",
-            marginBottom:"15px"
-          }}
-        >
-          <h3>🎯 Meta do mês</h3>
+        {tela==="inicio" && (
+          <>
+            <div style={{
+              background:"white",
+              borderRadius:"20px",
+              padding:"20px",
+              marginBottom:"15px"
+            }}>
+              <h3>🎯 Meta do mês</h3>
 
-          <input
-            value={meta}
-            onChange={(e)=>setMeta(e.target.value)}
-            style={{
-              width:"100%",
-              padding:"12px"
-            }}
-          />
+              <input
+                value={meta}
+                onChange={(e)=>setMeta(e.target.value)}
+                style={{
+                  width:"100%",
+                  padding:"12px"
+                }}
+              />
 
-          <p>Guardar: R$ {meta}</p>
-        </div>
+              <p>Guardar R$ {meta}</p>
+            </div>
 
-        <div
-          style={{
-            background:"white",
-            borderRadius:"20px",
-            padding:"20px",
-            marginBottom:"15px"
-          }}
-        >
-          <h3>💵 Receitas</h3>
+            <div style={{
+              background:"white",
+              borderRadius:"20px",
+              padding:"20px"
+            }}>
+              <input
+                type="number"
+                placeholder="Salário"
+                value={salario}
+                onChange={(e)=>setSalario(e.target.value)}
+              />
 
-          <input
-            type="number"
-            placeholder="Salário"
-            value={salario}
-            onChange={(e)=>setSalario(e.target.value)}
-            style={{
-              width:"100%",
-              padding:"12px",
-              marginBottom:"10px"
-            }}
-          />
+              <br/><br/>
 
-          <input
-            type="number"
-            placeholder="Extra / Bico"
-            value={extra}
-            onChange={(e)=>setExtra(e.target.value)}
-            style={{
-              width:"100%",
-              padding:"12px"
-            }}
-          />
-        </div>
+              <input
+                type="number"
+                placeholder="Extra"
+                value={extra}
+                onChange={(e)=>setExtra(e.target.value)}
+              />
 
-        <div
-          style={{
-            background:"white",
-            borderRadius:"20px",
-            padding:"20px"
-          }}
-        >
-          <h3>💳 Contas</h3>
+              <br/><br/>
 
-          <input
-            type="number"
-            placeholder="Contas"
-            value={contas}
-            onChange={(e)=>setContas(e.target.value)}
-            style={{
-              width:"100%",
-              padding:"12px"
-            }}
-          />
+              <input
+                type="number"
+                placeholder="Contas"
+                value={contas}
+                onChange={(e)=>setContas(e.target.value)}
+              />
 
-          <h2 style={{marginTop:"20px"}}>
-            💰 Saldo: R$ {saldo.toFixed(2)}
-          </h2>
-        </div>
+              <h2>
+                💰 R$ {saldo.toFixed(2)}
+              </h2>
+            </div>
+          </>
+        )}
+
+        {tela==="gastos" && (
+          <h1>💸 Área de gastos em construção</h1>
+        )}
+
+        {tela==="metas" && (
+          <h1>🎯 Área de metas</h1>
+        )}
+
+        {tela==="historico" && (
+          <h1>📅 Histórico</h1>
+        )}
+
+        {tela==="perfil" && (
+          <h1>⚙️ Perfil</h1>
+        )}
 
       </div>
 
-      <div
-        style={{
-          position:"fixed",
-          bottom:0,
-          left:0,
-          width:"100%",
-          background:"white",
-          borderTop:"1px solid #ddd",
-          display:"flex",
-          justifyContent:"space-around",
-          padding:"12px 0"
-        }}
-      >
-        <div style={{textAlign:"center"}}>
+      <div style={{
+        position:"fixed",
+        bottom:0,
+        left:0,
+        width:"100%",
+        background:"white",
+        borderTop:"1px solid #ddd",
+        display:"flex",
+        justifyContent:"space-around",
+        padding:"12px"
+      }}>
+
+        <div onClick={()=>setTela("inicio")}>
           🏠
-          <div style={{fontSize:"12px"}}>Início</div>
         </div>
 
-        <div style={{textAlign:"center"}}>
+        <div onClick={()=>setTela("gastos")}>
           💸
-          <div style={{fontSize:"12px"}}>Gastos</div>
         </div>
 
-        <div style={{textAlign:"center"}}>
+        <div onClick={()=>setTela("metas")}>
           🎯
-          <div style={{fontSize:"12px"}}>Metas</div>
         </div>
 
-        <div style={{textAlign:"center"}}>
+        <div onClick={()=>setTela("historico")}>
           📅
-          <div style={{fontSize:"12px"}}>Histórico</div>
         </div>
 
-        <div style={{textAlign:"center"}}>
+        <div onClick={()=>setTela("perfil")}>
           ⚙️
-          <div style={{fontSize:"12px"}}>Perfil</div>
         </div>
+
       </div>
 
     </div>

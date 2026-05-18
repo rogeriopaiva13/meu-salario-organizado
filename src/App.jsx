@@ -287,7 +287,62 @@ function limparMes() {
         {tela === "inicio" && (
           <>
             <div style={card}>
-              <h3>💰 Resumo do mês</h3>
+  <h3>🎯 Meta do mês</h3>
+
+  <p style={label}>Quanto deseja guardar?</p>
+
+  <input
+    type="number"
+    value={meta}
+    onChange={(e) => setMeta(e.target.value)}
+    style={inputStyle}
+  />
+
+  <div
+    style={{
+      marginTop: "14px",
+      background: "#e8f5e9",
+      padding: "14px",
+      borderRadius: "16px",
+      color: "#1b5e20",
+    }}
+  >
+    Guardar: <strong>{moeda(meta)}</strong>
+  </div>
+</div>
+
+<button
+  onClick={compartilharProgresso}
+  style={{
+    width: "100%",
+    padding: "16px",
+    borderRadius: "20px",
+    border: "none",
+    background: "#0D47A1",
+    color: "white",
+    fontWeight: "bold",
+    fontSize: "15px",
+    marginBottom: "12px",
+  }}
+>
+  📤 Compartilhar progresso
+</button>
+
+<button
+  onClick={limparMes}
+  style={{
+    width: "100%",
+    padding: "16px",
+    borderRadius: "20px",
+    border: "none",
+    background: "#111827",
+    color: "white",
+    fontWeight: "bold",
+    fontSize: "15px",
+  }}
+>
+  🔄 Resetar mês
+</button>
 
               <div
                 style={{

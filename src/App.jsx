@@ -1,133 +1,101 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 export default function App() {
-  const [salario, setSalario] = useState("");
-  const [extra, setExtra] = useState("");
-  const [contas, setContas] = useState("");
-  const [meta, setMeta] = useState("500");
+  const [loading, setLoading] = useState(true);
 
-  const receitas =
-    (Number(salario)||0) +
-    (Number(extra)||0);
+  const [salario, setSalario] = useState("");
+  const [contas, setContas] = useState("");
+
+  useEffect(() => {
+    setTimeout(() => {
+      setLoading(false);
+    }, 2200);
+  }, []);
 
   const saldo =
-    receitas -
-    (Number(contas)||0);
+    (Number(salario) || 0) -
+    (Number(contas) || 0);
 
-  return (
-    <div style={{
-      minHeight:"100vh",
-      background:"#f5f7fb",
-      fontFamily:"Arial"
-    }}>
-
-      <div style={{
-        background:"#0D47A1",
-        color:"white",
-        padding:"30px",
-        borderBottomLeftRadius:"30px",
-        borderBottomRightRadius:"30px"
-      }}>
-
-        <img
-          src="/logo-horizontal.png"
+  if (loading) {
+    return (
+      <div
+        style={{
+          background:"#0D47A1",
+          minHeight:"100vh",
+          display:"flex",
+          justifyContent:"center",
+          alignItems:"center",
+          color:"white"
+        }}
+      >
+        <div
           style={{
-            width:"220px",
-            display:"block",
-            margin:"0 auto 20px"
+            textAlign:"center"
           }}
-        />
-
-        <h2>👋 Olá Rogério</h2>
-
-        <p>
-          Organize hoje, realize amanhã
-        </p>
-
-      </div>
-
-      <div style={{
-        padding:"15px"
-      }}>
-
-        <div style={{
-          background:"white",
-          padding:"20px",
-          borderRadius:"20px",
-          marginBottom:"15px"
-        }}>
-          <h3>🎯 Meta do mês</h3>
-
-          <input
-            value={meta}
-            onChange={(e)=>
-            setMeta(e.target.value)}
+        >
+          <img
+            src="/logo.png"
             style={{
-              width:"100%",
-              padding:"12px"
+              width:"140px",
+              marginBottom:"25px"
             }}
           />
 
+          <h1>
+            Meu Salário Organizado
+          </h1>
+
           <p>
-            Guardar:
-            R$ {meta}
+            Organize hoje, realize amanhã
           </p>
+
+          <div
+            style={{
+              marginTop:"30px"
+            }}
+          >
+            Carregando...
+          </div>
         </div>
-
-        <div style={{
-          background:"white",
-          padding:"20px",
-          borderRadius:"20px",
-          marginBottom:"15px"
-        }}>
-          <h3>💵 Receitas</h3>
-
-          <input
-            placeholder="Salário"
-            value={salario}
-            onChange={(e)=>
-            setSalario(
-            e.target.value
-            )}
-          />
-
-          <br/><br/>
-
-          <input
-            placeholder="Extra"
-            value={extra}
-            onChange={(e)=>
-            setExtra(
-            e.target.value
-            )}
-          />
-        </div>
-
-        <div style={{
-          background:"white",
-          padding:"20px",
-          borderRadius:"20px"
-        }}>
-          <h3>💳 Contas</h3>
-
-          <input
-            placeholder="Contas"
-            value={contas}
-            onChange={(e)=>
-            setContas(
-            e.target.value
-            )}
-          />
-
-          <h2>
-            Saldo:
-            R$ {saldo}
-          </h2>
-
-        </div>
-
       </div>
+    );
+  }
 
+  return (
+    <div style={{
+      padding:"20px"
+    }}>
+      <img
+        src="/logo-horizontal.png"
+        style={{
+          width:"250px",
+          display:"block",
+          margin:"20px auto"
+        }}
+      />
+
+      <h2>💰 Meu App</h2>
+
+      <input
+        placeholder="Salário"
+        value={salario}
+        onChange={(e)=>
+        setSalario(e.target.value)}
+      />
+
+      <br/><br/>
+
+      <input
+        placeholder="Contas"
+        value={contas}
+        onChange={(e)=>
+        setContas(e.target.value)}
+      />
+
+      <h2>
+        Saldo:
+        R$ {saldo}
+      </h2>
     </div>
   );
-              }
+}

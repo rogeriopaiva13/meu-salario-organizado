@@ -149,22 +149,39 @@ export default function App() {
     setCategoriaGasto("Alimentação");
   }
 
-  function removerGasto(index) {
-    setGastos(gastos.filter((_, i) => i !== index));
+  function compartilharProgresso() {
+  const mensagem = `🎯 Estou organizando meu salário com o Meu Salário Organizado!
+
+${status}
+Uso do salário: ${progresso.toFixed(0)}%
+
+🚀 Organize hoje, realize amanhã.
+
+https://meu-salario-organizado.vercel.app/`;
+
+  if (navigator.share) {
+    navigator.share({
+      title: "Meu Salário Organizado",
+      text: mensagem,
+    });
+  } else {
+    navigator.clipboard.writeText(mensagem);
+    alert("Mensagem copiada para compartilhar!");
   }
+}
 
-  function limparMes() {
-    const confirmar = window.confirm(
-      "Tem certeza que deseja apagar os dados do mês?"
-    );
+function limparMes() {
+  const confirmar = window.confirm(
+    "Tem certeza que deseja apagar os dados do mês?"
+  );
 
-    if (!confirmar) return;
+  if (!confirmar) return;
 
-    setSalario("");
-    setExtra("");
-    setContas("");
-    setGastos([]);
-  }
+  setSalario("");
+  setExtra("");
+  setContas("");
+  setGastos([]);
+}
 
   const inputStyle = {
     width: "100%",

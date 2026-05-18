@@ -81,6 +81,12 @@ export default function App() {
   }
 
   function limparMes() {
+    const confirmar = window.confirm(
+      "Tem certeza que deseja apagar os dados do mês?"
+    );
+
+    if (!confirmar) return;
+
     setSalario("");
     setExtra("");
     setContas("");
@@ -114,17 +120,15 @@ export default function App() {
 
   if (loading) {
     return (
-      <div
-        style={{
-          background: "linear-gradient(180deg, #0D47A1, #06306f)",
-          minHeight: "100vh",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          color: "white",
-          fontFamily: "Arial",
-        }}
-      >
+      <div style={{
+        background: "linear-gradient(180deg, #0D47A1, #06306f)",
+        minHeight: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        color: "white",
+        fontFamily: "Arial",
+      }}>
         <div style={{ textAlign: "center" }}>
           <img src="/logo.png" style={{ width: "125px" }} />
           <h1 style={{ marginBottom: "5px" }}>Meu Salário Organizado</h1>
@@ -135,23 +139,19 @@ export default function App() {
   }
 
   return (
-    <div
-      style={{
-        background: "#eef3fb",
-        minHeight: "100vh",
-        paddingBottom: "95px",
-        fontFamily: "Arial",
-      }}
-    >
-      <div
-        style={{
-          background: "linear-gradient(180deg, #0D47A1, #063B88)",
-          color: "white",
-          padding: "28px 22px 34px",
-          borderBottomLeftRadius: "34px",
-          borderBottomRightRadius: "34px",
-        }}
-      >
+    <div style={{
+      background: "#eef3fb",
+      minHeight: "100vh",
+      paddingBottom: "95px",
+      fontFamily: "Arial",
+    }}>
+      <div style={{
+        background: "linear-gradient(180deg, #0D47A1, #063B88)",
+        color: "white",
+        padding: "28px 22px 34px",
+        borderBottomLeftRadius: "34px",
+        borderBottomRightRadius: "34px",
+      }}>
         <img
           src="/logo-horizontal.png"
           style={{
@@ -164,15 +164,13 @@ export default function App() {
         <h2 style={{ margin: "0 0 6px" }}>👋 Olá, {nome}</h2>
         <p style={{ opacity: 0.9, margin: 0 }}>Vamos organizar seu mês?</p>
 
-        <div
-          style={{
-            background: "rgba(255,255,255,0.14)",
-            borderRadius: "22px",
-            padding: "16px",
-            marginTop: "22px",
-            border: "1px solid rgba(255,255,255,0.20)",
-          }}
-        >
+        <div style={{
+          background: "rgba(255,255,255,0.14)",
+          borderRadius: "22px",
+          padding: "16px",
+          marginTop: "22px",
+          border: "1px solid rgba(255,255,255,0.20)",
+        }}>
           <p style={{ margin: 0, fontSize: "13px", opacity: 0.85 }}>
             Saldo disponível
           </p>
@@ -212,13 +210,11 @@ export default function App() {
                 </div>
 
                 <div style={{ background: "#e5e7eb", height: "15px", borderRadius: "20px", overflow: "hidden", marginTop: "8px" }}>
-                  <div
-                    style={{
-                      width: `${progresso}%`,
-                      height: "15px",
-                      background: progresso > 80 ? "#d32f2f" : "#FDD835",
-                    }}
-                  />
+                  <div style={{
+                    width: `${progresso}%`,
+                    height: "15px",
+                    background: progresso > 80 ? "#d32f2f" : "#FDD835",
+                  }} />
                 </div>
               </div>
 
@@ -268,7 +264,7 @@ export default function App() {
                 fontSize: "15px",
               }}
             >
-              Começar novo mês
+              🔄 Resetar mês
             </button>
           </>
         )}
@@ -283,11 +279,7 @@ export default function App() {
             <br /><br />
 
             <p style={label}>Categoria</p>
-            <select
-              value={categoriaGasto}
-              onChange={(e) => setCategoriaGasto(e.target.value)}
-              style={inputStyle}
-            >
+            <select value={categoriaGasto} onChange={(e) => setCategoriaGasto(e.target.value)} style={inputStyle}>
               {Object.keys(categorias).map((cat) => (
                 <option key={cat} value={cat}>
                   {categorias[cat].icone} {cat}
@@ -325,38 +317,30 @@ export default function App() {
               const cat = categorias[item.categoria] || categorias.Outros;
 
               return (
-                <div
-                  key={index}
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    borderBottom: "1px solid #eee",
-                    padding: "12px 0",
-                  }}
-                >
+                <div key={index} style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  borderBottom: "1px solid #eee",
+                  padding: "12px 0",
+                }}>
                   <div>
-                    <span
-                      style={{
-                        display: "inline-block",
-                        background: cat.cor,
-                        color: cat.texto,
-                        padding: "5px 10px",
-                        borderRadius: "999px",
-                        fontSize: "12px",
-                        fontWeight: "bold",
-                        marginBottom: "6px",
-                      }}
-                    >
+                    <span style={{
+                      display: "inline-block",
+                      background: cat.cor,
+                      color: cat.texto,
+                      padding: "5px 10px",
+                      borderRadius: "999px",
+                      fontSize: "12px",
+                      fontWeight: "bold",
+                      marginBottom: "6px",
+                    }}>
                       {cat.icone} {item.categoria || "Outros"}
                     </span>
 
                     <br />
-
                     <span>{item.nome}</span>
-
                     <br />
-
                     <strong>{moeda(item.valor)}</strong>
                   </div>
 
@@ -403,20 +387,18 @@ export default function App() {
         )}
       </div>
 
-      <div
-        style={{
-          position: "fixed",
-          bottom: 0,
-          left: 0,
-          right: 0,
-          background: "white",
-          display: "flex",
-          justifyContent: "space-around",
-          padding: "10px",
-          borderTop: "1px solid #ddd",
-          boxShadow: "0 -6px 18px rgba(0,0,0,0.06)",
-        }}
-      >
+      <div style={{
+        position: "fixed",
+        bottom: 0,
+        left: 0,
+        right: 0,
+        background: "white",
+        display: "flex",
+        justifyContent: "space-around",
+        padding: "10px",
+        borderTop: "1px solid #ddd",
+        boxShadow: "0 -6px 18px rgba(0,0,0,0.06)",
+      }}>
         <div onClick={() => setTela("inicio")}>🏠<br /><small>Início</small></div>
         <div onClick={() => setTela("gastos")}>💸<br /><small>Gastos</small></div>
         <div onClick={() => setTela("metas")}>🎯<br /><small>Metas</small></div>
@@ -425,4 +407,4 @@ export default function App() {
       </div>
     </div>
   );
-        }
+            }

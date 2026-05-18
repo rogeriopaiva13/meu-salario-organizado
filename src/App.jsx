@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 
 export default function App() {
-  const mesAgora = () => new Date().toISOString().slice(0, 7);
-
   const [loading, setLoading] = useState(true);
   const [tela, setTela] = useState("inicio");
   const [ocultarValores, setOcultarValores] = useState(false);
@@ -143,11 +141,6 @@ export default function App() {
     (Number(contas) || 0) + totalGastos;
 
   const saldo = receitas - saidas;
-
-  const progresso =
-    receitas > 0
-      ? Math.min((saidas / receitas) * 100, 100)
-      : 0;
 
   const status =
     saldo < 0
@@ -613,79 +606,6 @@ export default function App() {
           Perfil
         </button>
       </div>
-      <div
-        style={{
-          position: "fixed",
-          bottom: 0,
-          left: 0,
-          right: 0,
-          background: "#ffffff",
-          display: "flex",
-          justifyContent: "space-around",
-          alignItems: "center",
-          padding: "12px 0",
-          borderTop: "1px solid #dbe3f1",
-          boxShadow:
-            "0 -5px 20px rgba(0,0,0,0.06)",
-          zIndex: 9999,
-        }}
-      >
-        <button
-          style={{
-            background: "transparent",
-            border: "none",
-            color: "#0D47A1",
-            fontWeight: "bold",
-            fontSize: "13px",
-          }}
-        >
-          🏠
-          <br />
-          Início
-        </button>
-
-        <button
-          style={{
-            background: "transparent",
-            border: "none",
-            color: "#7b8794",
-            fontWeight: "bold",
-            fontSize: "13px",
-          }}
-        >
-          💸
-          <br />
-          Gastos
-        </button>
-
-        <button
-          style={{
-            background: "transparent",
-            border: "none",
-            color: "#7b8794",
-            fontWeight: "bold",
-            fontSize: "13px",
-          }}
-        >
-          🎯
-          <br />
-          Metas
-        </button>
-
-        <button
-          style={{
-            background: "transparent",
-            border: "none",
-            color: "#7b8794",
-            fontWeight: "bold",
-            fontSize: "13px",
-          }}
-        >
-          👤
-          <br />
-          Perfil
-        </button>
-      </div>
     </div>
   );
-}
+      }

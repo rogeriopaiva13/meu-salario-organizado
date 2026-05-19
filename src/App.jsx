@@ -12,6 +12,11 @@ export default function App() {
   const [nome, setNome] = useState(localStorage.getItem("nome") || "");
   const [salario, setSalario] = useState(localStorage.getItem("salario") || "");
   const [extra, setExtra] = useState(localStorage.getItem("extra") || "");
+
+  const [tipoMeta, setTipoMeta] = useState(localStorage.getItem("tipoMeta") || "Carro");
+  const [nomeMeta, setNomeMeta] = useState(localStorage.getItem("nomeMeta") || "Meu objetivo");
+  const [valorMetaTotal, setValorMetaTotal] = useState(localStorage.getItem("valorMetaTotal") || "30000");
+  const [valorGuardado, setValorGuardado] = useState(localStorage.getItem("valorGuardado") || "0");
   const [meta, setMeta] = useState(localStorage.getItem("meta") || "500");
 
   const [nomeGasto, setNomeGasto] = useState("");
@@ -22,13 +27,8 @@ export default function App() {
   const [valorConta, setValorConta] = useState("");
   const [categoriaConta, setCategoriaConta] = useState("Luz");
 
-  const [gastos, setGastos] = useState(
-    JSON.parse(localStorage.getItem("gastos")) || []
-  );
-
-  const [contas, setContas] = useState(
-    JSON.parse(localStorage.getItem("contasLista")) || []
-  );
+  const [gastos, setGastos] = useState(JSON.parse(localStorage.getItem("gastos")) || []);
+  const [contas, setContas] = useState(JSON.parse(localStorage.getItem("contasLista")) || []);
 
   const categorias = {
     Alimentação: { icone: "🍔", cor: "#fff3e0", texto: "#e65100" },
@@ -46,6 +46,13 @@ export default function App() {
     Aluguel: "🏠",
     Telefone: "📱",
     Outros: "📄",
+  };
+
+  const metasOpcoes = {
+    Casa: { icone: "🏠", cor: "#e8f1ff", texto: "#0D47A1" },
+    Viagem: { icone: "✈️", cor: "#fff8e1", texto: "#b7791f" },
+    Carro: { icone: "🚗", cor: "#e8f5e9", texto: "#1b5e20" },
+    Outros: { icone: "🎯", cor: "#f3e5f5", texto: "#6a1b9a" },
   };
 
   useEffect(() => {
@@ -72,6 +79,10 @@ export default function App() {
   useEffect(() => localStorage.setItem("nome", nome), [nome]);
   useEffect(() => localStorage.setItem("salario", salario), [salario]);
   useEffect(() => localStorage.setItem("extra", extra), [extra]);
+  useEffect(() => localStorage.setItem("tipoMeta", tipoMeta), [tipoMeta]);
+  useEffect(() => localStorage.setItem("nomeMeta", nomeMeta), [nomeMeta]);
+  useEffect(() => localStorage.setItem("valorMetaTotal", valorMetaTotal), [valorMetaTotal]);
+  useEffect(() => localStorage.setItem("valorGuardado", valorGuardado), [valorGuardado]);
   useEffect(() => localStorage.setItem("meta", meta), [meta]);
   useEffect(() => localStorage.setItem("gastos", JSON.stringify(gastos)), [gastos]);
   useEffect(() => localStorage.setItem("contasLista", JSON.stringify(contas)), [contas]);
@@ -90,6 +101,13 @@ export default function App() {
   const saidas = totalGastos + totalContas;
   const saldo = receitas - saidas - (Number(meta) || 0);
   const progresso = receitas > 0 ? Math.min((saidas / receitas) * 100, 100) : 0;
+
+  const valorTotalMeta = Number(valorMetaTotal) || 0;
+  const totalGuardado = Number(valorGuardado) || 0;
+  const faltaMeta = Math.max(valorTotalMeta - totalGuardado, 0);
+  const progressoMeta = valorTotalMeta > 0 ? Math.min((totalGuardado / valorTotalMeta) * 100, 100) : 0;
+  const mesesRestantes = Number(meta) > 0 ? Math.ceil(faltaMeta / Number(meta)) : 0;
+  const metaVisual = metasOpcoes[tipoMeta] || metasOpcoes.Outros;
 
   const status =
     saldo < 0
@@ -174,6 +192,12 @@ export default function App() {
 
   function removerConta(index) {
     setContas(contas.filter((_, i) => i !== index));
+  }
+
+  function adicionarValorMetaMensal() {
+    const confirmar = window.confirm(`Adicionar ${moeda(meta)} ao valor guardado da meta?`);
+    if (!confirmar) return;
+    setValorGuardado(String(totalGuardado + Number(meta || 0)));
   }
 
   const inputStyle = {
@@ -370,6 +394,37 @@ export default function App() {
             <p>Meta reservada: <strong>{moeda(meta)}</strong></p>
             <p>Uso do salário: <strong>{progresso.toFixed(0)}%</strong></p>
           </div>
+
+          <div style={card}>
+            <h2>{metaVisual.icone} {nomeMeta}</h2>
+            <p>Objetivo: <strong>{moeda(valorMetaTotal)}</strong></p>
+            <p>Guardado: <strong>{moeda(valorGuardado)}</strong></p>
+            <p>Falta: <strong>{moeda(faltaMeta)}</strong></p>
+
+            <div
+              style={{
+                width: "100%",
+                height: "18px",
+                background: "#e5e7eb",
+                borderRadius: "999px",
+                overflow: "hidden",
+                marginTop: "12px",
+              }}
+            >
+              <div
+                style={{
+                  width: `${progressoMeta}%`,
+                  height: "18px",
+                  background: "linear-gradient(90deg,#0D47A1,#42a5f5)",
+                  borderRadius: "999px",
+                }}
+              />
+            </div>
+
+            <p style={{ textAlign: "center", fontWeight: "bold", color: "#0D47A1" }}>
+              {progressoMeta.toFixed(1)}% concluído
+            </p>
+          </div>
         </div>
       )}
 
@@ -552,9 +607,9 @@ export default function App() {
 
             <div
               style={{
-                background: "#eef4ff",
-                padding: "16px",
-                borderRadius: "20px",
+                background: metaVisual.cor,
+                padding: "18px",
+                borderRadius: "22px",
                 marginBottom: "20px",
               }}
             >
@@ -562,21 +617,64 @@ export default function App() {
                 Sua meta atual
               </p>
 
-              <h2 style={{ margin: "8px 0", color: "#0D47A1" }}>
-                🚗 Meu objetivo
+              <h2 style={{ margin: "8px 0", color: metaVisual.texto }}>
+                {metaVisual.icone} {nomeMeta}
               </h2>
 
-              <p style={{ margin: 0, fontWeight: "bold", color: "#1b5e20" }}>
-                Guardando {moeda(meta)} por mês
+              <p style={{ margin: 0, fontWeight: "bold", color: metaVisual.texto }}>
+                {progressoMeta.toFixed(1)}% concluído
               </p>
             </div>
 
-            <p>Quanto deseja guardar por mês?</p>
+            <p>Tipo de meta</p>
+            <select
+              style={inputStyle}
+              value={tipoMeta}
+              onChange={(e) => setTipoMeta(e.target.value)}
+            >
+              <option value="Carro">🚗 Carro</option>
+              <option value="Casa">🏠 Casa</option>
+              <option value="Viagem">✈️ Viagem</option>
+              <option value="Outros">🎯 Outros</option>
+            </select>
 
+            <div style={{ height: "14px" }} />
+
+            <p>Nome da meta</p>
+            <input
+              style={inputStyle}
+              value={nomeMeta}
+              onChange={(e) => setNomeMeta(e.target.value)}
+              placeholder="Ex: Comprar meu carro"
+            />
+
+            <div style={{ height: "14px" }} />
+
+            <p>Valor total da meta</p>
+            <input
+              style={inputStyle}
+              value={ocultarValores ? "•••••" : valorMetaTotal}
+              onChange={(e) => setValorMetaTotal(e.target.value)}
+              inputMode="decimal"
+            />
+
+            <div style={{ height: "14px" }} />
+
+            <p>Quanto deseja guardar por mês?</p>
             <input
               style={inputStyle}
               value={ocultarValores ? "•••••" : meta}
               onChange={(e) => setMeta(e.target.value)}
+              inputMode="decimal"
+            />
+
+            <div style={{ height: "14px" }} />
+
+            <p>Quanto já guardou?</p>
+            <input
+              style={inputStyle}
+              value={ocultarValores ? "•••••" : valorGuardado}
+              onChange={(e) => setValorGuardado(e.target.value)}
               inputMode="decimal"
             />
 
@@ -590,33 +688,25 @@ export default function App() {
                 border: "1px solid #e5eaf3",
               }}
             >
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  marginBottom: "12px",
-                }}
-              >
-                <strong>💰 Meta mensal</strong>
-
-                <strong style={{ color: "#1b5e20" }}>
-                  {moeda(meta)}
-                </strong>
-              </div>
+              <p>Objetivo: <strong>{moeda(valorMetaTotal)}</strong></p>
+              <p>Guardado: <strong>{moeda(valorGuardado)}</strong></p>
+              <p>Falta: <strong>{moeda(faltaMeta)}</strong></p>
+              <p>Previsão: <strong>{mesesRestantes} meses</strong></p>
 
               <div
                 style={{
                   width: "100%",
-                  height: "18px",
+                  height: "20px",
                   background: "#e5e7eb",
                   borderRadius: "999px",
                   overflow: "hidden",
+                  marginTop: "12px",
                 }}
               >
                 <div
                   style={{
-                    width: `${Math.min(progresso, 100)}%`,
-                    height: "18px",
+                    width: `${progressoMeta}%`,
+                    height: "20px",
                     background: "linear-gradient(90deg,#0D47A1,#42a5f5)",
                     borderRadius: "999px",
                     transition: "0.4s",
@@ -632,8 +722,24 @@ export default function App() {
                   fontWeight: "bold",
                 }}
               >
-                {progresso.toFixed(0)}% do salário comprometido
+                {progressoMeta.toFixed(1)}% da meta concluída
               </p>
+
+              <button
+                onClick={adicionarValorMetaMensal}
+                style={{
+                  width: "100%",
+                  padding: "16px",
+                  borderRadius: "18px",
+                  border: "none",
+                  background: "#0D47A1",
+                  color: "white",
+                  fontWeight: "bold",
+                  marginTop: "14px",
+                }}
+              >
+                ✅ Adicionar meta mensal ao guardado
+              </button>
             </div>
           </div>
         </div>

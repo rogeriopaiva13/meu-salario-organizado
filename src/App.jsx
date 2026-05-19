@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
-import { db } from "./firebase";
+import { signInWithPopup, signOut, onAuthStateChanged } from "firebase/auth";
+import { db, auth, provider } from "./firebase";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
   const [tela, setTela] = useState("inicio");
   const [ocultarValores, setOcultarValores] = useState(false);
+  const [usuario, setUsuario] = useState(null);
 
   const [nome, setNome] = useState(localStorage.getItem("nome") || "");
   const [salario, setSalario] = useState(localStorage.getItem("salario") || "");
@@ -33,6 +35,22 @@ export default function App() {
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 1200);
     return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUsuario({
+          nome: user.displayName,
+          email: user.email,
+          foto: user.photoURL,
+        });
+      } else {
+        setUsuario(null);
+      }
+    });
+
+    return () => unsubscribe();
   }, []);
 
   useEffect(() => localStorage.setItem("nome", nome), [nome]);
@@ -82,6 +100,31 @@ export default function App() {
   const maiorGastoCategoria = Math.max(...Object.values(gastosPorCategoria), 1);
   const maiorSaldoHistorico = Math.max(...historico.map((h) => Math.abs(Number(h.saldo || 0))), 1);
 
+  async function loginGoogle() {
+    try {
+      const resultado = await signInWithPopup(auth, provider);
+
+      setUsuario({
+        nome: resultado.user.displayName,
+        email: resultado.user.email,
+        foto: resultado.user.photoURL,
+      });
+    } catch (error) {
+      console.error(error);
+      alert("Erro ao entrar com Google.");
+    }
+  }
+
+  async function logoutGoogle() {
+    try {
+      await signOut(auth);
+      setUsuario(null);
+    } catch (error) {
+      console.error(error);
+      alert("Erro ao sair da conta.");
+    }
+  }
+
   async function adicionarGasto() {
     if (!nomeGasto || !valorGasto) return;
 
@@ -96,7 +139,8 @@ export default function App() {
     try {
       await addDoc(collection(db, "gastos"), {
         ...novoGasto,
-        usuario: nome || "Usuário",
+        usuario: usuario?.nome || nome || "Usuário",
+        email: usuario?.email || "",
         criadoEm: serverTimestamp(),
       });
     } catch (error) {
@@ -224,7 +268,10 @@ ${progresso.toFixed(0)}%
           style={{ width: "220px", display: "block", margin: "0 auto 22px" }}
         />
 
-        <h2 style={{ fontSize: "34px" }}>👋 Olá{nome ? `, ${nome}` : ""}!</h2>
+        <h2 style={{ fontSize: "34px" }}>
+          👋 Olá{usuario?.nome ? `, ${usuario.nome}` : nome ? `, ${nome}` : ""}!
+        </h2>
+
         <p style={{ fontSize: "18px", opacity: 0.9 }}>Vamos organizar seu mês?</p>
 
         <button
@@ -242,6 +289,68 @@ ${progresso.toFixed(0)}%
         >
           {ocultarValores ? "👁 Mostrar" : "🙈 Ocultar"}
         </button>
+
+        {!usuario ? (
+          <button
+            onClick={loginGoogle}
+            style={{
+              marginTop: "14px",
+              width: "100%",
+              padding: "14px",
+              borderRadius: "16px",
+              border: "none",
+              background: "white",
+              color: "#0D47A1",
+              fontWeight: "bold",
+              fontSize: "15px",
+            }}
+          >
+            🔐 Entrar com Google
+          </button>
+        ) : (
+          <div
+            style={{
+              marginTop: "14px",
+              background: "rgba(255,255,255,0.18)",
+              padding: "12px",
+              borderRadius: "18px",
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+            }}
+          >
+            {usuario.foto && (
+              <img
+                src={usuario.foto}
+                alt="foto"
+                style={{
+                  width: "38px",
+                  height: "38px",
+                  borderRadius: "50%",
+                }}
+              />
+            )}
+
+            <div style={{ flex: 1 }}>
+              <p style={{ margin: 0, fontWeight: "bold" }}>{usuario.nome}</p>
+              <p style={{ margin: "4px 0 0", fontSize: "12px" }}>{usuario.email}</p>
+            </div>
+
+            <button
+              onClick={logoutGoogle}
+              style={{
+                border: "none",
+                background: "#d32f2f",
+                color: "white",
+                padding: "8px 10px",
+                borderRadius: "10px",
+                fontWeight: "bold",
+              }}
+            >
+              Sair
+            </button>
+          </div>
+        )}
 
         <div style={{
           background: "rgba(255,255,255,0.14)",
@@ -558,22 +667,4 @@ ${progresso.toFixed(0)}%
         boxShadow: "0 -5px 20px rgba(0,0,0,0.06)",
         zIndex: 999,
       }}>
-        <button onClick={() => setTela("inicio")} style={{ background: "transparent", border: "none", color: tela === "inicio" ? "#0D47A1" : "#7b8794", fontWeight: "bold" }}>
-          🏠<br />Início
-        </button>
-
-        <button onClick={() => setTela("gastos")} style={{ background: "transparent", border: "none", color: tela === "gastos" ? "#0D47A1" : "#7b8794", fontWeight: "bold" }}>
-          💸<br />Gastos
-        </button>
-
-        <button onClick={() => setTela("historico")} style={{ background: "transparent", border: "none", color: tela === "historico" ? "#0D47A1" : "#7b8794", fontWeight: "bold" }}>
-          📅<br />Histórico
-        </button>
-
-        <button onClick={() => setTela("perfil")} style={{ background: "transparent", border: "none", color: tela === "perfil" ? "#0D47A1" : "#7b8794", fontWeight: "bold" }}>
-          👤<br />Perfil
-        </button>
-      </div>
-    </div>
-  );
-}
+        <button onClick={() => setTela("inicio")} styl

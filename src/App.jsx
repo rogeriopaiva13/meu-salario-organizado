@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { db } from "./firebase";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -53,7 +55,6 @@ export default function App() {
   const totalGastos = gastos.reduce((acc, item) => acc + Number(item.valor || 0), 0);
   const saidas = (Number(contas) || 0) + totalGastos;
   const saldo = receitas - saidas - (Number(meta) || 0);
-
   const progresso = receitas > 0 ? Math.min((saidas / receitas) * 100, 100) : 0;
 
   const status =
@@ -81,17 +82,27 @@ export default function App() {
   const maiorGastoCategoria = Math.max(...Object.values(gastosPorCategoria), 1);
   const maiorSaldoHistorico = Math.max(...historico.map((h) => Math.abs(Number(h.saldo || 0))), 1);
 
-  function adicionarGasto() {
+  async function adicionarGasto() {
     if (!nomeGasto || !valorGasto) return;
 
-    setGastos([
-      ...gastos,
-      {
-        nome: nomeGasto,
-        valor: Number(valorGasto),
-        categoria: categoriaGasto,
-      },
-    ]);
+    const novoGasto = {
+      nome: nomeGasto,
+      valor: Number(valorGasto),
+      categoria: categoriaGasto,
+    };
+
+    setGastos([...gastos, novoGasto]);
+
+    try {
+      await addDoc(collection(db, "gastos"), {
+        ...novoGasto,
+        usuario: nome || "Usuário",
+        criadoEm: serverTimestamp(),
+      });
+    } catch (error) {
+      console.error("Erro ao salvar no Firebase:", error);
+      alert("Gasto salvo no celular, mas ainda não foi para a nuvem.");
+    }
 
     setNomeGasto("");
     setValorGasto("");
@@ -175,17 +186,15 @@ ${progresso.toFixed(0)}%
 
   if (loading) {
     return (
-      <div
-        style={{
-          background: "linear-gradient(180deg,#0D47A1,#06306f)",
-          minHeight: "100vh",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          color: "white",
-          fontFamily: "Arial",
-        }}
-      >
+      <div style={{
+        background: "linear-gradient(180deg,#0D47A1,#06306f)",
+        minHeight: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        color: "white",
+        fontFamily: "Arial",
+      }}>
         <div style={{ textAlign: "center" }}>
           <img src="/logo.png" alt="logo" style={{ width: "120px" }} />
           <h1>Meu Salário Organizado</h1>
@@ -196,23 +205,19 @@ ${progresso.toFixed(0)}%
   }
 
   return (
-    <div
-      style={{
-        background: "#eef3fb",
-        minHeight: "100vh",
-        paddingBottom: "120px",
-        fontFamily: "Arial",
-      }}
-    >
-      <div
-        style={{
-          background: "linear-gradient(180deg,#0D47A1,#063B88)",
-          color: "white",
-          padding: "28px 22px 34px",
-          borderBottomLeftRadius: "38px",
-          borderBottomRightRadius: "38px",
-        }}
-      >
+    <div style={{
+      background: "#eef3fb",
+      minHeight: "100vh",
+      paddingBottom: "120px",
+      fontFamily: "Arial",
+    }}>
+      <div style={{
+        background: "linear-gradient(180deg,#0D47A1,#063B88)",
+        color: "white",
+        padding: "28px 22px 34px",
+        borderBottomLeftRadius: "38px",
+        borderBottomRightRadius: "38px",
+      }}>
         <img
           src="/logo-horizontal.png"
           alt="logo"
@@ -220,7 +225,6 @@ ${progresso.toFixed(0)}%
         />
 
         <h2 style={{ fontSize: "34px" }}>👋 Olá{nome ? `, ${nome}` : ""}!</h2>
-
         <p style={{ fontSize: "18px", opacity: 0.9 }}>Vamos organizar seu mês?</p>
 
         <button
@@ -239,14 +243,12 @@ ${progresso.toFixed(0)}%
           {ocultarValores ? "👁 Mostrar" : "🙈 Ocultar"}
         </button>
 
-        <div
-          style={{
-            background: "rgba(255,255,255,0.14)",
-            borderRadius: "24px",
-            padding: "18px",
-            marginTop: "22px",
-          }}
-        >
+        <div style={{
+          background: "rgba(255,255,255,0.14)",
+          borderRadius: "24px",
+          padding: "18px",
+          marginTop: "22px",
+        }}>
           <p style={{ fontSize: "15px", margin: 0 }}>Saldo livre após meta</p>
 
           <h1 style={{ color: "#FDD835", fontSize: "42px", margin: "14px 0" }}>
@@ -255,14 +257,12 @@ ${progresso.toFixed(0)}%
 
           <p style={{ fontSize: "20px", margin: 0 }}>{status}</p>
 
-          <p
-            style={{
-              marginTop: "12px",
-              fontSize: "14px",
-              opacity: 0.95,
-              lineHeight: "20px",
-            }}
-          >
+          <p style={{
+            marginTop: "12px",
+            fontSize: "14px",
+            opacity: 0.95,
+            lineHeight: "20px",
+          }}>
             {alerta}
           </p>
         </div>
@@ -291,22 +291,18 @@ ${progresso.toFixed(0)}%
                 <strong>{progresso.toFixed(0)}%</strong>
               </div>
 
-              <div
-                style={{
-                  background: "#e5e7eb",
+              <div style={{
+                background: "#e5e7eb",
+                height: "14px",
+                borderRadius: "20px",
+                overflow: "hidden",
+                marginTop: "8px",
+              }}>
+                <div style={{
+                  width: `${progresso}%`,
                   height: "14px",
-                  borderRadius: "20px",
-                  overflow: "hidden",
-                  marginTop: "8px",
-                }}
-              >
-                <div
-                  style={{
-                    width: `${progresso}%`,
-                    height: "14px",
-                    background: progresso > 80 ? "#d32f2f" : "#FDD835",
-                  }}
-                />
+                  background: progresso > 80 ? "#d32f2f" : "#FDD835",
+                }} />
               </div>
             </div>
           </div>
@@ -457,29 +453,23 @@ ${progresso.toFixed(0)}%
               return (
                 <div key={categoria} style={{ marginBottom: "16px" }}>
                   <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <strong>
-                      {cat.icone} {categoria}
-                    </strong>
+                    <strong>{cat.icone} {categoria}</strong>
                     <strong>{moeda(valor)}</strong>
                   </div>
 
-                  <div
-                    style={{
-                      width: "100%",
+                  <div style={{
+                    width: "100%",
+                    height: "16px",
+                    background: "#eceff1",
+                    borderRadius: "20px",
+                    overflow: "hidden",
+                    marginTop: "6px",
+                  }}>
+                    <div style={{
+                      width: `${largura}%`,
                       height: "16px",
-                      background: "#eceff1",
-                      borderRadius: "20px",
-                      overflow: "hidden",
-                      marginTop: "6px",
-                    }}
-                  >
-                    <div
-                      style={{
-                        width: `${largura}%`,
-                        height: "16px",
-                        background: cat.texto,
-                      }}
-                    />
+                      background: cat.texto,
+                    }} />
                   </div>
                 </div>
               );
@@ -501,13 +491,10 @@ ${progresso.toFixed(0)}%
               const positivo = saldoMes >= 0;
 
               return (
-                <div
-                  key={index}
-                  style={{
-                    borderBottom: "1px solid #eee",
-                    padding: "14px 0",
-                  }}
-                >
+                <div key={index} style={{
+                  borderBottom: "1px solid #eee",
+                  padding: "14px 0",
+                }}>
                   <strong>📆 {item.mes}</strong>
 
                   <div style={{ marginTop: "8px", fontSize: "14px" }}>
@@ -521,23 +508,19 @@ ${progresso.toFixed(0)}%
                     </p>
                   </div>
 
-                  <div
-                    style={{
-                      width: "100%",
+                  <div style={{
+                    width: "100%",
+                    height: "16px",
+                    background: "#eceff1",
+                    borderRadius: "20px",
+                    overflow: "hidden",
+                    marginTop: "8px",
+                  }}>
+                    <div style={{
+                      width: `${largura}%`,
                       height: "16px",
-                      background: "#eceff1",
-                      borderRadius: "20px",
-                      overflow: "hidden",
-                      marginTop: "8px",
-                    }}
-                  >
-                    <div
-                      style={{
-                        width: `${largura}%`,
-                        height: "16px",
-                        background: positivo ? "#43a047" : "#d32f2f",
-                      }}
-                    />
+                      background: positivo ? "#43a047" : "#d32f2f",
+                    }} />
                   </div>
                 </div>
               );
@@ -561,78 +544,36 @@ ${progresso.toFixed(0)}%
         </div>
       )}
 
-      <div
-        style={{
-          position: "fixed",
-          bottom: 0,
-          left: 0,
-          right: 0,
-          background: "white",
-          display: "flex",
-          justifyContent: "space-around",
-          alignItems: "center",
-          padding: "14px 0",
-          borderTop: "1px solid #dbe3f1",
-          boxShadow: "0 -5px 20px rgba(0,0,0,0.06)",
-          zIndex: 999,
-        }}
-      >
-        <button
-          onClick={() => setTela("inicio")}
-          style={{
-            background: "transparent",
-            border: "none",
-            color: tela === "inicio" ? "#0D47A1" : "#7b8794",
-            fontWeight: "bold",
-          }}
-        >
-          🏠
-          <br />
-          Início
+      <div style={{
+        position: "fixed",
+        bottom: 0,
+        left: 0,
+        right: 0,
+        background: "white",
+        display: "flex",
+        justifyContent: "space-around",
+        alignItems: "center",
+        padding: "14px 0",
+        borderTop: "1px solid #dbe3f1",
+        boxShadow: "0 -5px 20px rgba(0,0,0,0.06)",
+        zIndex: 999,
+      }}>
+        <button onClick={() => setTela("inicio")} style={{ background: "transparent", border: "none", color: tela === "inicio" ? "#0D47A1" : "#7b8794", fontWeight: "bold" }}>
+          🏠<br />Início
         </button>
 
-        <button
-          onClick={() => setTela("gastos")}
-          style={{
-            background: "transparent",
-            border: "none",
-            color: tela === "gastos" ? "#0D47A1" : "#7b8794",
-            fontWeight: "bold",
-          }}
-        >
-          💸
-          <br />
-          Gastos
+        <button onClick={() => setTela("gastos")} style={{ background: "transparent", border: "none", color: tela === "gastos" ? "#0D47A1" : "#7b8794", fontWeight: "bold" }}>
+          💸<br />Gastos
         </button>
 
-        <button
-          onClick={() => setTela("historico")}
-          style={{
-            background: "transparent",
-            border: "none",
-            color: tela === "historico" ? "#0D47A1" : "#7b8794",
-            fontWeight: "bold",
-          }}
-        >
-          📅
-          <br />
-          Histórico
+        <button onClick={() => setTela("historico")} style={{ background: "transparent", border: "none", color: tela === "historico" ? "#0D47A1" : "#7b8794", fontWeight: "bold" }}>
+          📅<br />Histórico
         </button>
 
-        <button
-          onClick={() => setTela("perfil")}
-          style={{
-            background: "transparent",
-            border: "none",
-            color: tela === "perfil" ? "#0D47A1" : "#7b8794",
-            fontWeight: "bold",
-          }}
-        >
-          👤
-          <br />
-          Perfil
+        <button onClick={() => setTela("perfil")} style={{ background: "transparent", border: "none", color: tela === "perfil" ? "#0D47A1" : "#7b8794", fontWeight: "bold" }}>
+          👤<br />Perfil
         </button>
       </div>
     </div>
   );
-       }
+}

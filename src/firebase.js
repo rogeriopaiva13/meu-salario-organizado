@@ -1,6 +1,13 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
-import { getAuth, GoogleAuthProvider } from "firebase/auth";
+
+import {
+  getAuth,
+  GoogleAuthProvider,
+} from "firebase/auth";
+
+import {
+  getFirestore,
+} from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAVPsaa7ZZpwJpprLLwAGJhM8Bb8pId_SQ",
@@ -8,13 +15,13 @@ const firebaseConfig = {
   projectId: "meu-salario-organizado",
   storageBucket: "meu-salario-organizado.firebasestorage.app",
   messagingSenderId: "421726461241",
-  appId: "1:421726461241:web:e15494e468671538cb9ce8"
+  appId: "1:421726461241:web:e15494e468671538cb9ce8",
 };
 
 const app = initializeApp(firebaseConfig);
 
-export const db = getFirestore(app);
-
 export const auth = getAuth(app);
 
 export const provider = new GoogleAuthProvider();
+
+export const db = getFirestore(app);

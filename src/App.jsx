@@ -570,4 +570,353 @@ return ( <div style={{ background: "#eef3fb", minHeight: "100vh", paddingBottom:
   {tela === "metas" && (
     <div style={{ padding: "20px" }}>
       <div style={card}>
+       : "space-between",
+            alignItems: "center",
+            marginBottom: "18px",
+          }}
+        >
+          <div>
+            <p style={{ margin: 0, fontSize: "14px", color: "#6b7280" }}>
+              Resumo inteligente
+            </p>
+
+            <h1 style={{ margin: "8px 0 0", fontSize: "36px", color: "#0D47A1" }}>
+              {moeda(saldo)}
+            </h1>
+          </div>
+
+          <div
+            style={{
+              width: "78px",
+              height: "78px",
+              borderRadius: "50%",
+              background:
+                progresso > 80
+                  ? "linear-gradient(135deg,#ff6b6b,#d32f2f)"
+                  : "linear-gradient(135deg,#FDD835,#fbc02d)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "#1f2937",
+              fontWeight: "bold",
+              fontSize: "18px",
+              boxShadow: "0 10px 20px rgba(0,0,0,0.10)",
+            }}
+          >
+            {progresso.toFixed(0)}%
+          </div>
+        </div>
+
+        <div
+          style={{
+            background: "#edf4ff",
+            borderRadius: "999px",
+            height: "16px",
+            overflow: "hidden",
+          }}
+        >
+          <div
+            style={{
+              width: `${progresso}%`,
+              height: "16px",
+              borderRadius: "999px",
+              background:
+                progresso > 80
+                  ? "linear-gradient(90deg,#ff6b6b,#d32f2f)"
+                  : "linear-gradient(90deg,#0D47A1,#42a5f5)",
+              transition: "0.4s",
+            }}
+          />
+        </div>
+
+        <p style={{ marginTop: "14px", marginBottom: 0, color: "#374151", lineHeight: "22px" }}>
+          {alerta}
+        </p>
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
+        <div style={miniCardStyle}>
+          <p style={miniLabelStyle}>Entradas</p>
+          <h3 style={{ ...miniValueStyle, color: "#1b5e20" }}>{moeda(receitas)}</h3>
+        </div>
+
+        <div style={miniCardStyle}>
+          <p style={miniLabelStyle}>Saídas</p>
+          <h3 style={{ ...miniValueStyle, color: "#c62828" }}>{moeda(saidas)}</h3>
+        </div>
+
+        <div style={miniCardStyle}>
+          <p style={miniLabelStyle}>Meta</p>
+          <h3 style={{ ...miniValueStyle, color: "#0D47A1" }}>{moeda(meta)}</h3>
+        </div>
+
+        <div
+          style={{
+            background: "linear-gradient(135deg,#0D47A1,#1565C0)",
+            borderRadius: "24px",
+            padding: "18px",
+            color: "white",
+            boxShadow: "0 12px 28px rgba(13,71,161,0.25)",
+          }}
+        >
+          <p style={{ margin: 0, opacity: 0.85, fontSize: "13px" }}>Hoje</p>
+          <h3 style={{ margin: "10px 0 0", fontSize: "22px" }}>{moeda(totalGastosHoje)}</h3>
+        </div>
+      </div>
+    </div>
+  )}
+
+  {tela === "entradas" && (
+    <div style={{ padding: "20px" }}>
+      <div style={card}>
+        <h2>💰 Entradas</h2>
+
+        <p>Salário</p>
+        <input
+          style={inputStyle}
+          value={ocultarValores ? "•••••" : salario}
+          onChange={(e) => setSalario(e.target.value)}
+          inputMode="decimal"
+        />
+
+        <div style={{ height: "14px" }} />
+
+        <p>Extra</p>
+        <input
+          style={inputStyle}
+          value={ocultarValores ? "•••••" : extra}
+          onChange={(e) => setExtra(e.target.value)}
+          inputMode="decimal"
+        />
+      </div>
+    </div>
+  )}
+
+  {tela === "gastos" && (
+    <div style={{ padding: "20px" }}>
+      <div style={card}>
+        <h2>💸 Gastos</h2>
+
+        <input
+          style={inputStyle}
+          placeholder="Nome do gasto"
+          value={nomeGasto}
+          onChange={(e) => setNomeGasto(e.target.value)}
+        />
+
+        <div style={{ height: "12px" }} />
+
+        <input
+          style={inputStyle}
+          type="number"
+          placeholder="Valor"
+          value={valorGasto}
+          onChange={(e) => setValorGasto(e.target.value)}
+        />
+
+        <div style={{ height: "12px" }} />
+
+        <select
+          style={inputStyle}
+          value={categoriaGasto}
+          onChange={(e) => setCategoriaGasto(e.target.value)}
+        >
+          {Object.keys(categorias).map((cat) => (
+            <option key={cat} value={cat}>
+              {categorias[cat].icone} {cat}
+            </option>
+          ))}
+        </select>
+
+        <div style={{ height: "16px" }} />
+
+        <button
+          onClick={adicionarGasto}
+          style={primaryButtonStyle}
+        >
+          ➕ Adicionar gasto
+        </button>
+      </div>
+
+      <div style={card}>
+        <h2>📊 Onde você mais gasta</h2>
+
+        {Object.keys(gastosPorCategoria).length === 0 && (
+          <p>Adicione gastos para visualizar o gráfico.</p>
+        )}
+
+        {Object.entries(gastosPorCategoria).map(([categoria, valor]) => {
+          const cat = categorias[categoria] || categorias.Outros;
+          const largura = (valor / maiorGastoCategoria) * 100;
+
+          return (
+            <div key={categoria} style={{ marginBottom: "16px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px" }}>
+                <strong>{cat.icone} {categoria}</strong>
+                <strong>{moeda(valor)}</strong>
+              </div>
+
+              <div
+                style={{
+                  width: "100%",
+                  height: "16px",
+                  background: "#eceff1",
+                  borderRadius: "20px",
+                  overflow: "hidden",
+                }}
+              >
+                <div
+                  style={{
+                    width: `${largura}%`,
+                    height: "16px",
+                    background: cat.texto,
+                    borderRadius: "20px",
+                  }}
+                />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {gastos.map((item, index) => {
+        const cat = categorias[item.categoria] || categorias.Outros;
+
+        return (
+          <div key={index} style={card}>
+            <span style={badgeStyle(cat)}>
+              {cat.icone} {item.categoria}
+            </span>
+
+            <h3>{item.nome}</h3>
+            <p><strong>{moeda(item.valor)}</strong></p>
+
+            <button onClick={() => removerGasto(index)}>Excluir</button>
+          </div>
+        );
+      })}
+    </div>
+  )}
+
+  {tela === "diario" && (
+    <div style={{ padding: "20px" }}>
+      <div
+        style={{
+          background: "linear-gradient(135deg,#0D47A1,#1976D2)",
+          borderRadius: "28px",
+          padding: "24px",
+          color: "white",
+          marginBottom: "18px",
+          boxShadow: "0 18px 40px rgba(13,71,161,0.22)",
+        }}
+      >
+        <p style={{ margin: 0, opacity: 0.9 }}>Gastos de hoje</p>
+        <h1 style={{ margin: "10px 0", fontSize: "42px" }}>{moeda(totalGastosHoje)}</h1>
+        <p style={{ margin: 0, opacity: 0.9 }}>Continue acompanhando seus hábitos 💙</p>
+      </div>
+
+      {gastos.length === 0 && (
+        <div style={card}>
+          <p>Nenhum gasto registrado ainda.</p>
+        </div>
+      )}
+
+      {gastos.map((item, index) => {
+        const cat = categorias[item.categoria] || categorias.Outros;
+
+        return (
+          <div
+            key={index}
+            style={{
+              background: "white",
+              borderRadius: "24px",
+              padding: "18px",
+              marginBottom: "14px",
+              boxShadow: "0 10px 24px rgba(0,0,0,0.06)",
+            }}
+          >
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div>
+                <p style={{ margin: 0, fontSize: "13px", color: "#6b7280" }}>
+                  {cat.icone} {item.categoria}
+                </p>
+                <h3 style={{ margin: "6px 0" }}>{item.nome}</h3>
+                <strong style={{ color: cat.texto }}>{moeda(item.valor)}</strong>
+              </div>
+
+              <div
+                style={{
+                  background: "#f3f7ff",
+                  padding: "10px 12px",
+                  borderRadius: "14px",
+                  fontSize: "12px",
+                  color: "#0D47A1",
+                  fontWeight: "bold",
+                }}
+              >
+                {item.hora || "Hoje"}
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  )}
+
+  {tela === "contas" && (
+    <div style={{ padding: "20px" }}>
+      <div style={card}>
+        <h2>📄 Contas Fixas</h2>
+
+        <input
+          style={inputStyle}
+          placeholder="Nome da conta"
+          value={nomeConta}
+          onChange={(e) => setNomeConta(e.target.value)}
+        />
+
+        <div style={{ height: "12px" }} />
+
+        <input
+          style={inputStyle}
+          type="number"
+          placeholder="Valor"
+          value={valorConta}
+          onChange={(e) => setValorConta(e.target.value)}
+        />
+
+        <div style={{ height: "12px" }} />
+
+        <select
+          style={inputStyle}
+          value={categoriaConta}
+          onChange={(e) => setCategoriaConta(e.target.value)}
+        >
+          {Object.keys(categoriasContas).map((cat) => (
+            <option key={cat} value={cat}>
+              {categoriasContas[cat]} {cat}
+            </option>
+          ))}
+        </select>
+
+        <div style={{ height: "16px" }} />
+
+        <button onClick={adicionarConta} style={primaryButtonStyle}>
+          ➕ Adicionar conta
+        </button>
+      </div>
+
+      {contas.map((item, index) => (
+        <div key={index} style={card}>
+          <h3>{categoriasContas[item.categoria]} {item.nome}</h3>
+          <p><strong>{moeda(item.valor)}</strong></p>
+          <button onClick={() => removerConta(index)}>Excluir</button>
+        </div>
+      ))}
+    </div>
+  )}
+
+  {tela === "metas" && (
+    <div style={{ padding: "20px" }}>
+      <div style={card}>
        

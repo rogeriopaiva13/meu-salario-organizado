@@ -19,6 +19,10 @@ export default function App() {
     JSON.parse(localStorage.getItem("gastos")) || []
   );
 
+  const [historico, setHistorico] = useState(
+    JSON.parse(localStorage.getItem("historico")) || []
+  );
+
   const categorias = {
     Alimentação: { icone: "🍔", cor: "#fff3e0", texto: "#e65100" },
     Transporte: { icone: "🚗", cor: "#e3f2fd", texto: "#0D47A1" },
@@ -39,7 +43,17 @@ export default function App() {
   useEffect(() => localStorage.setItem("extra", extra), [extra]);
   useEffect(() => localStorage.setItem("contas", contas), [contas]);
   useEffect(() => localStorage.setItem("meta", meta), [meta]);
-  useEffect(() => localStorage.setItem("gastos", JSON.stringify(gastos)), [gastos]);
+
+  useEffect(() => {
+    localStorage.setItem("gastos", JSON.stringify(gastos));
+  }, [gastos]);
+
+  useEffect(() => {
+    localStorage.setItem(
+      "historico",
+      JSON.stringify(historico)
+    );
+  }, [historico]);
 
   const moeda = (valor) => {
     if (ocultarValores) return "••••••";
@@ -50,13 +64,33 @@ export default function App() {
     });
   };
 
-  const receitas = (Number(salario) || 0) + (Number(extra) || 0);
+  const receitas =
+    (Number(salario) || 0) +
+    (Number(extra) || 0);
+
   const totalGastos = gastos.reduce(
-    (acc, item) => acc + Number(item.valor || 0),
+    (acc, item) =>
+      acc + Number(item.valor || 0),
     0
   );
-  const saidas = (Number(contas) || 0) + totalGastos;
-  const saldo = receitas - saidas;
+
+  const saidas =
+    (Number(contas) || 0) +
+    totalGastos;
+
+  // META DESCONTADA DO SALDO
+  const saldo =
+    receitas -
+    saidas -
+    (Number(meta) || 0);
+
+  const progresso =
+    receitas > 0
+      ? Math.min(
+          (saidas / receitas) * 100,
+          100
+        )
+      : 0;
 
   const status =
     saldo < 0
@@ -64,6 +98,25 @@ export default function App() {
       : saldo <= 300
       ? "🟡 Mês apertado"
       : "🟢 Salário sob controle";
+
+  const gastosPorCategoria = gastos.reduce(
+    (acc, item) => {
+      const categoria =
+        item.categoria || "Outros";
+
+      acc[categoria] =
+        (acc[categoria] || 0) +
+        Number(item.valor || 0);
+
+      return acc;
+    },
+    {}
+  );
+
+  const maiorGastoCategoria = Math.max(
+    ...Object.values(gastosPorCategoria),
+    1
+  );
 
   function adicionarGasto() {
     if (!nomeGasto || !valorGasto) return;
@@ -83,7 +136,72 @@ export default function App() {
   }
 
   function removerGasto(index) {
-    setGastos(gastos.filter((_, i) => i !== index));
+    setGastos(
+      gastos.filter((_, i) => i !== index)
+    );
+  }
+
+  function compartilharProgresso() {
+    const mensagem = `🎯 Meu progresso no Meu Salário Organizado
+
+${status}
+
+💰 Uso do salário:
+${progresso.toFixed(0)}%
+
+🚀 Organize hoje, realize amanhã.`;
+
+    if (navigator.share) {
+      navigator.share({
+        title: "Meu Salário Organizado",
+        text: mensagem,
+      });
+    } else {
+      navigator.clipboard.writeText(
+        mensagem
+      );
+
+      alert(
+        "Mensagem copiada para compartilhar!"
+      );
+    }
+  }
+
+  function resetarMes() {
+    const confirmar = window.confirm(
+      "Deseja realmente apagar os dados do mês?"
+    );
+
+    if (!confirmar) return;
+
+    if (
+      receitas > 0 ||
+      saidas > 0
+    ) {
+      const novoRegistro = {
+        mes: new Date().toLocaleDateString(
+          "pt-BR",
+          {
+            month: "long",
+            year: "numeric",
+          }
+        ),
+
+        receitas,
+        saidas,
+        saldo,
+      };
+
+      setHistorico([
+        novoRegistro,
+        ...historico,
+      ]);
+    }
+
+    setSalario("");
+    setExtra("");
+    setContas("");
+    setGastos([]);
   }
 
   const inputStyle = {
@@ -102,7 +220,8 @@ export default function App() {
     padding: "22px",
     borderRadius: "28px",
     marginBottom: "18px",
-    boxShadow: "0 10px 30px rgba(13,71,161,0.10)",
+    boxShadow:
+      "0 10px 30px rgba(13,71,161,0.10)",
   };
 
   const label = {
@@ -116,7 +235,8 @@ export default function App() {
     return (
       <div
         style={{
-          background: "linear-gradient(180deg,#0D47A1,#06306f)",
+          background:
+            "linear-gradient(180deg,#0D47A1,#06306f)",
           minHeight: "100vh",
           display: "flex",
           justifyContent: "center",
@@ -126,9 +246,19 @@ export default function App() {
         }}
       >
         <div style={{ textAlign: "center" }}>
-          <img src="/logo.png" alt="logo" style={{ width: "120px" }} />
-          <h1>Meu Salário Organizado</h1>
-          <p style={{ color: "#FDD835" }}>Organize hoje, realize amanhã</p>
+          <img
+            src="/logo.png"
+            alt="logo"
+            style={{ width: "120px" }}
+          />
+
+          <h1>
+            Meu Salário Organizado
+          </h1>
+
+          <p style={{ color: "#FDD835" }}>
+            Organize hoje, realize amanhã
+          </p>
         </div>
       </div>
     );
@@ -145,7 +275,8 @@ export default function App() {
     >
       <div
         style={{
-          background: "linear-gradient(180deg,#0D47A1,#063B88)",
+          background:
+            "linear-gradient(180deg,#0D47A1,#063B88)",
           color: "white",
           padding: "28px 22px 34px",
           borderBottomLeftRadius: "38px",
@@ -162,37 +293,60 @@ export default function App() {
           }}
         />
 
-        <h2 style={{ fontSize: "34px" }}>👋 Olá{nome ? `, ${nome}` : ""}!</h2>
+        <h2 style={{ fontSize: "34px" }}>
+          👋 Olá
+          {nome ? `, ${nome}` : ""}!
+        </h2>
 
-        <p style={{ fontSize: "18px", opacity: 0.9 }}>
+        <p
+          style={{
+            fontSize: "18px",
+            opacity: 0.9,
+          }}
+        >
           Vamos organizar seu mês?
         </p>
 
         <button
-          onClick={() => setOcultarValores(!ocultarValores)}
+          onClick={() =>
+            setOcultarValores(
+              !ocultarValores
+            )
+          }
           style={{
             marginTop: "14px",
             padding: "10px 14px",
             borderRadius: "14px",
             border: "none",
-            background: "rgba(255,255,255,0.18)",
+            background:
+              "rgba(255,255,255,0.18)",
             color: "white",
             fontWeight: "bold",
             fontSize: "14px",
           }}
         >
-          {ocultarValores ? "👁 Mostrar" : "🙈 Ocultar"}
+          {ocultarValores
+            ? "👁 Mostrar"
+            : "🙈 Ocultar"}
         </button>
 
         <div
           style={{
-            background: "rgba(255,255,255,0.14)",
+            background:
+              "rgba(255,255,255,0.14)",
             borderRadius: "24px",
             padding: "18px",
             marginTop: "22px",
           }}
         >
-          <p style={{ fontSize: "15px", margin: 0 }}>Saldo disponível</p>
+          <p
+            style={{
+              fontSize: "15px",
+              margin: 0,
+            }}
+          >
+            Saldo disponível
+          </p>
 
           <h1
             style={{
@@ -204,61 +358,241 @@ export default function App() {
             {moeda(saldo)}
           </h1>
 
-          <p style={{ fontSize: "20px", margin: 0 }}>{status}</p>
+          <p
+            style={{
+              fontSize: "20px",
+              margin: 0,
+            }}
+          >
+            {status}
+          </p>
         </div>
       </div>
 
       {tela === "inicio" && (
-        <div style={{ padding: "20px", marginTop: "-10px" }}>
+        <div
+          style={{
+            padding: "20px",
+            marginTop: "-10px",
+          }}
+        >
+          {/* RESUMO */}
           <div style={card}>
-            <p style={label}>💰 Salário</p>
+            <h2>📊 Resumo do mês</h2>
+
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns:
+                  "1fr 1fr",
+                gap: "12px",
+              }}
+            >
+              <div
+                style={{
+                  background: "#e8f1ff",
+                  padding: "14px",
+                  borderRadius: "18px",
+                }}
+              >
+                <small>Entrou</small>
+
+                <h3>
+                  {moeda(receitas)}
+                </h3>
+              </div>
+
+              <div
+                style={{
+                  background: "#fff8d6",
+                  padding: "14px",
+                  borderRadius: "18px",
+                }}
+              >
+                <small>Saiu</small>
+
+                <h3>
+                  {moeda(saidas)}
+                </h3>
+              </div>
+            </div>
+
+            <div
+              style={{
+                marginTop: "18px",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent:
+                    "space-between",
+                }}
+              >
+                <span>
+                  Uso do salário
+                </span>
+
+                <strong>
+                  {progresso.toFixed(0)}%
+                </strong>
+              </div>
+
+              <div
+                style={{
+                  background: "#e5e7eb",
+                  height: "14px",
+                  borderRadius: "20px",
+                  overflow: "hidden",
+                  marginTop: "8px",
+                }}
+              >
+                <div
+                  style={{
+                    width: `${progresso}%`,
+                    height: "14px",
+                    background:
+                      progresso > 80
+                        ? "#d32f2f"
+                        : "#FDD835",
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* CAMPOS */}
+          <div style={card}>
+            <p style={label}>
+              💰 Salário
+            </p>
+
             <input
               style={inputStyle}
               type="text"
               inputMode="decimal"
-              value={ocultarValores ? "•••••" : salario}
-              onChange={(e) => setSalario(e.target.value)}
-              placeholder="0,00"
+              value={
+                ocultarValores
+                  ? "•••••"
+                  : salario
+              }
+              onChange={(e) =>
+                setSalario(
+                  e.target.value
+                )
+              }
             />
 
-            <div style={{ height: "16px" }} />
-
-            <p style={label}>✨ Extra</p>
-            <input
-              style={inputStyle}
-              type="text"
-              inputMode="decimal"
-              value={ocultarValores ? "•••••" : extra}
-              onChange={(e) => setExtra(e.target.value)}
-              placeholder="0,00"
+            <div
+              style={{ height: "16px" }}
             />
 
-            <div style={{ height: "16px" }} />
+            <p style={label}>
+              ✨ Extra
+            </p>
 
-            <p style={label}>📄 Contas Fixas</p>
             <input
               style={inputStyle}
               type="text"
               inputMode="decimal"
-              value={ocultarValores ? "•••••" : contas}
-              onChange={(e) => setContas(e.target.value)}
-              placeholder="0,00"
+              value={
+                ocultarValores
+                  ? "•••••"
+                  : extra
+              }
+              onChange={(e) =>
+                setExtra(
+                  e.target.value
+                )
+              }
+            />
+
+            <div
+              style={{ height: "16px" }}
+            />
+
+            <p style={label}>
+              📄 Contas Fixas
+            </p>
+
+            <input
+              style={inputStyle}
+              type="text"
+              inputMode="decimal"
+              value={
+                ocultarValores
+                  ? "•••••"
+                  : contas
+              }
+              onChange={(e) =>
+                setContas(
+                  e.target.value
+                )
+              }
             />
           </div>
 
+          {/* META */}
           <div style={card}>
-            <p style={label}>🎯 Meta do mês</p>
+            <p style={label}>
+              🎯 Meta do mês
+            </p>
+
             <input
               style={inputStyle}
               type="text"
-              value={ocultarValores ? "•••••" : meta}
-              onChange={(e) => setMeta(e.target.value)}
-              placeholder="500"
+              value={
+                ocultarValores
+                  ? "•••••"
+                  : meta
+              }
+              onChange={(e) =>
+                setMeta(
+                  e.target.value
+                )
+              }
             />
           </div>
+
+          {/* BOTÕES */}
+          <button
+            onClick={
+              compartilharProgresso
+            }
+            style={{
+              width: "100%",
+              padding: "16px",
+              borderRadius: "18px",
+              border: "none",
+              background: "#0D47A1",
+              color: "white",
+              fontWeight: "bold",
+              fontSize: "16px",
+              marginBottom: "12px",
+            }}
+          >
+            📤 Compartilhar progresso
+          </button>
+
+          <button
+            onClick={resetarMes}
+            style={{
+              width: "100%",
+              padding: "16px",
+              borderRadius: "18px",
+              border: "none",
+              background: "#111827",
+              color: "white",
+              fontWeight: "bold",
+              fontSize: "16px",
+            }}
+          >
+            🔄 Resetar mês
+          </button>
         </div>
       )}
 
+      {/* GASTOS */}
       {tela === "gastos" && (
         <div style={{ padding: "20px" }}>
           <div style={card}>
@@ -267,39 +601,67 @@ export default function App() {
             <input
               style={inputStyle}
               value={nomeGasto}
-              onChange={(e) => setNomeGasto(e.target.value)}
+              onChange={(e) =>
+                setNomeGasto(
+                  e.target.value
+                )
+              }
               placeholder="Nome do gasto"
             />
 
-            <div style={{ height: "12px" }} />
+            <div
+              style={{ height: "12px" }}
+            />
 
             <input
               style={inputStyle}
               type="number"
-              inputMode="decimal"
               value={valorGasto}
-              onChange={(e) => setValorGasto(e.target.value)}
+              onChange={(e) =>
+                setValorGasto(
+                  e.target.value
+                )
+              }
               placeholder="Valor"
             />
 
-            <div style={{ height: "12px" }} />
+            <div
+              style={{ height: "12px" }}
+            />
 
             <select
               style={inputStyle}
               value={categoriaGasto}
-              onChange={(e) => setCategoriaGasto(e.target.value)}
+              onChange={(e) =>
+                setCategoriaGasto(
+                  e.target.value
+                )
+              }
             >
-              {Object.keys(categorias).map((cat) => (
-                <option key={cat} value={cat}>
-                  {categorias[cat].icone} {cat}
+              {Object.keys(
+                categorias
+              ).map((cat) => (
+                <option
+                  key={cat}
+                  value={cat}
+                >
+                  {
+                    categorias[cat]
+                      .icone
+                  }{" "}
+                  {cat}
                 </option>
               ))}
             </select>
 
-            <div style={{ height: "16px" }} />
+            <div
+              style={{ height: "16px" }}
+            />
 
             <button
-              onClick={adicionarGasto}
+              onClick={
+                adicionarGasto
+              }
               style={{
                 width: "100%",
                 padding: "16px",
@@ -308,119 +670,172 @@ export default function App() {
                 background: "#0D47A1",
                 color: "white",
                 fontWeight: "bold",
-                fontSize: "16px",
               }}
             >
               ➕ Adicionar gasto
             </button>
           </div>
 
-          {gastos.length === 0 && (
-            <div style={card}>
-              <p>Nenhum gasto cadastrado ainda.</p>
-            </div>
-          )}
+          {/* GRÁFICO */}
+          <div style={card}>
+            <h2>
+              📊 Gastos por categoria
+            </h2>
 
-          {gastos.map((item, index) => {
-            const cat = categorias[item.categoria] || categorias.Outros;
+            {Object.entries(
+              gastosPorCategoria
+            ).map(
+              ([categoria, valor]) => {
+                const cat =
+                  categorias[
+                    categoria
+                  ];
 
-            return (
-              <div
-                key={index}
-                style={{
-                  ...card,
-                  background: "white",
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    gap: "12px",
-                  }}
-                >
-                  <div>
-                    <span
-                      style={{
-                        display: "inline-block",
-                        background: cat.cor,
-                        color: cat.texto,
-                        padding: "6px 12px",
-                        borderRadius: "999px",
-                        fontSize: "13px",
-                        fontWeight: "bold",
-                        marginBottom: "8px",
-                      }}
-                    >
-                      {cat.icone} {item.categoria || "Outros"}
-                    </span>
+                const largura =
+                  (valor /
+                    maiorGastoCategoria) *
+                  100;
 
-                    <h3 style={{ margin: "6px 0" }}>{item.nome}</h3>
-
-                    <p
-                      style={{
-                        color: cat.texto,
-                        fontWeight: "bold",
-                        fontSize: "18px",
-                        margin: 0,
-                      }}
-                    >
-                      {moeda(item.valor)}
-                    </p>
-                  </div>
-
-                  <button
-                    onClick={() => removerGasto(index)}
+                return (
+                  <div
+                    key={categoria}
                     style={{
-                      border: "none",
-                      background: "#ffebee",
-                      color: "#c62828",
-                      borderRadius: "12px",
-                      padding: "10px",
-                      fontWeight: "bold",
+                      marginBottom:
+                        "16px",
                     }}
                   >
-                    Excluir
-                  </button>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
+                    <div
+                      style={{
+                        display:
+                          "flex",
+                        justifyContent:
+                          "space-between",
+                      }}
+                    >
+                      <strong>
+                        {cat.icone}{" "}
+                        {categoria}
+                      </strong>
 
-      {tela === "metas" && (
-        <div style={{ padding: "20px" }}>
-          <div style={card}>
-            <h2>🎯 Metas</h2>
+                      <strong>
+                        {moeda(valor)}
+                      </strong>
+                    </div>
 
-            <p style={{ fontSize: "18px" }}>Sua meta atual é:</p>
-
-            <h1 style={{ color: "#0D47A1", fontSize: "42px" }}>
-              {moeda(meta)}
-            </h1>
+                    <div
+                      style={{
+                        width:
+                          "100%",
+                        height: "16px",
+                        background:
+                          "#eceff1",
+                        borderRadius:
+                          "20px",
+                        overflow:
+                          "hidden",
+                        marginTop:
+                          "6px",
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: `${largura}%`,
+                          height:
+                            "16px",
+                          background:
+                            cat.texto,
+                        }}
+                      />
+                    </div>
+                  </div>
+                );
+              }
+            )}
           </div>
         </div>
       )}
 
+      {/* HISTÓRICO */}
+      {tela === "historico" && (
+        <div style={{ padding: "20px" }}>
+          <div style={card}>
+            <h2>📅 Histórico</h2>
+
+            {historico.length ===
+              0 && (
+              <p>
+                Nenhum mês salvo ainda.
+              </p>
+            )}
+
+            {historico.map(
+              (item, index) => (
+                <div
+                  key={index}
+                  style={{
+                    borderBottom:
+                      "1px solid #eee",
+                    padding:
+                      "12px 0",
+                  }}
+                >
+                  <strong>
+                    📆 {item.mes}
+                  </strong>
+
+                  <p>
+                    Receitas:{" "}
+                    {moeda(
+                      item.receitas
+                    )}
+                  </p>
+
+                  <p>
+                    Saídas:{" "}
+                    {moeda(
+                      item.saidas
+                    )}
+                  </p>
+
+                  <p>
+                    Saldo:{" "}
+                    <strong>
+                      {moeda(
+                        item.saldo
+                      )}
+                    </strong>
+                  </p>
+                </div>
+              )
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* PERFIL */}
       {tela === "perfil" && (
         <div style={{ padding: "20px" }}>
           <div style={card}>
             <h2>👤 Perfil</h2>
 
-            <p style={label}>Nome</p>
+            <p style={label}>
+              Nome
+            </p>
 
             <input
               style={inputStyle}
               value={nome}
-              onChange={(e) => setNome(e.target.value)}
-              placeholder="Digite seu nome"
+              onChange={(e) =>
+                setNome(
+                  e.target.value
+                )
+              }
             />
           </div>
         </div>
       )}
 
+      {/* MENU */}
       <div
         style={{
           position: "fixed",
@@ -429,22 +844,30 @@ export default function App() {
           right: 0,
           background: "white",
           display: "flex",
-          justifyContent: "space-around",
+          justifyContent:
+            "space-around",
           alignItems: "center",
           padding: "14px 0",
-          borderTop: "1px solid #dbe3f1",
-          boxShadow: "0 -5px 20px rgba(0,0,0,0.06)",
+          borderTop:
+            "1px solid #dbe3f1",
+          boxShadow:
+            "0 -5px 20px rgba(0,0,0,0.06)",
           zIndex: 999,
         }}
       >
         <button
-          onClick={() => setTela("inicio")}
+          onClick={() =>
+            setTela("inicio")
+          }
           style={{
-            background: "transparent",
+            background:
+              "transparent",
             border: "none",
-            color: tela === "inicio" ? "#0D47A1" : "#7b8794",
+            color:
+              tela === "inicio"
+                ? "#0D47A1"
+                : "#7b8794",
             fontWeight: "bold",
-            fontSize: "14px",
           }}
         >
           🏠
@@ -453,13 +876,18 @@ export default function App() {
         </button>
 
         <button
-          onClick={() => setTela("gastos")}
+          onClick={() =>
+            setTela("gastos")
+          }
           style={{
-            background: "transparent",
+            background:
+              "transparent",
             border: "none",
-            color: tela === "gastos" ? "#0D47A1" : "#7b8794",
+            color:
+              tela === "gastos"
+                ? "#0D47A1"
+                : "#7b8794",
             fontWeight: "bold",
-            fontSize: "14px",
           }}
         >
           💸
@@ -468,28 +896,39 @@ export default function App() {
         </button>
 
         <button
-          onClick={() => setTela("metas")}
+          onClick={() =>
+            setTela("historico")
+          }
           style={{
-            background: "transparent",
+            background:
+              "transparent",
             border: "none",
-            color: tela === "metas" ? "#0D47A1" : "#7b8794",
+            color:
+              tela ===
+              "historico"
+                ? "#0D47A1"
+                : "#7b8794",
             fontWeight: "bold",
-            fontSize: "14px",
           }}
         >
-          🎯
+          📅
           <br />
-          Metas
+          Histórico
         </button>
 
         <button
-          onClick={() => setTela("perfil")}
+          onClick={() =>
+            setTela("perfil")
+          }
           style={{
-            background: "transparent",
+            background:
+              "transparent",
             border: "none",
-            color: tela === "perfil" ? "#0D47A1" : "#7b8794",
+            color:
+              tela === "perfil"
+                ? "#0D47A1"
+                : "#7b8794",
             fontWeight: "bold",
-            fontSize: "14px",
           }}
         >
           👤
@@ -499,4 +938,4 @@ export default function App() {
       </div>
     </div>
   );
-             }
+}

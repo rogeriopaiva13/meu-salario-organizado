@@ -66,6 +66,14 @@ export default function App() {
     ? "🔴 Seu saldo livre ficou negativo."
     : "🟢 Continue assim! Seu mês está saudável.";
     saldo < 0 ? "🔴 Mês no vermelho" : saldo <= 300 ? "🟡 Mês apertado" : "🟢 Salário sob controle";
+  const alerta =
+  progresso >= 100
+    ? "🚨 Você ultrapassou seu limite do mês."
+    : progresso >= 80
+    ? "⚠️ Atenção! Você já usou mais de 80%."
+    : saldo <= 0
+    ? "🔴 Seu saldo livre ficou negativo."
+    : "🟢 Continue assim! Seu mês está saudável.";
 
   const gastosPorCategoria = gastos.reduce((acc, item) => {
     const categoria = item.categoria || "Outros";

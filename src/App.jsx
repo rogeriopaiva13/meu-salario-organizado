@@ -66,8 +66,7 @@ setUsuario(null);
 }
 });
 
-return () => unsubscribe();  
-
+return () => unsubscribe();
 
 }, []);
 
@@ -151,8 +150,7 @@ try {
 }  
 
 setNomeGasto("");  
-setValorGasto("");  
-
+setValorGasto("");
 
 }
 
@@ -169,8 +167,7 @@ setContas([
 ]);  
 
 setNomeConta("");  
-setValorConta("");  
-
+setValorConta("");
 
 }
 
@@ -216,11 +213,9 @@ fontSize: "11px",
 boxShadow: tela === id ? "0 6px 14px rgba(13,71,161,0.12)" : "none",
 }}
 >
-<div style={{ fontSize: "20px", lineHeight: "20px" }}>{icon}
-
-{label}
-
-
+<div style={{ fontSize: "20px", lineHeight: "20px" }}>{icon}</div>
+<div>{label}</div>
+</button>
 );
 
 if (loading) {
@@ -238,13 +233,10 @@ fontFamily: "Arial",
 >
 <div style={{ textAlign: "center" }}>
 <img src="/logo.png" alt="logo" style={{ width: "120px" }} />
-
-Meu Salário Organizado
-
-<p style={{ color: "#FDD835" }}>Organize hoje, realize amanhã
-
-
-
+<h1>Meu Salário Organizado</h1>
+<p style={{ color: "#FDD835" }}>Organize hoje, realize amanhã</p>
+</div>
+</div>
 );
 }
 
@@ -272,7 +264,7 @@ alt="logo"
 style={{ width: "220px", display: "block", margin: "0 auto 22px" }}
 />
 
-    <h2 style={{ fontSize: "30px", margin: 0 }}>  
+<h2 style={{ fontSize: "30px", margin: 0 }}>  
       👋 Olá{usuario?.nome ? `, ${usuario.nome}` : nome ? `, ${nome}` : ""}!  
     </h2>  
 
@@ -611,9 +603,7 @@ style={{ width: "220px", display: "block", margin: "0 auto 22px" }}
     {navItem("metas", "🎯", "Metas")}  
     {navItem("perfil", "👤", "Perfil")}  
   </div>  
-</div>  
-
+</div>
 
 );
 }
-

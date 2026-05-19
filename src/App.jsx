@@ -29,6 +29,7 @@ export default function App() {
 
   const [gastos, setGastos] = useState(JSON.parse(localStorage.getItem("gastos")) || []);
   const [contas, setContas] = useState(JSON.parse(localStorage.getItem("contasLista")) || []);
+  const [historico, setHistorico] = useState(JSON.parse(localStorage.getItem("historicoFinanceiro")) || []);
 
   const categorias = {
     Alimentação: { icone: "🍔", cor: "#fff3e0", texto: "#e65100" },
@@ -62,15 +63,11 @@ export default function App() {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setUsuario({
-          nome: user.displayName,
-          email: user.email,
-          foto: user.photoURL,
-        });
-      } else {
-        setUsuario(null);
-      }
+      setUsuario(
+        user
+          ? { nome: user.displayName, email: user.email, foto: user.photoURL }
+          : null
+      );
     });
 
     return () => unsubscribe();
@@ -86,6 +83,7 @@ export default function App() {
   useEffect(() => localStorage.setItem("meta", meta), [meta]);
   useEffect(() => localStorage.setItem("gastos", JSON.stringify(gastos)), [gastos]);
   useEffect(() => localStorage.setItem("contasLista", JSON.stringify(contas)), [contas]);
+  useEffect(() => localStorage.setItem("historicoFinanceiro", JSON.stringify(historico)), [historico]);
 
   const moeda = (valor) => {
     if (ocultarValores) return "••••••";
@@ -198,6 +196,38 @@ export default function App() {
     const confirmar = window.confirm(`Adicionar ${moeda(meta)} ao valor guardado da meta?`);
     if (!confirmar) return;
     setValorGuardado(String(totalGuardado + Number(meta || 0)));
+  }
+
+  function iniciarNovoMes() {
+    const confirmar = window.confirm("Deseja fechar o mês atual e iniciar um novo?");
+    if (!confirmar) return;
+
+    const agora = new Date();
+
+    const novoHistorico = {
+      mes: agora.toLocaleDateString("pt-BR", {
+        month: "long",
+        year: "numeric",
+      }),
+      entradas: receitas,
+      gastos: totalGastos,
+      contas: totalContas,
+      metaMensal: Number(meta) || 0,
+      saldo,
+      criadoEm: agora.toISOString(),
+    };
+
+    setHistorico([novoHistorico, ...historico]);
+
+    setGastos([]);
+    setContas([]);
+    setSalario("");
+    setExtra("");
+
+    localStorage.removeItem("gastos");
+    localStorage.removeItem("contasLista");
+    localStorage.removeItem("salario");
+    localStorage.removeItem("extra");
   }
 
   const inputStyle = {
@@ -745,6 +775,36 @@ export default function App() {
         </div>
       )}
 
+      {tela === "historico" && (
+        <div style={{ padding: "20px" }}>
+          <div style={card}>
+            <h2>📈 Histórico Financeiro</h2>
+
+            {historico.length === 0 && <p>Nenhum mês salvo ainda.</p>}
+
+            {historico.map((item, index) => (
+              <div
+                key={index}
+                style={{
+                  background: "#f7faff",
+                  padding: "18px",
+                  borderRadius: "20px",
+                  marginTop: "14px",
+                  border: "1px solid #dde7ff",
+                }}
+              >
+                <h3 style={{ color: "#0D47A1" }}>📅 {item.mes}</h3>
+                <p>💰 Entradas: <strong>{moeda(item.entradas)}</strong></p>
+                <p>💸 Gastos: <strong>{moeda(item.gastos)}</strong></p>
+                <p>📄 Contas: <strong>{moeda(item.contas)}</strong></p>
+                <p>🎯 Meta: <strong>{moeda(item.metaMensal)}</strong></p>
+                <p>🏦 Saldo final: <strong>{moeda(item.saldo)}</strong></p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {tela === "perfil" && (
         <div style={{ padding: "20px" }}>
           <div style={card}>
@@ -756,6 +816,23 @@ export default function App() {
               onChange={(e) => setNome(e.target.value)}
               placeholder="Digite seu nome"
             />
+
+            <div style={{ height: "16px" }} />
+
+            <button
+              onClick={iniciarNovoMes}
+              style={{
+                width: "100%",
+                padding: "16px",
+                borderRadius: "18px",
+                border: "none",
+                background: "#d32f2f",
+                color: "white",
+                fontWeight: "bold",
+              }}
+            >
+              🔄 Iniciar novo mês
+            </button>
           </div>
         </div>
       )}
@@ -776,6 +853,7 @@ export default function App() {
           border: "1px solid #e5eaf3",
           zIndex: 999,
           backdropFilter: "blur(10px)",
+          overflowX: "auto",
         }}
       >
         {navItem("inicio", "🏠", "Início")}
@@ -783,6 +861,7 @@ export default function App() {
         {navItem("gastos", "💸", "Gastos")}
         {navItem("contas", "📄", "Contas")}
         {navItem("metas", "🎯", "Metas")}
+        {navItem("historico", "📈", "Hist.")}
         {navItem("perfil", "👤", "Perfil")}
       </div>
     </div>

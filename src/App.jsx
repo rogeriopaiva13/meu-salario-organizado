@@ -57,6 +57,14 @@ export default function App() {
   const progresso = receitas > 0 ? Math.min((saidas / receitas) * 100, 100) : 0;
 
   const status =
+    const alerta =
+  progresso >= 100
+    ? "🚨 Você ultrapassou seu limite do mês."
+    : progresso >= 80
+    ? "⚠️ Atenção! Você já usou mais de 80%."
+    : saldo <= 0
+    ? "🔴 Seu saldo livre ficou negativo."
+    : "🟢 Continue assim! Seu mês está saudável.";
     saldo < 0 ? "🔴 Mês no vermelho" : saldo <= 300 ? "🟡 Mês apertado" : "🟢 Salário sob controle";
 
   const gastosPorCategoria = gastos.reduce((acc, item) => {
@@ -227,6 +235,16 @@ ${progresso.toFixed(0)}%
           marginTop: "22px",
         }}>
           <p style={{ fontSize: "15px", margin: 0 }}>Saldo livre após meta</p>
+          <p
+  style={{
+    marginTop: "12px",
+    fontSize: "14px",
+    opacity: 0.95,
+    lineHeight: "20px",
+  }}
+>
+  {alerta}
+</p>
 
           <h1 style={{ color: "#FDD835", fontSize: "42px", margin: "14px 0" }}>
             {moeda(saldo)}

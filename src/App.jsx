@@ -19,6 +19,8 @@ export default function App() {
   const [valorGuardado, setValorGuardado] = useState(localStorage.getItem("valorGuardado") || "0");
   const [meta, setMeta] = useState(localStorage.getItem("meta") || "500");
 
+  const [xp, setXp] = useState(Number(localStorage.getItem("xp")) || 0);
+
   const [nomeGasto, setNomeGasto] = useState("");
   const [valorGasto, setValorGasto] = useState("");
   const [categoriaGasto, setCategoriaGasto] = useState("Alimentação");
@@ -81,6 +83,7 @@ export default function App() {
   useEffect(() => localStorage.setItem("valorMetaTotal", valorMetaTotal), [valorMetaTotal]);
   useEffect(() => localStorage.setItem("valorGuardado", valorGuardado), [valorGuardado]);
   useEffect(() => localStorage.setItem("meta", meta), [meta]);
+  useEffect(() => localStorage.setItem("xp", String(xp)), [xp]);
   useEffect(() => localStorage.setItem("gastos", JSON.stringify(gastos)), [gastos]);
   useEffect(() => localStorage.setItem("contasLista", JSON.stringify(contas)), [contas]);
   useEffect(() => localStorage.setItem("historicoFinanceiro", JSON.stringify(historico)), [historico]);
@@ -107,25 +110,21 @@ export default function App() {
   const mesesRestantes = Number(meta) > 0 ? Math.ceil(faltaMeta / Number(meta)) : 0;
   const metaVisual = metasOpcoes[tipoMeta] || metasOpcoes.Outros;
 
-  const pontos = Math.max(
-    0,
-    Math.floor(
-      Number(valorGuardado || 0) / 100 +
-        historico.length * 50 -
-        totalGastos / 500
-    )
-  );
+  let nivel = "🥉 Bronze";
+  let proximoNivel = 500;
 
-  const nivel =
-    pontos >= 1000
-      ? "👑 Mestre Financeiro"
-      : pontos >= 600
-      ? "💎 Investidor"
-      : pontos >= 300
-      ? "🚀 Organizado"
-      : pontos >= 100
-      ? "🔥 Iniciante"
-      : "🌱 Começando";
+  if (xp >= 2000) {
+    nivel = "💎 Diamante";
+    proximoNivel = 2000;
+  } else if (xp >= 1000) {
+    nivel = "🥇 Ouro";
+    proximoNivel = 2000;
+  } else if (xp >= 500) {
+    nivel = "🥈 Prata";
+    proximoNivel = 1000;
+  }
+
+  const progressoXp = Math.min((xp / proximoNivel) * 100, 100);
 
   const status =
     saldo < 0
@@ -142,6 +141,7 @@ export default function App() {
       : saldo <= 0
       ? "🔴 Seu saldo livre ficou negativo."
       : "🟢 Continue assim! Seu mês está saudável.";
+
   async function loginGoogle() {
     try {
       await signInWithPopup(auth, provider);
@@ -216,6 +216,7 @@ export default function App() {
     if (!confirmar) return;
 
     setValorGuardado(String(totalGuardado + Number(meta || 0)));
+    setXp((prev) => prev + 50);
   }
 
   function iniciarNovoMes() {
@@ -238,6 +239,10 @@ export default function App() {
     };
 
     setHistorico([novoHistorico, ...historico]);
+
+    if (saldo > 0) setXp((prev) => prev + 150);
+    if (progresso < 70) setXp((prev) => prev + 100);
+    if (progressoMeta >= 100) setXp((prev) => prev + 500);
 
     setGastos([]);
     setContas([]);
@@ -305,10 +310,474 @@ export default function App() {
         <div style={{ textAlign: "center" }}>
           <img src="/logo.png" alt="logo" style={{ width: "120px" }} />
           <h1>Meu Salário Organizado</h1>
-          <p style={{ color: "#FDD835" }}>
-            Organize hoje, realize amanhã
-          </p>
+          <p style={{ color: "#FDD835" }}>Organize hoje, realize amanhã</p>
         </div>
       </div>
     );
   }
+
+  return (
+    <div style={{ background: "#eef3fb", minHeight: "100vh", paddingBottom: "120px", fontFamily: "Arial" }}>
+      <div
+        style={{
+          background: "linear-gradient(180deg,#0D47A1,#063B88)",
+          color: "white",
+          padding: "28px 22px 34px",
+          borderBottomLeftRadius: "38px",
+          borderBottomRightRadius: "38px",
+        }}
+      >
+        <img src="/logo-horizontal.png" alt="logo" style={{ width: "220px", display: "block", margin: "0 auto 22px" }} />
+
+        <h2 style={{ fontSize: "30px", margin: 0 }}>
+          👋 Olá{usuario?.nome ? `, ${usuario.nome}` : nome ? `, ${nome}` : ""}!
+        </h2>
+
+        <p style={{ fontSize: "17px", opacity: 0.9 }}>Vamos organizar seu mês?</p>
+
+        <button
+          onClick={() => setOcultarValores(!ocultarValores)}
+          style={{
+            padding: "10px 14px",
+            borderRadius: "14px",
+            border: "none",
+            background: "rgba(255,255,255,0.18)",
+            color: "white",
+            fontWeight: "bold",
+          }}
+        >
+          {ocultarValores ? "👁 Mostrar" : "🙈 Ocultar"}
+        </button>
+
+        {!usuario ? (
+          <button
+            onClick={loginGoogle}
+            style={{
+              marginTop: "14px",
+              width: "100%",
+              padding: "14px",
+              borderRadius: "16px",
+              border: "none",
+              background: "white",
+              color: "#0D47A1",
+              fontWeight: "bold",
+              fontSize: "15px",
+            }}
+          >
+            🔐 Entrar com Google
+          </button>
+        ) : (
+          <div
+            style={{
+              marginTop: "14px",
+              background: "rgba(255,255,255,0.18)",
+              padding: "12px",
+              borderRadius: "18px",
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+            }}
+          >
+            {usuario.foto && <img src={usuario.foto} alt="foto" style={{ width: "38px", height: "38px", borderRadius: "50%" }} />}
+
+            <div style={{ flex: 1 }}>
+              <p style={{ margin: 0, fontWeight: "bold" }}>{usuario.nome}</p>
+              <p style={{ margin: "3px 0 0", fontSize: "12px" }}>{usuario.email}</p>
+            </div>
+
+            <button
+              onClick={logoutGoogle}
+              style={{
+                border: "none",
+                background: "#d32f2f",
+                color: "white",
+                padding: "8px 10px",
+                borderRadius: "10px",
+                fontWeight: "bold",
+              }}
+            >
+              Sair
+            </button>
+          </div>
+        )}
+
+        <div
+          style={{
+            background: "rgba(255,255,255,0.14)",
+            borderRadius: "24px",
+            padding: "18px",
+            marginTop: "22px",
+          }}
+        >
+          <p style={{ fontSize: "15px", margin: 0 }}>Saldo livre após meta</p>
+
+          <h1 style={{ color: "#FDD835", fontSize: "42px", margin: "14px 0" }}>
+            {moeda(saldo)}
+          </h1>
+
+          <p style={{ fontSize: "20px", margin: 0 }}>{status}</p>
+
+          <p style={{ marginTop: "12px", fontSize: "14px", opacity: 0.95 }}>
+            {alerta}
+          </p>
+
+          <div style={{ background: "rgba(255,255,255,0.14)", padding: "14px", borderRadius: "18px", marginTop: "14px" }}>
+            <p style={{ margin: 0, fontSize: "14px" }}>🏆 {nivel}</p>
+            <h3 style={{ margin: "6px 0" }}>⭐ {xp} pontos</h3>
+
+            <div style={{ width: "100%", height: "12px", background: "rgba(255,255,255,0.22)", borderRadius: "999px", overflow: "hidden" }}>
+              <div
+                style={{
+                  width: `${progressoXp}%`,
+                  height: "12px",
+                  background: "#FDD835",
+                  borderRadius: "999px",
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {tela === "inicio" && (
+        <div style={{ padding: "20px", marginTop: "-10px" }}>
+          <div style={card}>
+            <h2>📊 Resumo</h2>
+            <p>Entradas: <strong>{moeda(receitas)}</strong></p>
+            <p>Saídas: <strong>{moeda(saidas)}</strong></p>
+            <p>Meta reservada: <strong>{moeda(meta)}</strong></p>
+            <p>Uso do salário: <strong>{progresso.toFixed(0)}%</strong></p>
+          </div>
+
+          <div style={card}>
+            <h2>{metaVisual.icone} {nomeMeta}</h2>
+            <p>Objetivo: <strong>{moeda(valorMetaTotal)}</strong></p>
+            <p>Guardado: <strong>{moeda(valorGuardado)}</strong></p>
+            <p>Falta: <strong>{moeda(faltaMeta)}</strong></p>
+
+            <div style={{ width: "100%", height: "18px", background: "#e5e7eb", borderRadius: "999px", overflow: "hidden", marginTop: "12px" }}>
+              <div
+                style={{
+                  width: `${progressoMeta}%`,
+                  height: "18px",
+                  background: "linear-gradient(90deg,#0D47A1,#42a5f5)",
+                  borderRadius: "999px",
+                }}
+              />
+            </div>
+
+            <p style={{ textAlign: "center", fontWeight: "bold", color: "#0D47A1" }}>
+              {progressoMeta.toFixed(1)}% concluído
+            </p>
+          </div>
+        </div>
+      )}
+
+      {tela === "entradas" && (
+        <div style={{ padding: "20px" }}>
+          <div style={card}>
+            <h2>💰 Entradas</h2>
+
+            <p>Salário</p>
+            <input style={inputStyle} value={ocultarValores ? "•••••" : salario} onChange={(e) => setSalario(e.target.value)} inputMode="decimal" />
+
+            <div style={{ height: "14px" }} />
+
+            <p>Extra</p>
+            <input style={inputStyle} value={ocultarValores ? "•••••" : extra} onChange={(e) => setExtra(e.target.value)} inputMode="decimal" />
+          </div>
+        </div>
+      )}
+
+      {tela === "gastos" && (
+        <div style={{ padding: "20px" }}>
+          <div style={card}>
+            <h2>💸 Gastos</h2>
+
+            <input style={inputStyle} placeholder="Nome do gasto" value={nomeGasto} onChange={(e) => setNomeGasto(e.target.value)} />
+
+            <div style={{ height: "12px" }} />
+
+            <input style={inputStyle} type="number" placeholder="Valor" value={valorGasto} onChange={(e) => setValorGasto(e.target.value)} />
+
+            <div style={{ height: "12px" }} />
+
+            <select style={inputStyle} value={categoriaGasto} onChange={(e) => setCategoriaGasto(e.target.value)}>
+              {Object.keys(categorias).map((cat) => (
+                <option key={cat} value={cat}>
+                  {categorias[cat].icone} {cat}
+                </option>
+              ))}
+            </select>
+
+            <div style={{ height: "16px" }} />
+
+            <button
+              onClick={adicionarGasto}
+              style={{
+                width: "100%",
+                padding: "16px",
+                borderRadius: "18px",
+                border: "none",
+                background: "#0D47A1",
+                color: "white",
+                fontWeight: "bold",
+              }}
+            >
+              ➕ Adicionar gasto
+            </button>
+          </div>
+
+          {gastos.map((item, index) => {
+            const cat = categorias[item.categoria] || categorias.Outros;
+
+            return (
+              <div key={index} style={card}>
+                <span
+                  style={{
+                    background: cat.cor,
+                    color: cat.texto,
+                    padding: "6px 12px",
+                    borderRadius: "999px",
+                    fontWeight: "bold",
+                    fontSize: "13px",
+                  }}
+                >
+                  {cat.icone} {item.categoria}
+                </span>
+
+                <h3>{item.nome}</h3>
+                <p><strong>{moeda(item.valor)}</strong></p>
+
+                <button onClick={() => removerGasto(index)}>Excluir</button>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {tela === "contas" && (
+        <div style={{ padding: "20px" }}>
+          <div style={card}>
+            <h2>📄 Contas Fixas</h2>
+
+            <input style={inputStyle} placeholder="Nome da conta" value={nomeConta} onChange={(e) => setNomeConta(e.target.value)} />
+
+            <div style={{ height: "12px" }} />
+
+            <input style={inputStyle} type="number" placeholder="Valor" value={valorConta} onChange={(e) => setValorConta(e.target.value)} />
+
+            <div style={{ height: "12px" }} />
+
+            <select style={inputStyle} value={categoriaConta} onChange={(e) => setCategoriaConta(e.target.value)}>
+              {Object.keys(categoriasContas).map((cat) => (
+                <option key={cat} value={cat}>
+                  {categoriasContas[cat]} {cat}
+                </option>
+              ))}
+            </select>
+
+            <div style={{ height: "16px" }} />
+
+            <button
+              onClick={adicionarConta}
+              style={{
+                width: "100%",
+                padding: "16px",
+                borderRadius: "18px",
+                border: "none",
+                background: "#0D47A1",
+                color: "white",
+                fontWeight: "bold",
+              }}
+            >
+              ➕ Adicionar conta
+            </button>
+          </div>
+
+          {contas.map((item, index) => (
+            <div key={index} style={card}>
+              <h3>{categoriasContas[item.categoria]} {item.nome}</h3>
+              <p><strong>{moeda(item.valor)}</strong></p>
+              <button onClick={() => removerConta(index)}>Excluir</button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {tela === "metas" && (
+        <div style={{ padding: "20px" }}>
+          <div style={card}>
+            <h2>🎯 Objetivo financeiro</h2>
+
+            <div style={{ background: metaVisual.cor, padding: "18px", borderRadius: "22px", marginBottom: "20px" }}>
+              <p style={{ margin: 0, color: "#6b7280", fontSize: "13px" }}>Sua meta atual</p>
+
+              <h2 style={{ margin: "8px 0", color: metaVisual.texto }}>
+                {metaVisual.icone} {nomeMeta}
+              </h2>
+
+              <p style={{ margin: 0, fontWeight: "bold", color: metaVisual.texto }}>
+                {progressoMeta.toFixed(1)}% concluído
+              </p>
+            </div>
+
+            <p>Tipo de meta</p>
+            <select style={inputStyle} value={tipoMeta} onChange={(e) => setTipoMeta(e.target.value)}>
+              <option value="Carro">🚗 Carro</option>
+              <option value="Casa">🏠 Casa</option>
+              <option value="Viagem">✈️ Viagem</option>
+              <option value="Outros">🎯 Outros</option>
+            </select>
+
+            <div style={{ height: "14px" }} />
+
+            <p>Nome da meta</p>
+            <input style={inputStyle} value={nomeMeta} onChange={(e) => setNomeMeta(e.target.value)} placeholder="Ex: Comprar meu carro" />
+
+            <div style={{ height: "14px" }} />
+
+            <p>Valor total da meta</p>
+            <input style={inputStyle} value={ocultarValores ? "•••••" : valorMetaTotal} onChange={(e) => setValorMetaTotal(e.target.value)} inputMode="decimal" />
+
+            <div style={{ height: "14px" }} />
+
+            <p>Quanto deseja guardar por mês?</p>
+            <input style={inputStyle} value={ocultarValores ? "•••••" : meta} onChange={(e) => setMeta(e.target.value)} inputMode="decimal" />
+
+            <div style={{ height: "14px" }} />
+
+            <p>Quanto já guardou?</p>
+            <input style={inputStyle} value={ocultarValores ? "•••••" : valorGuardado} onChange={(e) => setValorGuardado(e.target.value)} inputMode="decimal" />
+
+            <div style={{ height: "24px" }} />
+
+            <div style={{ background: "#f8fafc", borderRadius: "22px", padding: "18px", border: "1px solid #e5eaf3" }}>
+              <p>Objetivo: <strong>{moeda(valorMetaTotal)}</strong></p>
+              <p>Guardado: <strong>{moeda(valorGuardado)}</strong></p>
+              <p>Falta: <strong>{moeda(faltaMeta)}</strong></p>
+              <p>Previsão: <strong>{mesesRestantes} meses</strong></p>
+
+              <div style={{ width: "100%", height: "20px", background: "#e5e7eb", borderRadius: "999px", overflow: "hidden", marginTop: "12px" }}>
+                <div
+                  style={{
+                    width: `${progressoMeta}%`,
+                    height: "20px",
+                    background: "linear-gradient(90deg,#0D47A1,#42a5f5)",
+                    borderRadius: "999px",
+                    transition: "0.4s",
+                  }}
+                />
+              </div>
+
+              <p style={{ textAlign: "center", marginTop: "12px", color: "#0D47A1", fontWeight: "bold" }}>
+                {progressoMeta.toFixed(1)}% da meta concluída
+              </p>
+
+              <button
+                onClick={adicionarValorMetaMensal}
+                style={{
+                  width: "100%",
+                  padding: "16px",
+                  borderRadius: "18px",
+                  border: "none",
+                  background: "#0D47A1",
+                  color: "white",
+                  fontWeight: "bold",
+                  marginTop: "14px",
+                }}
+              >
+                ✅ Adicionar meta mensal ao guardado
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {tela === "historico" && (
+        <div style={{ padding: "20px" }}>
+          <div style={card}>
+            <h2>📈 Histórico Financeiro</h2>
+
+            {historico.length === 0 && <p>Nenhum mês salvo ainda.</p>}
+
+            {historico.map((item, index) => (
+              <div
+                key={index}
+                style={{
+                  background: "#f7faff",
+                  padding: "18px",
+                  borderRadius: "20px",
+                  marginTop: "14px",
+                  border: "1px solid #dde7ff",
+                }}
+              >
+                <h3 style={{ color: "#0D47A1" }}>📅 {item.mes}</h3>
+                <p>💰 Entradas: <strong>{moeda(item.entradas)}</strong></p>
+                <p>💸 Gastos: <strong>{moeda(item.gastos)}</strong></p>
+                <p>📄 Contas: <strong>{moeda(item.contas)}</strong></p>
+                <p>🎯 Meta: <strong>{moeda(item.metaMensal)}</strong></p>
+                <p>🏦 Saldo final: <strong>{moeda(item.saldo)}</strong></p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {tela === "perfil" && (
+        <div style={{ padding: "20px" }}>
+          <div style={card}>
+            <h2>👤 Perfil</h2>
+
+            <input style={inputStyle} value={nome} onChange={(e) => setNome(e.target.value)} placeholder="Digite seu nome" />
+
+            <div style={{ height: "16px" }} />
+
+            <button
+              onClick={iniciarNovoMes}
+              style={{
+                width: "100%",
+                padding: "16px",
+                borderRadius: "18px",
+                border: "none",
+                background: "#d32f2f",
+                color: "white",
+                fontWeight: "bold",
+              }}
+            >
+              🔄 Iniciar novo mês
+            </button>
+          </div>
+        </div>
+      )}
+
+      <div
+        style={{
+          position: "fixed",
+          bottom: "12px",
+          left: "10px",
+          right: "10px",
+          background: "rgba(255,255,255,0.96)",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          padding: "8px",
+          borderRadius: "26px",
+          boxShadow: "0 -8px 30px rgba(0,0,0,0.12)",
+          border: "1px solid #e5eaf3",
+          zIndex: 999,
+          backdropFilter: "blur(10px)",
+          overflowX: "auto",
+        }}
+      >
+        {navItem("inicio", "🏠", "Início")}
+        {navItem("entradas", "💰", "Entrada")}
+        {navItem("gastos", "💸", "Gastos")}
+        {navItem("contas", "📄", "Contas")}
+        {navItem("metas", "🎯", "Metas")}
+        {navItem("historico", "📈", "Hist.")}
+        {navItem("perfil", "👤", "Perfil")}
+      </div>
+    </div>
+  );
+}

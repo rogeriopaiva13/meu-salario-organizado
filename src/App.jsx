@@ -5,141 +5,57 @@ export default function App() {
   const [tela, setTela] = useState("inicio");
   const [ocultarValores, setOcultarValores] = useState(false);
 
-  const [nome, setNome] = useState(
-    localStorage.getItem("nome") || ""
-  );
-
-  const [salario, setSalario] = useState(
-    localStorage.getItem("salario") || ""
-  );
-
-  const [extra, setExtra] = useState(
-    localStorage.getItem("extra") || ""
-  );
-
-  const [contas, setContas] = useState(
-    localStorage.getItem("contas") || ""
-  );
-
-  const [meta, setMeta] = useState(
-    localStorage.getItem("meta") || "500"
-  );
+  const [nome, setNome] = useState(localStorage.getItem("nome") || "");
+  const [salario, setSalario] = useState(localStorage.getItem("salario") || "");
+  const [extra, setExtra] = useState(localStorage.getItem("extra") || "");
+  const [contas, setContas] = useState(localStorage.getItem("contas") || "");
+  const [meta, setMeta] = useState(localStorage.getItem("meta") || "500");
 
   const [nomeGasto, setNomeGasto] = useState("");
   const [valorGasto, setValorGasto] = useState("");
-  const [categoriaGasto, setCategoriaGasto] =
-    useState("Alimentação");
+  const [categoriaGasto, setCategoriaGasto] = useState("Alimentação");
 
   const [gastos, setGastos] = useState(
     JSON.parse(localStorage.getItem("gastos")) || []
   );
 
   const categorias = {
-    Alimentação: {
-      icone: "🍔",
-      cor: "#fff3e0",
-      texto: "#e65100",
-    },
-
-    Transporte: {
-      icone: "🚗",
-      cor: "#e3f2fd",
-      texto: "#0D47A1",
-    },
-
-    Casa: {
-      icone: "🏠",
-      cor: "#fff8e1",
-      texto: "#8a6d00",
-    },
-
-    Saúde: {
-      icone: "💊",
-      cor: "#e8f5e9",
-      texto: "#1b5e20",
-    },
-
-    Lazer: {
-      icone: "🎮",
-      cor: "#f3e5f5",
-      texto: "#6a1b9a",
-    },
-
-    Contas: {
-      icone: "📄",
-      cor: "#eeeeee",
-      texto: "#333333",
-    },
-
-    Outros: {
-      icone: "🛒",
-      cor: "#e0f2f1",
-      texto: "#00695c",
-    },
+    Alimentação: { icone: "🍔", cor: "#fff3e0", texto: "#e65100" },
+    Transporte: { icone: "🚗", cor: "#e3f2fd", texto: "#0D47A1" },
+    Casa: { icone: "🏠", cor: "#fff8e1", texto: "#8a6d00" },
+    Saúde: { icone: "💊", cor: "#e8f5e9", texto: "#1b5e20" },
+    Lazer: { icone: "🎮", cor: "#f3e5f5", texto: "#6a1b9a" },
+    Contas: { icone: "📄", cor: "#eeeeee", texto: "#333333" },
+    Outros: { icone: "🛒", cor: "#e0f2f1", texto: "#00695c" },
   };
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 1200);
-
+    const timer = setTimeout(() => setLoading(false), 1200);
     return () => clearTimeout(timer);
   }, []);
 
-  useEffect(() => {
-    localStorage.setItem("nome", nome);
-  }, [nome]);
-
-  useEffect(() => {
-    localStorage.setItem("salario", salario);
-  }, [salario]);
-
-  useEffect(() => {
-    localStorage.setItem("extra", extra);
-  }, [extra]);
-
-  useEffect(() => {
-    localStorage.setItem("contas", contas);
-  }, [contas]);
-
-  useEffect(() => {
-    localStorage.setItem("meta", meta);
-  }, [meta]);
-
-  useEffect(() => {
-    localStorage.setItem(
-      "gastos",
-      JSON.stringify(gastos)
-    );
-  }, [gastos]);
+  useEffect(() => localStorage.setItem("nome", nome), [nome]);
+  useEffect(() => localStorage.setItem("salario", salario), [salario]);
+  useEffect(() => localStorage.setItem("extra", extra), [extra]);
+  useEffect(() => localStorage.setItem("contas", contas), [contas]);
+  useEffect(() => localStorage.setItem("meta", meta), [meta]);
+  useEffect(() => localStorage.setItem("gastos", JSON.stringify(gastos)), [gastos]);
 
   const moeda = (valor) => {
-    if (ocultarValores) {
-      return "R$ •••••";
-    }
+    if (ocultarValores) return "••••••";
 
-    return Number(valor || 0).toLocaleString(
-      "pt-BR",
-      {
-        style: "currency",
-        currency: "BRL",
-      }
-    );
+    return Number(valor || 0).toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    });
   };
 
-  const receitas =
-    (Number(salario) || 0) +
-    (Number(extra) || 0);
-
+  const receitas = (Number(salario) || 0) + (Number(extra) || 0);
   const totalGastos = gastos.reduce(
-    (acc, item) =>
-      acc + Number(item.valor || 0),
+    (acc, item) => acc + Number(item.valor || 0),
     0
   );
-
-  const saidas =
-    (Number(contas) || 0) + totalGastos;
-
+  const saidas = (Number(contas) || 0) + totalGastos;
   const saldo = receitas - saidas;
 
   const status =
@@ -167,9 +83,7 @@ export default function App() {
   }
 
   function removerGasto(index) {
-    setGastos(
-      gastos.filter((_, i) => i !== index)
-    );
+    setGastos(gastos.filter((_, i) => i !== index));
   }
 
   const inputStyle = {
@@ -188,8 +102,7 @@ export default function App() {
     padding: "22px",
     borderRadius: "28px",
     marginBottom: "18px",
-    boxShadow:
-      "0 10px 30px rgba(13,71,161,0.10)",
+    boxShadow: "0 10px 30px rgba(13,71,161,0.10)",
   };
 
   const label = {
@@ -203,8 +116,7 @@ export default function App() {
     return (
       <div
         style={{
-          background:
-            "linear-gradient(180deg,#0D47A1,#06306f)",
+          background: "linear-gradient(180deg,#0D47A1,#06306f)",
           minHeight: "100vh",
           display: "flex",
           justifyContent: "center",
@@ -214,17 +126,9 @@ export default function App() {
         }}
       >
         <div style={{ textAlign: "center" }}>
-          <img
-            src="/logo.png"
-            alt="logo"
-            style={{ width: "120px" }}
-          />
-
+          <img src="/logo.png" alt="logo" style={{ width: "120px" }} />
           <h1>Meu Salário Organizado</h1>
-
-          <p style={{ color: "#FDD835" }}>
-            Organize hoje, realize amanhã
-          </p>
+          <p style={{ color: "#FDD835" }}>Organize hoje, realize amanhã</p>
         </div>
       </div>
     );
@@ -241,8 +145,7 @@ export default function App() {
     >
       <div
         style={{
-          background:
-            "linear-gradient(180deg,#0D47A1,#063B88)",
+          background: "linear-gradient(180deg,#0D47A1,#063B88)",
           color: "white",
           padding: "28px 22px 34px",
           borderBottomLeftRadius: "38px",
@@ -259,163 +162,97 @@ export default function App() {
           }}
         />
 
-        <h2 style={{ fontSize: "38px" }}>
-          👋 Olá!
-        </h2>
+        <h2 style={{ fontSize: "34px" }}>👋 Olá{nome ? `, ${nome}` : ""}!</h2>
 
-        <p
-          style={{
-            fontSize: "18px",
-            opacity: 0.9,
-          }}
-        >
+        <p style={{ fontSize: "18px", opacity: 0.9 }}>
           Vamos organizar seu mês?
         </p>
 
         <button
-          onClick={() =>
-            setOcultarValores(!ocultarValores)
-          }
+          onClick={() => setOcultarValores(!ocultarValores)}
           style={{
-            marginTop: "18px",
-            padding: "14px 18px",
-            borderRadius: "18px",
+            marginTop: "14px",
+            padding: "10px 14px",
+            borderRadius: "14px",
             border: "none",
-            background:
-              "rgba(255,255,255,0.18)",
+            background: "rgba(255,255,255,0.18)",
             color: "white",
             fontWeight: "bold",
-            fontSize: "16px",
+            fontSize: "14px",
           }}
         >
-          {ocultarValores
-            ? "👁 Mostrar valores"
-            : "🙈 Ocultar valores"}
+          {ocultarValores ? "👁 Mostrar" : "🙈 Ocultar"}
         </button>
 
         <div
           style={{
-            background:
-              "rgba(255,255,255,0.14)",
-            borderRadius: "28px",
-            padding: "22px",
-            marginTop: "24px",
+            background: "rgba(255,255,255,0.14)",
+            borderRadius: "24px",
+            padding: "18px",
+            marginTop: "22px",
           }}
         >
-          <p style={{ fontSize: "16px" }}>
-            Saldo disponível
-          </p>
+          <p style={{ fontSize: "15px", margin: 0 }}>Saldo disponível</p>
 
           <h1
             style={{
               color: "#FDD835",
-              fontSize: "56px",
+              fontSize: "42px",
+              margin: "14px 0",
             }}
           >
             {moeda(saldo)}
           </h1>
 
-          <p
-            style={{
-              fontSize: "22px",
-            }}
-          >
-            {status}
-          </p>
+          <p style={{ fontSize: "20px", margin: 0 }}>{status}</p>
         </div>
       </div>
 
       {tela === "inicio" && (
-        <div
-          style={{
-            padding: "20px",
-            marginTop: "-10px",
-          }}
-        >
-          <div style={card}>
-            <p style={label}>👤 Seu nome</p>
-
-            <input
-              style={inputStyle}
-              value={nome}
-              onChange={(e) =>
-                setNome(e.target.value)
-              }
-              placeholder="Digite seu nome"
-            />
-          </div>
-
+        <div style={{ padding: "20px", marginTop: "-10px" }}>
           <div style={card}>
             <p style={label}>💰 Salário</p>
-
             <input
               style={inputStyle}
               type="text"
               inputMode="decimal"
-              value={
-                ocultarValores
-                  ? "•••••"
-                  : salario
-              }
-              onChange={(e) =>
-                setSalario(e.target.value)
-              }
+              value={ocultarValores ? "•••••" : salario}
+              onChange={(e) => setSalario(e.target.value)}
               placeholder="0,00"
             />
 
             <div style={{ height: "16px" }} />
 
             <p style={label}>✨ Extra</p>
-
             <input
               style={inputStyle}
               type="text"
               inputMode="decimal"
-              value={
-                ocultarValores
-                  ? "•••••"
-                  : extra
-              }
-              onChange={(e) =>
-                setExtra(e.target.value)
-              }
+              value={ocultarValores ? "•••••" : extra}
+              onChange={(e) => setExtra(e.target.value)}
               placeholder="0,00"
             />
 
             <div style={{ height: "16px" }} />
 
             <p style={label}>📄 Contas Fixas</p>
-
             <input
               style={inputStyle}
               type="text"
               inputMode="decimal"
-              value={
-                ocultarValores
-                  ? "•••••"
-                  : contas
-              }
-              onChange={(e) =>
-                setContas(e.target.value)
-              }
+              value={ocultarValores ? "•••••" : contas}
+              onChange={(e) => setContas(e.target.value)}
               placeholder="0,00"
             />
           </div>
 
           <div style={card}>
             <p style={label}>🎯 Meta do mês</p>
-
             <input
               style={inputStyle}
               type="text"
-              value={
-                ocultarValores
-                  ? "•••••"
-                  : meta
-              }
-              onChange={(e) =>
-                setMeta(e.target.value)
-              }
+              value={ocultarValores ? "•••••" : meta}
+              onChange={(e) => setMeta(e.target.value)}
               placeholder="500"
             />
           </div>
@@ -430,9 +267,7 @@ export default function App() {
             <input
               style={inputStyle}
               value={nomeGasto}
-              onChange={(e) =>
-                setNomeGasto(e.target.value)
-              }
+              onChange={(e) => setNomeGasto(e.target.value)}
               placeholder="Nome do gasto"
             />
 
@@ -443,9 +278,7 @@ export default function App() {
               type="number"
               inputMode="decimal"
               value={valorGasto}
-              onChange={(e) =>
-                setValorGasto(e.target.value)
-              }
+              onChange={(e) => setValorGasto(e.target.value)}
               placeholder="Valor"
             />
 
@@ -454,17 +287,13 @@ export default function App() {
             <select
               style={inputStyle}
               value={categoriaGasto}
-              onChange={(e) =>
-                setCategoriaGasto(e.target.value)
-              }
+              onChange={(e) => setCategoriaGasto(e.target.value)}
             >
-              {Object.keys(categorias).map(
-                (cat) => (
-                  <option key={cat}>
-                    {cat}
-                  </option>
-                )
-              )}
+              {Object.keys(categorias).map((cat) => (
+                <option key={cat} value={cat}>
+                  {categorias[cat].icone} {cat}
+                </option>
+              ))}
             </select>
 
             <div style={{ height: "16px" }} />
@@ -486,61 +315,78 @@ export default function App() {
             </button>
           </div>
 
-          {gastos.map((item, index) => (
-            <div
-              key={index}
-              style={{
-                ...card,
-                background:
-                  categorias[item.categoria]
-                    ?.cor,
-              }}
-            >
+          {gastos.length === 0 && (
+            <div style={card}>
+              <p>Nenhum gasto cadastrado ainda.</p>
+            </div>
+          )}
+
+          {gastos.map((item, index) => {
+            const cat = categorias[item.categoria] || categorias.Outros;
+
+            return (
               <div
+                key={index}
                 style={{
-                  display: "flex",
-                  justifyContent:
-                    "space-between",
-                  alignItems: "center",
+                  ...card,
+                  background: "white",
                 }}
               >
-                <div>
-                  <h3>
-                    {
-                      categorias[item.categoria]
-                        ?.icone
-                    }{" "}
-                    {item.nome}
-                  </h3>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    gap: "12px",
+                  }}
+                >
+                  <div>
+                    <span
+                      style={{
+                        display: "inline-block",
+                        background: cat.cor,
+                        color: cat.texto,
+                        padding: "6px 12px",
+                        borderRadius: "999px",
+                        fontSize: "13px",
+                        fontWeight: "bold",
+                        marginBottom: "8px",
+                      }}
+                    >
+                      {cat.icone} {item.categoria || "Outros"}
+                    </span>
 
-                  <p
+                    <h3 style={{ margin: "6px 0" }}>{item.nome}</h3>
+
+                    <p
+                      style={{
+                        color: cat.texto,
+                        fontWeight: "bold",
+                        fontSize: "18px",
+                        margin: 0,
+                      }}
+                    >
+                      {moeda(item.valor)}
+                    </p>
+                  </div>
+
+                  <button
+                    onClick={() => removerGasto(index)}
                     style={{
-                      color:
-                        categorias[item.categoria]
-                          ?.texto,
+                      border: "none",
+                      background: "#ffebee",
+                      color: "#c62828",
+                      borderRadius: "12px",
+                      padding: "10px",
                       fontWeight: "bold",
                     }}
                   >
-                    {moeda(item.valor)}
-                  </p>
+                    Excluir
+                  </button>
                 </div>
-
-                <button
-                  onClick={() =>
-                    removerGasto(index)
-                  }
-                  style={{
-                    border: "none",
-                    background:
-                      "transparent",
-                    fontSize: "22px",
-                  }}
-                >
-                  ❌
-                </button>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
@@ -549,20 +395,9 @@ export default function App() {
           <div style={card}>
             <h2>🎯 Metas</h2>
 
-            <p
-              style={{
-                fontSize: "18px",
-              }}
-            >
-              Sua meta atual é:
-            </p>
+            <p style={{ fontSize: "18px" }}>Sua meta atual é:</p>
 
-            <h1
-              style={{
-                color: "#0D47A1",
-                fontSize: "42px",
-              }}
-            >
+            <h1 style={{ color: "#0D47A1", fontSize: "42px" }}>
               {moeda(meta)}
             </h1>
           </div>
@@ -574,9 +409,14 @@ export default function App() {
           <div style={card}>
             <h2>👤 Perfil</h2>
 
-            <p>Nome:</p>
+            <p style={label}>Nome</p>
 
-            <h3>{nome || "Usuário"}</h3>
+            <input
+              style={inputStyle}
+              value={nome}
+              onChange={(e) => setNome(e.target.value)}
+              placeholder="Digite seu nome"
+            />
           </div>
         </div>
       )}
@@ -593,8 +433,7 @@ export default function App() {
           alignItems: "center",
           padding: "14px 0",
           borderTop: "1px solid #dbe3f1",
-          boxShadow:
-            "0 -5px 20px rgba(0,0,0,0.06)",
+          boxShadow: "0 -5px 20px rgba(0,0,0,0.06)",
           zIndex: 999,
         }}
       >
@@ -603,10 +442,7 @@ export default function App() {
           style={{
             background: "transparent",
             border: "none",
-            color:
-              tela === "inicio"
-                ? "#0D47A1"
-                : "#7b8794",
+            color: tela === "inicio" ? "#0D47A1" : "#7b8794",
             fontWeight: "bold",
             fontSize: "14px",
           }}
@@ -621,10 +457,7 @@ export default function App() {
           style={{
             background: "transparent",
             border: "none",
-            color:
-              tela === "gastos"
-                ? "#0D47A1"
-                : "#7b8794",
+            color: tela === "gastos" ? "#0D47A1" : "#7b8794",
             fontWeight: "bold",
             fontSize: "14px",
           }}
@@ -639,10 +472,7 @@ export default function App() {
           style={{
             background: "transparent",
             border: "none",
-            color:
-              tela === "metas"
-                ? "#0D47A1"
-                : "#7b8794",
+            color: tela === "metas" ? "#0D47A1" : "#7b8794",
             fontWeight: "bold",
             fontSize: "14px",
           }}
@@ -657,10 +487,7 @@ export default function App() {
           style={{
             background: "transparent",
             border: "none",
-            color:
-              tela === "perfil"
-                ? "#0D47A1"
-                : "#7b8794",
+            color: tela === "perfil" ? "#0D47A1" : "#7b8794",
             fontWeight: "bold",
             fontSize: "14px",
           }}
@@ -672,4 +499,4 @@ export default function App() {
       </div>
     </div>
   );
-}
+             }

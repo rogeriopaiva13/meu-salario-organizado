@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
-import { signInWithPopup, signOut, onAuthStateChanged } from "firebase/auth";
+import {
+  signInWithRedirect,
+  getRedirectResult,
+  signOut,
+  onAuthStateChanged,
+} from "firebase/auth";
 import { db, auth, provider } from "./firebase";
 
 export default function App() {
@@ -72,6 +77,19 @@ export default function App() {
     });
 
     return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    getRedirectResult(auth)
+      .then((result) => {
+        if (result?.user) {
+          console.log("Login Google realizado com sucesso.");
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        alert("Não foi possível concluir o login com Google.");
+      });
   }, []);
 
   useEffect(() => localStorage.setItem("nome", nome), [nome]);
@@ -254,7 +272,7 @@ export default function App() {
 
   async function loginGoogle() {
     try {
-      await signInWithPopup(auth, provider);
+      await signInWithRedirect(auth, provider);
     } catch (error) {
       console.error(error);
       alert("Não foi possível entrar com Google.");

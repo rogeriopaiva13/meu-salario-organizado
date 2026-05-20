@@ -1,23 +1,26 @@
 import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+
 import {
   FaHome,
   FaWallet,
-  FaChartPie,
   FaBullseye,
   FaTrophy,
   FaUser,
   FaMoneyBillWave,
   FaFileInvoiceDollar,
   FaHistory,
+  FaPiggyBank,
 } from "react-icons/fa";
+
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+
 import {
   signInWithRedirect,
   getRedirectResult,
   signOut,
   onAuthStateChanged,
 } from "firebase/auth";
+
 import { db, auth, provider } from "./firebase";
 
 export default function App() {
@@ -441,8 +444,7 @@ export default function App() {
   );
 
   const MiniCard = ({ titulo, valor, icone, cor }) => (
-    <motion.div
-      whileTap={{ scale: 0.98 }}
+    <div
       style={{
         background: "white",
         borderRadius: "26px",
@@ -472,7 +474,7 @@ export default function App() {
       <h3 style={{ margin: "8px 0 0", color: "#111827", fontSize: "20px" }}>
         {valor}
       </h3>
-    </motion.div>
+    </div>
   );
 
   if (loading) {
@@ -488,15 +490,11 @@ export default function App() {
           fontFamily: "Arial",
         }}
       >
-        <motion.div
-          initial={{ opacity: 0, scale: 0.92 }}
-          animate={{ opacity: 1, scale: 1 }}
-          style={{ textAlign: "center" }}
-        >
+        <div style={{ textAlign: "center" }}>
           <img src="/logo.png" alt="logo" style={{ width: "120px" }} />
           <h1>Meu Salário Organizado</h1>
           <p style={{ color: "#FDD835" }}>Organize hoje, realize amanhã</p>
-        </motion.div>
+        </div>
       </div>
     );
   }
@@ -510,10 +508,7 @@ export default function App() {
         fontFamily: "Arial",
       }}
     >
-      <motion.div
-        initial={{ opacity: 0, y: -24 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.45 }}
+      <div
         style={{
           background: "linear-gradient(135deg,#0D47A1 0%,#1565C0 48%,#42A5F5 100%)",
           color: "white",
@@ -617,10 +612,7 @@ export default function App() {
           )}
         </div>
 
-        <motion.div
-          initial={{ opacity: 0, scale: 0.94 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.15 }}
+        <div
           style={{
             background: "rgba(255,255,255,0.15)",
             backdropFilter: "blur(16px)",
@@ -717,8 +709,8 @@ export default function App() {
               />
             </div>
           </div>
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
 
       {tela === "inicio" && (
         <div style={{ padding: "20px", marginTop: "-18px" }}>
@@ -729,7 +721,7 @@ export default function App() {
             <MiniCard titulo="Conquistas" valor={`${conquistasDesbloqueadas}/${totalConquistas}`} icone={<FaTrophy />} cor="#fff8e1" />
           </div>
 
-          <motion.div whileTap={{ scale: 0.99 }} style={card}>
+          <div style={card}>
             <h2>🚦 Alertas Inteligentes</h2>
 
             {alertasInteligentes.map((item, index) => (
@@ -752,9 +744,9 @@ export default function App() {
                 </p>
               </div>
             ))}
-          </motion.div>
+          </div>
 
-          <motion.div style={card}>
+          <div style={card}>
             <h2>{metaVisual.icone} {nomeMeta}</h2>
             <p>Objetivo: <strong>{moeda(valorMetaTotal)}</strong></p>
             <p>Guardado: <strong>{moeda(valorGuardado)}</strong></p>
@@ -774,7 +766,7 @@ export default function App() {
             <p style={{ textAlign: "center", fontWeight: "bold", color: "#0D47A1" }}>
               {progressoMeta.toFixed(1)}% concluído
             </p>
-          </motion.div>
+          </div>
         </div>
       )}
 

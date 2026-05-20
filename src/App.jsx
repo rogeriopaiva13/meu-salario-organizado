@@ -12,8 +12,8 @@ import {
   FaPiggyBank,
   FaArrowDown,
   FaArrowUp,
-  FaShieldAlt,
   FaStar,
+  FaChartBar,
 } from "react-icons/fa";
 
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
@@ -152,13 +152,6 @@ export default function App() {
 
   const progressoXp = Math.min((xp / proximoNivel) * 100, 100);
 
-  const status =
-    saldo < 0
-      ? "🔴 Mês no vermelho"
-      : saldo <= 300
-      ? "🟡 Mês apertado"
-      : "🟢 Salário sob controle";
-
   const statusLimpo =
     saldo < 0
       ? "Mês no vermelho"
@@ -229,7 +222,6 @@ export default function App() {
       ? gastosPorCategoria.reduce((maior, item) => (item.total > maior.total ? item : maior))
       : null;
 
-  const maiorSaldoHistorico = Math.max(...historico.map((item) => Math.abs(Number(item.saldo || 0))), 1);
   const ultimoMes = historico[0];
   const saldoUltimoMes = ultimoMes ? Number(ultimoMes.saldo || 0) : 0;
 
@@ -516,6 +508,26 @@ export default function App() {
     </div>
   );
 
+  const AppLogo = () => (
+    <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+      <div style={{ display: "flex", alignItems: "end", gap: "4px", height: "48px" }}>
+        <div style={{ width: "10px", height: "22px", background: "white", borderRadius: "5px" }} />
+        <div style={{ width: "10px", height: "34px", background: "white", borderRadius: "5px" }} />
+        <div style={{ width: "10px", height: "46px", background: "white", borderRadius: "5px" }} />
+        <div style={{ width: "10px", height: "28px", background: "#FDD835", borderRadius: "5px" }} />
+      </div>
+
+      <div style={{ lineHeight: "32px" }}>
+        <div style={{ fontSize: "30px", fontWeight: "900", color: "white" }}>
+          Meu Salário
+        </div>
+        <div style={{ fontSize: "27px", fontWeight: "900", color: "#FDD835" }}>
+          Organizado
+        </div>
+      </div>
+    </div>
+  );
+
   if (loading) {
     return (
       <div
@@ -530,9 +542,10 @@ export default function App() {
         }}
       >
         <div style={{ textAlign: "center" }}>
-          <img src="/logo.png" alt="logo" style={{ width: "120px" }} />
-          <h1>Meu Salário Organizado</h1>
-          <p style={{ color: "#FDD835" }}>Organize hoje, realize amanhã</p>
+          <AppLogo />
+          <p style={{ color: "#FDD835", marginTop: "18px" }}>
+            Organize hoje, realize amanhã
+          </p>
         </div>
       </div>
     );
@@ -551,42 +564,56 @@ export default function App() {
         style={{
           background: "linear-gradient(160deg,#003c96 0%,#0057c8 48%,#0D47A1 100%)",
           color: "white",
-          padding: "28px 22px 58px",
+          padding: "26px 22px 58px",
           borderBottomLeftRadius: "42px",
           borderBottomRightRadius: "42px",
           boxShadow: "0 18px 45px rgba(13,71,161,0.35)",
         }}
       >
-        <img
-          src="/logo-horizontal.png"
-          alt="logo"
+        <div
           style={{
-            width: "220px",
-            display: "block",
-            margin: "0 auto 20px",
-            borderRadius: "18px",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+            marginBottom: "26px",
           }}
-        />
+        >
+          <AppLogo />
 
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <h1 style={{ fontSize: "34px", margin: 0, fontWeight: "900" }}>
-            👋 Olá{usuario?.nome ? `, ${usuario.nome}` : nome ? `, ${nome}` : ""}!
-          </h1>
-
-          {usuario?.foto && (
+          {usuario?.foto ? (
             <img
               src={usuario.foto}
               alt="foto"
               style={{
-                width: "46px",
-                height: "46px",
+                width: "52px",
+                height: "52px",
                 borderRadius: "50%",
                 border: "3px solid white",
-                marginLeft: "auto",
+                objectFit: "cover",
               }}
             />
+          ) : (
+            <div
+              style={{
+                width: "52px",
+                height: "52px",
+                borderRadius: "50%",
+                border: "3px solid white",
+                background: "rgba(255,255,255,0.16)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontWeight: "bold",
+              }}
+            >
+              👤
+            </div>
           )}
         </div>
+
+        <h1 style={{ fontSize: "34px", margin: 0, fontWeight: "900" }}>
+          👋 Olá{usuario?.nome ? `, ${usuario.nome}` : nome ? `, ${nome}` : ""}!
+        </h1>
 
         <p style={{ fontSize: "17px", opacity: 0.95, marginTop: "8px" }}>
           Vamos organizar seu mês?
@@ -807,20 +834,6 @@ export default function App() {
               <p style={{ margin: 0, color: "#374151" }}>
                 Você ainda tem {Math.max(100 - progresso, 0).toFixed(0)}% do salário disponível.
               </p>
-
-              <div
-                style={{
-                  marginTop: "14px",
-                  background: "rgba(255,255,255,0.75)",
-                  padding: "14px",
-                  borderRadius: "16px",
-                }}
-              >
-                <strong style={{ color: "#0D47A1" }}>😂 Frase do app</strong>
-                <p style={{ margin: "8px 0 0", color: "#374151", lineHeight: "21px" }}>
-                  {mensagemPrincipal}
-                </p>
-              </div>
             </div>
           </div>
 

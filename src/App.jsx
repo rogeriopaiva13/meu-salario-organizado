@@ -142,6 +142,30 @@ export default function App() {
       ? "🔴 Seu saldo livre ficou negativo."
       : "🟢 Continue assim! Seu mês está saudável.";
 
+  const gastosPorCategoria = Object.keys(categorias)
+    .map((categoria) => {
+      const total = gastos
+        .filter((item) => item.categoria === categoria)
+        .reduce((acc, item) => acc + Number(item.valor || 0), 0);
+
+      return {
+        categoria,
+        total,
+        ...categorias[categoria],
+      };
+    })
+    .filter((item) => item.total > 0);
+
+  const maiorGastoCategoria = Math.max(
+    ...gastosPorCategoria.map((item) => item.total),
+    1
+  );
+
+  const maiorSaldoHistorico = Math.max(
+    ...historico.map((item) => Math.abs(Number(item.saldo || 0))),
+    1
+  );
+
   async function loginGoogle() {
     try {
       await signInWithPopup(auth, provider);
@@ -528,6 +552,38 @@ export default function App() {
             </button>
           </div>
 
+          <div style={card}>
+            <h2>📊 Gastos por categoria</h2>
+
+            {gastosPorCategoria.length === 0 ? (
+              <p>Nenhum gasto lançado ainda.</p>
+            ) : (
+              gastosPorCategoria.map((item) => {
+                const largura = (item.total / maiorGastoCategoria) * 100;
+
+                return (
+                  <div key={item.categoria} style={{ marginBottom: "16px" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px" }}>
+                      <strong>{item.icone} {item.categoria}</strong>
+                      <strong>{moeda(item.total)}</strong>
+                    </div>
+
+                    <div style={{ width: "100%", height: "18px", background: "#eceff1", borderRadius: "999px", overflow: "hidden" }}>
+                      <div
+                        style={{
+                          width: `${largura}%`,
+                          height: "18px",
+                          background: item.texto,
+                          borderRadius: "999px",
+                        }}
+                      />
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
+
           {gastos.map((item, index) => {
             const cat = categorias[item.categoria] || categorias.Outros;
 
@@ -700,6 +756,40 @@ export default function App() {
             <h2>📈 Histórico Financeiro</h2>
 
             {historico.length === 0 && <p>Nenhum mês salvo ainda.</p>}
+
+            {historico.length > 0 && (
+              <div style={{ marginBottom: "20px" }}>
+                <h3 style={{ color: "#0D47A1" }}>📊 Evolução do saldo</h3>
+
+                {historico.map((item, index) => {
+                  const saldoMes = Number(item.saldo || 0);
+                  const largura = Math.min((Math.abs(saldoMes) / maiorSaldoHistorico) * 100, 100);
+                  const positivo = saldoMes >= 0;
+
+                  return (
+                    <div key={index} style={{ marginBottom: "12px" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "5px" }}>
+                        <strong>{item.mes}</strong>
+                        <strong style={{ color: positivo ? "#1b5e20" : "#c62828" }}>
+                          {moeda(saldoMes)}
+                        </strong>
+                      </div>
+
+                      <div style={{ width: "100%", height: "16px", background: "#eceff1", borderRadius: "999px", overflow: "hidden" }}>
+                        <div
+                          style={{
+                            width: `${largura}%`,
+                            height: "16px",
+                            background: positivo ? "#1b5e20" : "#c62828",
+                            borderRadius: "999px",
+                          }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
 
             {historico.map((item, index) => (
               <div

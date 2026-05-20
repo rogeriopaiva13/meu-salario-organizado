@@ -10,6 +10,9 @@ import {
   FaFileInvoiceDollar,
   FaHistory,
   FaPiggyBank,
+  FaArrowDown,
+  FaArrowUp,
+  FaShieldAlt,
 } from "react-icons/fa";
 
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
@@ -84,20 +87,14 @@ export default function App() {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUsuario(
-        user
-          ? { nome: user.displayName, email: user.email, foto: user.photoURL }
-          : null
-      );
+      setUsuario(user ? { nome: user.displayName, email: user.email, foto: user.photoURL } : null);
     });
 
     return () => unsubscribe();
   }, []);
 
   useEffect(() => {
-    getRedirectResult(auth).catch((error) => {
-      console.error(error);
-    });
+    getRedirectResult(auth).catch((error) => console.error(error));
   }, []);
 
   useEffect(() => localStorage.setItem("nome", nome), [nome]);
@@ -131,8 +128,7 @@ export default function App() {
   const valorTotalMeta = Number(valorMetaTotal) || 0;
   const totalGuardado = Number(valorGuardado) || 0;
   const faltaMeta = Math.max(valorTotalMeta - totalGuardado, 0);
-  const progressoMeta =
-    valorTotalMeta > 0 ? Math.min((totalGuardado / valorTotalMeta) * 100, 100) : 0;
+  const progressoMeta = valorTotalMeta > 0 ? Math.min((totalGuardado / valorTotalMeta) * 100, 100) : 0;
   const mesesRestantes = Number(meta) > 0 ? Math.ceil(faltaMeta / Number(meta)) : 0;
   const metaVisual = metasOpcoes[tipoMeta] || metasOpcoes.Outros;
 
@@ -162,44 +158,12 @@ export default function App() {
       ? "🟡 Mês apertado"
       : "🟢 Salário sob controle";
 
-  const alerta =
-    progresso >= 100
-      ? "🚨 Você ultrapassou seu limite do mês."
-      : progresso >= 80
-      ? "⚠️ Atenção! Você já usou mais de 80%."
-      : saldo <= 0
-      ? "🔴 Seu saldo livre ficou negativo."
-      : "🟢 Continue assim! Seu mês está saudável.";
-
-  const gastosPorCategoria = Object.keys(categorias)
-    .map((categoria) => {
-      const total = gastos
-        .filter((item) => item.categoria === categoria)
-        .reduce((acc, item) => acc + Number(item.valor || 0), 0);
-
-      return { categoria, total, ...categorias[categoria] };
-    })
-    .filter((item) => item.total > 0);
-
-  const maiorGastoCategoria = Math.max(
-    ...gastosPorCategoria.map((item) => item.total),
-    1
-  );
-
-  const maiorCategoria =
-    gastosPorCategoria.length > 0
-      ? gastosPorCategoria.reduce((maior, item) =>
-          item.total > maior.total ? item : maior
-        )
-      : null;
-
-  const maiorSaldoHistorico = Math.max(
-    ...historico.map((item) => Math.abs(Number(item.saldo || 0))),
-    1
-  );
-
-  const ultimoMes = historico[0];
-  const saldoUltimoMes = ultimoMes ? Number(ultimoMes.saldo || 0) : 0;
+  const statusLimpo =
+    saldo < 0
+      ? "Mês no vermelho"
+      : saldo <= 300
+      ? "Mês apertado"
+      : "Salário sob controle";
 
   const mensagensRuins = [
     "🚨 Calma lá, milionário... o cartão não é patrocinador oficial.",
@@ -246,6 +210,27 @@ export default function App() {
     progressoMeta >= 100
       ? mensagemAleatoria(mensagensMeta)
       : `Faltam cerca de ${mesesRestantes} meses para concluir sua meta.`;
+
+  const gastosPorCategoria = Object.keys(categorias)
+    .map((categoria) => {
+      const total = gastos
+        .filter((item) => item.categoria === categoria)
+        .reduce((acc, item) => acc + Number(item.valor || 0), 0);
+
+      return { categoria, total, ...categorias[categoria] };
+    })
+    .filter((item) => item.total > 0);
+
+  const maiorGastoCategoria = Math.max(...gastosPorCategoria.map((item) => item.total), 1);
+
+  const maiorCategoria =
+    gastosPorCategoria.length > 0
+      ? gastosPorCategoria.reduce((maior, item) => (item.total > maior.total ? item : maior))
+      : null;
+
+  const maiorSaldoHistorico = Math.max(...historico.map((item) => Math.abs(Number(item.saldo || 0))), 1);
+  const ultimoMes = historico[0];
+  const saldoUltimoMes = ultimoMes ? Number(ultimoMes.saldo || 0) : 0;
 
   const conquistas = [
     {
@@ -452,7 +437,7 @@ export default function App() {
   };
 
   const card = {
-    background: "rgba(255,255,255,0.96)",
+    background: "white",
     padding: "22px",
     borderRadius: "30px",
     marginBottom: "18px",
@@ -478,51 +463,55 @@ export default function App() {
       style={{
         border: "none",
         background: tela === id ? "#0D47A1" : "transparent",
-        color: tela === id ? "white" : "#7b8794",
-        borderRadius: "18px",
-        padding: "9px 10px",
-        minWidth: "58px",
+        color: tela === id ? "white" : "#6b7280",
+        borderRadius: "22px",
+        padding: "10px 12px",
+        minWidth: "64px",
         fontWeight: "bold",
-        fontSize: "10px",
-        boxShadow: tela === id ? "0 8px 18px rgba(13,71,161,0.22)" : "none",
+        fontSize: "11px",
+        boxShadow: tela === id ? "0 10px 24px rgba(13,71,161,0.25)" : "none",
       }}
     >
-      <div style={{ fontSize: "18px", lineHeight: "18px" }}>{icon}</div>
-      <div>{label}</div>
+      <div style={{ fontSize: "20px", lineHeight: "20px" }}>{icon}</div>
+      <div style={{ marginTop: "4px" }}>{label}</div>
     </button>
   );
 
-  const MiniCard = ({ titulo, valor, icone, cor }) => (
+  const MiniCard = ({ titulo, valor, icone, cor, texto }) => (
     <div
       style={{
-        background: "white",
-        borderRadius: "26px",
-        padding: "18px",
-        boxShadow: "0 12px 28px rgba(0,0,0,0.06)",
-        border: "1px solid #edf2ff",
+        background: cor,
+        borderRadius: "22px",
+        padding: "16px",
+        border: "1px solid rgba(0,0,0,0.04)",
+        minHeight: "112px",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        textAlign: "center",
       }}
     >
       <div
         style={{
-          width: "42px",
-          height: "42px",
-          borderRadius: "16px",
-          background: cor,
+          width: "44px",
+          height: "44px",
+          borderRadius: "18px",
+          background: "white",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          color: "#0D47A1",
-          marginBottom: "12px",
+          color: texto,
+          marginBottom: "10px",
           fontSize: "18px",
+          boxShadow: "0 8px 20px rgba(0,0,0,0.08)",
         }}
       >
         {icone}
       </div>
 
-      <p style={{ margin: 0, color: "#6b7280", fontSize: "13px" }}>{titulo}</p>
-      <h3 style={{ margin: "8px 0 0", color: "#111827", fontSize: "20px" }}>
-        {valor}
-      </h3>
+      <p style={{ margin: 0, color: "#4b5563", fontSize: "13px" }}>{titulo}</p>
+      <h3 style={{ margin: "7px 0 0", color: texto, fontSize: "18px" }}>{valor}</h3>
     </div>
   );
 
@@ -551,7 +540,7 @@ export default function App() {
   return (
     <div
       style={{
-        background: "linear-gradient(180deg,#eef3fb 0%,#f8fbff 100%)",
+        background: "#f3f7ff",
         minHeight: "100vh",
         paddingBottom: "125px",
         fontFamily: "Arial",
@@ -559,14 +548,12 @@ export default function App() {
     >
       <div
         style={{
-          background: "linear-gradient(135deg,#0D47A1 0%,#1565C0 48%,#42A5F5 100%)",
+          background: "linear-gradient(160deg,#003c96 0%,#0057c8 48%,#0D47A1 100%)",
           color: "white",
-          padding: "30px 22px 38px",
+          padding: "28px 22px 58px",
           borderBottomLeftRadius: "42px",
           borderBottomRightRadius: "42px",
           boxShadow: "0 18px 45px rgba(13,71,161,0.35)",
-          position: "relative",
-          overflow: "hidden",
         }}
       >
         <img
@@ -575,31 +562,47 @@ export default function App() {
           style={{
             width: "220px",
             display: "block",
-            margin: "0 auto 22px",
-            position: "relative",
-            zIndex: 2,
+            margin: "0 auto 20px",
+            borderRadius: "18px",
           }}
         />
 
-        <h2 style={{ fontSize: "31px", margin: 0, fontWeight: "800" }}>
-          👋 Olá{usuario?.nome ? `, ${usuario.nome}` : nome ? `, ${nome}` : ""}!
-        </h2>
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <h1 style={{ fontSize: "34px", margin: 0, fontWeight: "900" }}>
+            👋 Olá{usuario?.nome ? `, ${usuario.nome}` : nome ? `, ${nome}` : ""}!
+          </h1>
 
-        <p style={{ fontSize: "16px", opacity: 0.92, marginTop: "6px" }}>
-          Seu painel financeiro inteligente ✨
+          {usuario?.foto && (
+            <img
+              src={usuario.foto}
+              alt="foto"
+              style={{
+                width: "46px",
+                height: "46px",
+                borderRadius: "50%",
+                border: "3px solid white",
+                marginLeft: "auto",
+              }}
+            />
+          )}
+        </div>
+
+        <p style={{ fontSize: "17px", opacity: 0.95, marginTop: "8px" }}>
+          Vamos organizar seu mês?
         </p>
 
-        <div style={{ display: "flex", gap: "10px", marginTop: "18px" }}>
+        <div style={{ display: "flex", gap: "12px", marginTop: "18px" }}>
           <button
             onClick={() => setOcultarValores(!ocultarValores)}
             style={{
               flex: 1,
-              padding: "12px",
-              borderRadius: "18px",
-              border: "none",
-              background: "rgba(255,255,255,0.18)",
+              padding: "14px",
+              borderRadius: "20px",
+              border: "1px solid rgba(255,255,255,0.3)",
+              background: "rgba(255,255,255,0.16)",
               color: "white",
               fontWeight: "bold",
+              fontSize: "15px",
             }}
           >
             {ocultarValores ? "👁 Mostrar" : "🙈 Ocultar"}
@@ -610,23 +613,24 @@ export default function App() {
               onClick={loginGoogle}
               style={{
                 flex: 1,
-                padding: "12px",
-                borderRadius: "18px",
+                padding: "14px",
+                borderRadius: "20px",
                 border: "none",
                 background: "white",
                 color: "#0D47A1",
                 fontWeight: "bold",
+                fontSize: "15px",
               }}
             >
-              Google
+              🔐 Google
             </button>
           ) : (
             <button
               onClick={logoutGoogle}
               style={{
                 flex: 1,
-                padding: "12px",
-                borderRadius: "18px",
+                padding: "14px",
+                borderRadius: "20px",
                 border: "none",
                 background: "#d32f2f",
                 color: "white",
@@ -640,58 +644,130 @@ export default function App() {
 
         <div
           style={{
-            background: "rgba(255,255,255,0.15)",
-            borderRadius: "30px",
+            marginTop: "26px",
             padding: "22px",
-            marginTop: "24px",
-            border: "1px solid rgba(255,255,255,0.16)",
+            borderRadius: "32px",
+            background: "rgba(0,42,120,0.30)",
+            border: "1px solid rgba(255,255,255,0.18)",
+            boxShadow: "inset 0 0 30px rgba(255,255,255,0.08)",
           }}
         >
-          <p style={{ fontSize: "14px", opacity: 0.9, margin: 0 }}>
-            Saldo livre após meta
-          </p>
+          <div style={{ display: "flex", justifyContent: "space-between", gap: "18px", alignItems: "center" }}>
+            <div style={{ flex: 1 }}>
+              <p style={{ margin: 0, fontSize: "15px", fontWeight: "bold" }}>
+                Saldo livre após meta ⓘ
+              </p>
 
-          <h1 style={{ color: "#FDD835", fontSize: "40px", margin: "12px 0", fontWeight: "800" }}>
-            {moeda(saldo)}
-          </h1>
+              <h1
+                style={{
+                  color: "#FDD835",
+                  fontSize: "42px",
+                  margin: "18px 0 12px",
+                  fontWeight: "900",
+                  lineHeight: "42px",
+                }}
+              >
+                {moeda(saldo)}
+              </h1>
 
-          <p style={{ margin: 0, fontWeight: "bold", opacity: 0.95 }}>{status}</p>
-
-          <p style={{ marginTop: "14px", fontSize: "14px", opacity: 0.95 }}>
-            {mensagemPrincipal}
-          </p>
-
-          <div style={{ marginTop: "18px", background: "rgba(255,255,255,0.12)", borderRadius: "22px", padding: "15px" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
-              <strong>{nivel}</strong>
-              <strong>⭐ {xp} XP</strong>
-            </div>
-
-            <div style={{ width: "100%", height: "12px", background: "rgba(255,255,255,0.16)", borderRadius: "999px", overflow: "hidden" }}>
               <div
                 style={{
-                  width: `${progressoXp}%`,
-                  height: "12px",
-                  background: "#FDD835",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  background: "rgba(0,150,90,0.55)",
+                  padding: "10px 16px",
                   borderRadius: "999px",
+                  fontWeight: "bold",
+                  color: "#b8ff5c",
                 }}
-              />
+              >
+                🟢 {statusLimpo}
+              </div>
+
+              <p style={{ marginTop: "16px", fontSize: "15px", lineHeight: "22px" }}>
+                {mensagemPrincipal}
+              </p>
+            </div>
+
+            <div
+              style={{
+                width: "110px",
+                height: "110px",
+                minWidth: "110px",
+                borderRadius: "50%",
+                background:
+                  "conic-gradient(#8cff4f 0% 12%, #FDD835 12% " +
+                  progresso +
+                  "%, rgba(255,255,255,0.22) " +
+                  progresso +
+                  "% 100%)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                boxShadow: "0 12px 28px rgba(0,0,0,0.25)",
+              }}
+            >
+              <div
+                style={{
+                  width: "78px",
+                  height: "78px",
+                  borderRadius: "50%",
+                  background: "#0D47A1",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexDirection: "column",
+                  color: "white",
+                  fontWeight: "bold",
+                }}
+              >
+                <span style={{ fontSize: "26px" }}>{progresso.toFixed(0)}%</span>
+                <span style={{ fontSize: "11px", textAlign: "center" }}>do salário usado</span>
+              </div>
+            </div>
+          </div>
+
+          <div style={{ marginTop: "20px", background: "rgba(255,255,255,0.12)", borderRadius: "24px", padding: "16px" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "10px", fontWeight: "bold" }}>
+              <span>{nivel}</span>
+              <span>⭐ {xp} XP</span>
+            </div>
+
+            <div style={{ width: "100%", height: "13px", background: "rgba(255,255,255,0.18)", borderRadius: "999px", overflow: "hidden" }}>
+              <div style={{ width: `${progressoXp}%`, height: "13px", background: "#FDD835", borderRadius: "999px" }} />
             </div>
           </div>
         </div>
       </div>
 
       {tela === "inicio" && (
-        <div style={{ padding: "20px", marginTop: "-18px" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px", marginBottom: "18px" }}>
-            <MiniCard titulo="Entradas" valor={moeda(receitas)} icone={<FaMoneyBillWave />} cor="#e8f5e9" />
-            <MiniCard titulo="Saídas" valor={moeda(saidas)} icone={<FaWallet />} cor="#fff1f2" />
-            <MiniCard titulo="Meta mensal" valor={moeda(meta)} icone={<FaPiggyBank />} cor="#eef4ff" />
-            <MiniCard titulo="Conquistas" valor={`${conquistasDesbloqueadas}/${totalConquistas}`} icone={<FaTrophy />} cor="#fff8e1" />
+        <div style={{ padding: "20px", marginTop: "-38px" }}>
+          <div style={card}>
+            <h2 style={{ marginTop: 0 }}>📊 Resumo do mês</h2>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
+              <MiniCard titulo="Entradas" valor={moeda(receitas)} icone={<FaArrowDown />} cor="#eefbf5" texto="#059669" />
+              <MiniCard titulo="Saídas" valor={moeda(saidas)} icone={<FaArrowUp />} cor="#fff1f2" texto="#e11d48" />
+              <MiniCard titulo="Meta" valor={moeda(meta)} icone={<FaBullseye />} cor="#fff8e1" texto="#b7791f" />
+              <MiniCard titulo="Saldo livre" valor={moeda(saldo)} icone={<FaWallet />} cor="#eef4ff" texto="#0D47A1" />
+            </div>
           </div>
 
           <div style={card}>
-            <h2>🚦 Alertas Inteligentes</h2>
+            <h2 style={{ marginTop: 0 }}>Visão geral do mês</h2>
+
+            <p>💼 Total de entradas: <strong style={{ color: "#059669" }}>{moeda(receitas)}</strong></p>
+            <p>➖ Total de saídas: <strong style={{ color: "#e11d48" }}>{moeda(saidas)}</strong></p>
+            <p>🎯 Meta reservada: <strong style={{ color: "#b7791f" }}>{moeda(meta)}</strong></p>
+
+            <div style={{ background: "#eef4ff", padding: "16px", borderRadius: "18px", marginTop: "14px" }}>
+              <strong style={{ color: "#0D47A1" }}>Saldo livre: {moeda(saldo)}</strong>
+            </div>
+          </div>
+
+          <div style={card}>
+            <h2 style={{ marginTop: 0 }}>🚦 Alertas inteligentes</h2>
 
             {alertasInteligentes.map((item, index) => (
               <div
@@ -715,7 +791,7 @@ export default function App() {
           </div>
 
           <div style={card}>
-            <h2>{metaVisual.icone} {nomeMeta}</h2>
+            <h2 style={{ marginTop: 0 }}>{metaVisual.icone} {nomeMeta}</h2>
             <p>Objetivo: <strong>{moeda(valorMetaTotal)}</strong></p>
             <p>Guardado: <strong>{moeda(valorGuardado)}</strong></p>
             <p>Falta: <strong>{moeda(faltaMeta)}</strong></p>
@@ -730,6 +806,33 @@ export default function App() {
                   borderRadius: "999px",
                 }}
               />
+            </div>
+          </div>
+
+          <div style={card}>
+            <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+              <div
+                style={{
+                  width: "52px",
+                  height: "52px",
+                  borderRadius: "18px",
+                  background: "linear-gradient(135deg,#0D47A1,#42A5F5)",
+                  color: "white",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  fontSize: "22px",
+                }}
+              >
+                <FaShieldAlt />
+              </div>
+
+              <div>
+                <h3 style={{ margin: 0 }}>Situação do mês</h3>
+                <p style={{ margin: "6px 0 0", color: "#4b5563" }}>
+                  Você ainda tem {Math.max(100 - progresso, 0).toFixed(0)}% do salário disponível.
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -941,7 +1044,7 @@ export default function App() {
         </div>
       )}
 
-      <div style={{ position: "fixed", bottom: "12px", left: "8px", right: "8px", background: "rgba(255,255,255,0.96)", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px", borderRadius: "28px", boxShadow: "0 -8px 30px rgba(0,0,0,0.12)", border: "1px solid #e5eaf3", zIndex: 999, overflowX: "auto" }}>
+      <div style={{ position: "fixed", bottom: "12px", left: "8px", right: "8px", background: "rgba(255,255,255,0.98)", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px", borderRadius: "28px", boxShadow: "0 -8px 30px rgba(0,0,0,0.12)", border: "1px solid #e5eaf3", zIndex: 999, overflowX: "auto" }}>
         {navItem("inicio", <FaHome />, "Início")}
         {navItem("entradas", <FaMoneyBillWave />, "Entrada")}
         {navItem("gastos", <FaWallet />, "Gastos")}

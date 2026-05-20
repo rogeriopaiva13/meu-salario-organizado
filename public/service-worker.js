@@ -1,4 +1,4 @@
-const CACHE_NAME = "salario-organizado-v1";
+const CACHE_NAME = "meu-salario-organizado-v1";
 
 const urlsToCache = [
   "/",

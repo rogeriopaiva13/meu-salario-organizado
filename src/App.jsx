@@ -9,11 +9,9 @@ import {
   FaMoneyBillWave,
   FaFileInvoiceDollar,
   FaHistory,
-  FaPiggyBank,
   FaArrowDown,
   FaArrowUp,
   FaStar,
-  FaChartBar,
 } from "react-icons/fa";
 
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
@@ -32,6 +30,8 @@ export default function App() {
   const [tela, setTela] = useState("inicio");
   const [ocultarValores, setOcultarValores] = useState(false);
   const [usuario, setUsuario] = useState(null);
+
+  const [fotoPerfil, setFotoPerfil] = useState(localStorage.getItem("fotoPerfil") || "");
 
   const [nome, setNome] = useState(localStorage.getItem("nome") || "");
   const [salario, setSalario] = useState(localStorage.getItem("salario") || "");
@@ -98,6 +98,7 @@ export default function App() {
     getRedirectResult(auth).catch((error) => console.error(error));
   }, []);
 
+  useEffect(() => localStorage.setItem("fotoPerfil", fotoPerfil), [fotoPerfil]);
   useEffect(() => localStorage.setItem("nome", nome), [nome]);
   useEffect(() => localStorage.setItem("salario", salario), [salario]);
   useEffect(() => localStorage.setItem("extra", extra), [extra]);
@@ -110,6 +111,28 @@ export default function App() {
   useEffect(() => localStorage.setItem("gastos", JSON.stringify(gastos)), [gastos]);
   useEffect(() => localStorage.setItem("contasLista", JSON.stringify(contas)), [contas]);
   useEffect(() => localStorage.setItem("historicoFinanceiro", JSON.stringify(historico)), [historico]);
+
+  const fotoAtual = fotoPerfil || usuario?.foto || "";
+
+  function escolherFoto(event) {
+    const arquivo = event.target.files[0];
+    if (!arquivo) return;
+
+    const leitor = new FileReader();
+
+    leitor.onload = () => {
+      setFotoPerfil(leitor.result);
+    };
+
+    leitor.readAsDataURL(arquivo);
+  }
+
+  function removerFotoPerfil() {
+    const confirmar = window.confirm("Deseja remover a foto do perfil?");
+    if (!confirmar) return;
+    setFotoPerfil("");
+    localStorage.removeItem("fotoPerfil");
+  }
 
   const moeda = (valor) => {
     if (ocultarValores) return "••••••";
@@ -264,7 +287,7 @@ export default function App() {
   const alertasInteligentes = [
     {
       icone: progresso >= 80 ? "🚨" : "🟢",
-     titulo: progresso >= 80 ? "Atenção ao mês" : "Frase do app",
+      titulo: progresso >= 80 ? "Atenção ao mês" : "Frase do app",
       texto: mensagemPrincipal,
       cor: progresso >= 80 ? "#fff1f2" : "#ecfdf5",
       textoCor: progresso >= 80 ? "#be123c" : "#047857",
@@ -528,6 +551,47 @@ export default function App() {
     </div>
   );
 
+  const AvatarPerfil = () => (
+    <label style={{ cursor: "pointer" }}>
+      <input
+        type="file"
+        accept="image/*"
+        onChange={escolherFoto}
+        style={{ display: "none" }}
+      />
+
+      {fotoAtual ? (
+        <img
+          src={fotoAtual}
+          alt="foto"
+          style={{
+            width: "52px",
+            height: "52px",
+            borderRadius: "50%",
+            border: "3px solid white",
+            objectFit: "cover",
+          }}
+        />
+      ) : (
+        <div
+          style={{
+            width: "52px",
+            height: "52px",
+            borderRadius: "50%",
+            border: "3px solid white",
+            background: "rgba(255,255,255,0.16)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontWeight: "bold",
+          }}
+        >
+          👤
+        </div>
+      )}
+    </label>
+  );
+
   if (loading) {
     return (
       <div
@@ -552,63 +616,11 @@ export default function App() {
   }
 
   return (
-    <div
-      style={{
-        background: "#f3f7ff",
-        minHeight: "100vh",
-        paddingBottom: "125px",
-        fontFamily: "Arial",
-      }}
-    >
-      <div
-        style={{
-          background: "linear-gradient(160deg,#003c96 0%,#0057c8 48%,#0D47A1 100%)",
-          color: "white",
-          padding: "26px 22px 58px",
-          borderBottomLeftRadius: "42px",
-          borderBottomRightRadius: "42px",
-          boxShadow: "0 18px 45px rgba(13,71,161,0.35)",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "flex-start",
-            marginBottom: "26px",
-          }}
-        >
+    <div style={{ background: "#f3f7ff", minHeight: "100vh", paddingBottom: "125px", fontFamily: "Arial" }}>
+      <div style={{ background: "linear-gradient(160deg,#003c96 0%,#0057c8 48%,#0D47A1 100%)", color: "white", padding: "26px 22px 58px", borderBottomLeftRadius: "42px", borderBottomRightRadius: "42px", boxShadow: "0 18px 45px rgba(13,71,161,0.35)" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "26px" }}>
           <AppLogo />
-
-          {usuario?.foto ? (
-            <img
-              src={usuario.foto}
-              alt="foto"
-              style={{
-                width: "52px",
-                height: "52px",
-                borderRadius: "50%",
-                border: "3px solid white",
-                objectFit: "cover",
-              }}
-            />
-          ) : (
-            <div
-              style={{
-                width: "52px",
-                height: "52px",
-                borderRadius: "50%",
-                border: "3px solid white",
-                background: "rgba(255,255,255,0.16)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontWeight: "bold",
-              }}
-            >
-              👤
-            </div>
-          )}
+          <AvatarPerfil />
         </div>
 
         <h1 style={{ fontSize: "34px", margin: 0, fontWeight: "900" }}>
@@ -620,96 +632,30 @@ export default function App() {
         </p>
 
         <div style={{ display: "flex", gap: "12px", marginTop: "18px" }}>
-          <button
-            onClick={() => setOcultarValores(!ocultarValores)}
-            style={{
-              flex: 1,
-              padding: "14px",
-              borderRadius: "20px",
-              border: "1px solid rgba(255,255,255,0.3)",
-              background: "rgba(255,255,255,0.16)",
-              color: "white",
-              fontWeight: "bold",
-              fontSize: "15px",
-            }}
-          >
+          <button onClick={() => setOcultarValores(!ocultarValores)} style={{ flex: 1, padding: "14px", borderRadius: "20px", border: "1px solid rgba(255,255,255,0.3)", background: "rgba(255,255,255,0.16)", color: "white", fontWeight: "bold", fontSize: "15px" }}>
             {ocultarValores ? "👁 Mostrar" : "🙈 Ocultar"}
           </button>
 
           {!usuario ? (
-            <button
-              onClick={loginGoogle}
-              style={{
-                flex: 1,
-                padding: "14px",
-                borderRadius: "20px",
-                border: "none",
-                background: "white",
-                color: "#0D47A1",
-                fontWeight: "bold",
-                fontSize: "15px",
-              }}
-            >
+            <button onClick={loginGoogle} style={{ flex: 1, padding: "14px", borderRadius: "20px", border: "none", background: "white", color: "#0D47A1", fontWeight: "bold", fontSize: "15px" }}>
               🔐 Google
             </button>
           ) : (
-            <button
-              onClick={logoutGoogle}
-              style={{
-                flex: 1,
-                padding: "14px",
-                borderRadius: "20px",
-                border: "none",
-                background: "#d32f2f",
-                color: "white",
-                fontWeight: "bold",
-              }}
-            >
+            <button onClick={logoutGoogle} style={{ flex: 1, padding: "14px", borderRadius: "20px", border: "none", background: "#d32f2f", color: "white", fontWeight: "bold" }}>
               Sair
             </button>
           )}
         </div>
 
-        <div
-          style={{
-            marginTop: "26px",
-            padding: "22px",
-            borderRadius: "32px",
-            background: "rgba(0,42,120,0.30)",
-            border: "1px solid rgba(255,255,255,0.18)",
-            boxShadow: "inset 0 0 30px rgba(255,255,255,0.08)",
-          }}
-        >
+        <div style={{ marginTop: "26px", padding: "22px", borderRadius: "32px", background: "rgba(0,42,120,0.30)", border: "1px solid rgba(255,255,255,0.18)", boxShadow: "inset 0 0 30px rgba(255,255,255,0.08)" }}>
           <div style={{ display: "flex", justifyContent: "space-between", gap: "18px", alignItems: "center" }}>
             <div style={{ flex: 1 }}>
-              <p style={{ margin: 0, fontSize: "15px", fontWeight: "bold" }}>
-                Saldo livre após meta ⓘ
-              </p>
-
-              <h1
-                style={{
-                  color: "#FDD835",
-                  fontSize: "32px",
-                  margin: "14px 0 10px",
-                  fontWeight: "900",
-                  lineHeight: "34px",
-                }}
-              >
+              <p style={{ margin: 0, fontSize: "15px", fontWeight: "bold" }}>Saldo livre após meta ⓘ</p>
+              <h1 style={{ color: "#FDD835", fontSize: "32px", margin: "14px 0 10px", fontWeight: "900", lineHeight: "34px" }}>
                 {moeda(saldo)}
               </h1>
 
-              <div
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  background: "rgba(0,150,90,0.55)",
-                  padding: "10px 16px",
-                  borderRadius: "999px",
-                  fontWeight: "bold",
-                  color: "#b8ff5c",
-                }}
-              >
+              <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "rgba(0,150,90,0.55)", padding: "10px 16px", borderRadius: "999px", fontWeight: "bold", color: "#b8ff5c" }}>
                 🟢 {statusLimpo}
               </div>
 
@@ -718,38 +664,8 @@ export default function App() {
               </p>
             </div>
 
-            <div
-              style={{
-                width: "96px",
-                height: "96px",
-                minWidth: "96px",
-                borderRadius: "50%",
-                background:
-                  "conic-gradient(#8cff4f 0% 12%, #FDD835 12% " +
-                  progresso +
-                  "%, rgba(255,255,255,0.22) " +
-                  progresso +
-                  "% 100%)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                boxShadow: "0 12px 28px rgba(0,0,0,0.25)",
-              }}
-            >
-              <div
-                style={{
-                  width: "70px",
-                  height: "70px",
-                  borderRadius: "50%",
-                  background: "#0D47A1",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  flexDirection: "column",
-                  color: "white",
-                  fontWeight: "bold",
-                }}
-              >
+            <div style={{ width: "96px", height: "96px", minWidth: "96px", borderRadius: "50%", background: "conic-gradient(#8cff4f 0% 12%, #FDD835 12% " + progresso + "%, rgba(255,255,255,0.22) " + progresso + "% 100%)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 12px 28px rgba(0,0,0,0.25)" }}>
+              <div style={{ width: "70px", height: "70px", borderRadius: "50%", background: "#0D47A1", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", color: "white", fontWeight: "bold" }}>
                 <span style={{ fontSize: "24px" }}>{progresso.toFixed(0)}%</span>
                 <span style={{ fontSize: "10px", textAlign: "center" }}>do salário usado</span>
               </div>
@@ -773,7 +689,6 @@ export default function App() {
         <div style={{ padding: "20px", marginTop: "-38px" }}>
           <div style={card}>
             <h2 style={{ marginTop: 0 }}>📊 Resumo do mês</h2>
-
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
               <MiniCard titulo="Entradas" valor={moeda(receitas)} icone={<FaArrowDown />} cor="#eefbf5" texto="#059669" />
               <MiniCard titulo="Saídas" valor={moeda(saidas)} icone={<FaArrowUp />} cor="#fff1f2" texto="#e11d48" />
@@ -784,7 +699,6 @@ export default function App() {
 
           <div style={card}>
             <h2 style={{ marginTop: 0 }}>Visão geral do mês</h2>
-
             <p>💼 Total de entradas: <strong style={{ color: "#059669" }}>{moeda(receitas)}</strong></p>
             <p>➖ Total de saídas: <strong style={{ color: "#e11d48" }}>{moeda(saidas)}</strong></p>
             <p>🎯 Meta reservada: <strong style={{ color: "#b7791f" }}>{moeda(meta)}</strong></p>
@@ -793,44 +707,10 @@ export default function App() {
               <strong style={{ color: "#0D47A1" }}>Saldo livre: {moeda(saldo)}</strong>
             </div>
 
-            <div
-              style={{
-                marginTop: "16px",
-                background:
-                  saldo < 0
-                    ? "#fff1f2"
-                    : progresso >= 80
-                    ? "#fff8e1"
-                    : "#ecfdf5",
-                padding: "16px",
-                borderRadius: "18px",
-                border:
-                  saldo < 0
-                    ? "1px solid #fecdd3"
-                    : progresso >= 80
-                    ? "1px solid #fde68a"
-                    : "1px solid #bbf7d0",
-              }}
-            >
-              <h3
-                style={{
-                  marginTop: 0,
-                  marginBottom: "8px",
-                  color:
-                    saldo < 0
-                      ? "#be123c"
-                      : progresso >= 80
-                      ? "#b45309"
-                      : "#047857",
-                }}
-              >
-                {saldo < 0
-                  ? "🔴 Situação crítica"
-                  : progresso >= 80
-                  ? "🟡 Atenção ao mês"
-                  : "🟢 Situação saudável"}
+            <div style={{ marginTop: "16px", background: saldo < 0 ? "#fff1f2" : progresso >= 80 ? "#fff8e1" : "#ecfdf5", padding: "16px", borderRadius: "18px", border: saldo < 0 ? "1px solid #fecdd3" : progresso >= 80 ? "1px solid #fde68a" : "1px solid #bbf7d0" }}>
+              <h3 style={{ marginTop: 0, marginBottom: "8px", color: saldo < 0 ? "#be123c" : progresso >= 80 ? "#b45309" : "#047857" }}>
+                {saldo < 0 ? "🔴 Situação crítica" : progresso >= 80 ? "🟡 Atenção ao mês" : "🟢 Situação saudável"}
               </h3>
-
               <p style={{ margin: 0, color: "#374151" }}>
                 Você ainda tem {Math.max(100 - progresso, 0).toFixed(0)}% do salário disponível.
               </p>
@@ -839,24 +719,10 @@ export default function App() {
 
           <div style={card}>
             <h2 style={{ marginTop: 0 }}>🚦 Alertas inteligentes</h2>
-
             {alertasInteligentes.map((item, index) => (
-              <div
-                key={index}
-                style={{
-                  background: item.cor,
-                  borderRadius: "22px",
-                  padding: "16px",
-                  marginBottom: "12px",
-                }}
-              >
-                <strong style={{ color: item.textoCor }}>
-                  {item.icone} {item.titulo}
-                </strong>
-
-                <p style={{ margin: "8px 0 0", color: "#374151", lineHeight: "20px" }}>
-                  {item.texto}
-                </p>
+              <div key={index} style={{ background: item.cor, borderRadius: "22px", padding: "16px", marginBottom: "12px" }}>
+                <strong style={{ color: item.textoCor }}>{item.icone} {item.titulo}</strong>
+                <p style={{ margin: "8px 0 0", color: "#374151", lineHeight: "20px" }}>{item.texto}</p>
               </div>
             ))}
           </div>
@@ -867,16 +733,8 @@ export default function App() {
             <p>Guardado: <strong>{moeda(valorGuardado)}</strong></p>
             <p>Falta: <strong>{moeda(faltaMeta)}</strong></p>
             <p><strong>{mensagemMetaEspecial}</strong></p>
-
             <div style={{ width: "100%", height: "20px", background: "#e5e7eb", borderRadius: "999px", overflow: "hidden", marginTop: "12px" }}>
-              <div
-                style={{
-                  width: `${progressoMeta}%`,
-                  height: "20px",
-                  background: "linear-gradient(90deg,#0D47A1,#42a5f5)",
-                  borderRadius: "999px",
-                }}
-              />
+              <div style={{ width: `${progressoMeta}%`, height: "20px", background: "linear-gradient(90deg,#0D47A1,#42a5f5)", borderRadius: "999px" }} />
             </div>
           </div>
         </div>
@@ -905,45 +763,33 @@ export default function App() {
             <div style={{ height: "12px" }} />
             <select style={inputStyle} value={categoriaGasto} onChange={(e) => setCategoriaGasto(e.target.value)}>
               {Object.keys(categorias).map((cat) => (
-                <option key={cat} value={cat}>
-                  {categorias[cat].icone} {cat}
-                </option>
+                <option key={cat} value={cat}>{categorias[cat].icone} {cat}</option>
               ))}
             </select>
             <div style={{ height: "16px" }} />
-            <button onClick={adicionarGasto} style={primaryButton}>
-              ➕ Adicionar gasto +5 XP
-            </button>
+            <button onClick={adicionarGasto} style={primaryButton}>➕ Adicionar gasto +5 XP</button>
           </div>
 
           <div style={card}>
             <h2>📊 Gastos por categoria</h2>
-
-            {gastosPorCategoria.length === 0 ? (
-              <p>Nenhum gasto lançado ainda.</p>
-            ) : (
-              gastosPorCategoria.map((item) => {
-                const largura = (item.total / maiorGastoCategoria) * 100;
-
-                return (
-                  <div key={item.categoria} style={{ marginBottom: "16px" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px" }}>
-                      <strong>{item.icone} {item.categoria}</strong>
-                      <strong>{moeda(item.total)}</strong>
-                    </div>
-
-                    <div style={{ width: "100%", height: "18px", background: "#eceff1", borderRadius: "999px", overflow: "hidden" }}>
-                      <div style={{ width: `${largura}%`, height: "18px", background: item.texto, borderRadius: "999px" }} />
-                    </div>
+            {gastosPorCategoria.length === 0 ? <p>Nenhum gasto lançado ainda.</p> : gastosPorCategoria.map((item) => {
+              const largura = (item.total / maiorGastoCategoria) * 100;
+              return (
+                <div key={item.categoria} style={{ marginBottom: "16px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px" }}>
+                    <strong>{item.icone} {item.categoria}</strong>
+                    <strong>{moeda(item.total)}</strong>
                   </div>
-                );
-              })
-            )}
+                  <div style={{ width: "100%", height: "18px", background: "#eceff1", borderRadius: "999px", overflow: "hidden" }}>
+                    <div style={{ width: `${largura}%`, height: "18px", background: item.texto, borderRadius: "999px" }} />
+                  </div>
+                </div>
+              );
+            })}
           </div>
 
           {gastos.map((item, index) => {
             const cat = categorias[item.categoria] || categorias.Outros;
-
             return (
               <div key={index} style={card}>
                 <span style={{ background: cat.cor, color: cat.texto, padding: "7px 13px", borderRadius: "999px", fontWeight: "bold", fontSize: "13px" }}>
@@ -968,15 +814,11 @@ export default function App() {
             <div style={{ height: "12px" }} />
             <select style={inputStyle} value={categoriaConta} onChange={(e) => setCategoriaConta(e.target.value)}>
               {Object.keys(categoriasContas).map((cat) => (
-                <option key={cat} value={cat}>
-                  {categoriasContas[cat]} {cat}
-                </option>
+                <option key={cat} value={cat}>{categoriasContas[cat]} {cat}</option>
               ))}
             </select>
             <div style={{ height: "16px" }} />
-            <button onClick={adicionarConta} style={primaryButton}>
-              ➕ Adicionar conta +5 XP
-            </button>
+            <button onClick={adicionarConta} style={primaryButton}>➕ Adicionar conta +5 XP</button>
           </div>
 
           {contas.map((item, index) => (
@@ -993,7 +835,6 @@ export default function App() {
         <div style={{ padding: "20px" }}>
           <div style={card}>
             <h2>🎯 Objetivo financeiro</h2>
-
             <div style={{ background: metaVisual.cor, padding: "18px", borderRadius: "24px", marginBottom: "20px" }}>
               <p style={{ margin: 0, color: "#6b7280", fontSize: "13px" }}>Sua meta atual</p>
               <h2 style={{ margin: "8px 0", color: metaVisual.texto }}>{metaVisual.icone} {nomeMeta}</h2>
@@ -1025,9 +866,7 @@ export default function App() {
             <input style={inputStyle} value={ocultarValores ? "•••••" : valorGuardado} onChange={(e) => setValorGuardado(e.target.value)} inputMode="decimal" />
 
             <div style={{ height: "24px" }} />
-            <button onClick={adicionarValorMetaMensal} style={primaryButton}>
-              ✅ Adicionar meta mensal +20 XP
-            </button>
+            <button onClick={adicionarValorMetaMensal} style={primaryButton}>✅ Adicionar meta mensal +20 XP</button>
           </div>
         </div>
       )}
@@ -1037,7 +876,6 @@ export default function App() {
           <div style={card}>
             <h2>📈 Histórico Financeiro</h2>
             {historico.length === 0 && <p>Nenhum mês salvo ainda.</p>}
-
             {historico.map((item, index) => (
               <div key={index} style={{ background: "#f7faff", padding: "18px", borderRadius: "22px", marginTop: "14px", border: "1px solid #dde7ff" }}>
                 <h3 style={{ color: "#0D47A1" }}>📅 {item.mes}</h3>
@@ -1056,7 +894,6 @@ export default function App() {
         <div style={{ padding: "20px" }}>
           <div style={card}>
             <h2>🏅 Conquistas</h2>
-
             <div style={{ background: "linear-gradient(135deg,#0D47A1,#1565C0)", color: "white", padding: "18px", borderRadius: "24px", marginBottom: "18px" }}>
               <p style={{ margin: 0, opacity: 0.9 }}>Seu progresso</p>
               <h2 style={{ margin: "8px 0 0", color: "#FDD835" }}>{conquistasDesbloqueadas}/{totalConquistas} desbloqueadas</h2>
@@ -1079,6 +916,28 @@ export default function App() {
         <div style={{ padding: "20px" }}>
           <div style={card}>
             <h2>👤 Perfil</h2>
+
+            <div style={{ textAlign: "center", marginBottom: "20px" }}>
+              {fotoAtual ? (
+                <img src={fotoAtual} alt="foto perfil" style={{ width: "96px", height: "96px", borderRadius: "50%", objectFit: "cover", border: "4px solid #0D47A1" }} />
+              ) : (
+                <div style={{ width: "96px", height: "96px", borderRadius: "50%", background: "#eef4ff", color: "#0D47A1", margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "34px", border: "4px solid #0D47A1" }}>
+                  👤
+                </div>
+              )}
+
+              <label style={{ display: "block", marginTop: "14px", padding: "14px", borderRadius: "18px", background: "#0D47A1", color: "white", fontWeight: "bold", cursor: "pointer" }}>
+                📷 Escolher foto
+                <input type="file" accept="image/*" onChange={escolherFoto} style={{ display: "none" }} />
+              </label>
+
+              {fotoAtual && (
+                <button onClick={removerFotoPerfil} style={{ marginTop: "10px", width: "100%", padding: "12px", borderRadius: "16px", border: "none", background: "#ef4444", color: "white", fontWeight: "bold" }}>
+                  Remover foto
+                </button>
+              )}
+            </div>
+
             <input style={inputStyle} value={nome} onChange={(e) => setNome(e.target.value)} placeholder="Digite seu nome" />
             <div style={{ height: "16px" }} />
             <button onClick={iniciarNovoMes} style={{ width: "100%", padding: "16px", borderRadius: "20px", border: "none", background: "#d32f2f", color: "white", fontWeight: "bold" }}>

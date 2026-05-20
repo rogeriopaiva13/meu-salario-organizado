@@ -7,14 +7,3 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <App />
   </React.StrictMode>
 );
-
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", async () => {
-    try {
-      await navigator.serviceWorker.register("/service-worker.js");
-      console.log("PWA funcionando");
-    } catch (error) {
-      console.log(error);
-    }
-  });
-}

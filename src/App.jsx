@@ -18,7 +18,6 @@ export default function App() {
   const [valorMetaTotal, setValorMetaTotal] = useState(localStorage.getItem("valorMetaTotal") || "30000");
   const [valorGuardado, setValorGuardado] = useState(localStorage.getItem("valorGuardado") || "0");
   const [meta, setMeta] = useState(localStorage.getItem("meta") || "500");
-
   const [xp, setXp] = useState(Number(localStorage.getItem("xp")) || 0);
 
   const [nomeGasto, setNomeGasto] = useState("");
@@ -106,7 +105,8 @@ export default function App() {
   const valorTotalMeta = Number(valorMetaTotal) || 0;
   const totalGuardado = Number(valorGuardado) || 0;
   const faltaMeta = Math.max(valorTotalMeta - totalGuardado, 0);
-  const progressoMeta = valorTotalMeta > 0 ? Math.min((totalGuardado / valorTotalMeta) * 100, 100) : 0;
+  const progressoMeta =
+    valorTotalMeta > 0 ? Math.min((totalGuardado / valorTotalMeta) * 100, 100) : 0;
   const mesesRestantes = Number(meta) > 0 ? Math.ceil(faltaMeta / Number(meta)) : 0;
   const metaVisual = metasOpcoes[tipoMeta] || metasOpcoes.Outros;
 
@@ -148,11 +148,7 @@ export default function App() {
         .filter((item) => item.categoria === categoria)
         .reduce((acc, item) => acc + Number(item.valor || 0), 0);
 
-      return {
-        categoria,
-        total,
-        ...categorias[categoria],
-      };
+      return { categoria, total, ...categorias[categoria] };
     })
     .filter((item) => item.total > 0);
 
@@ -161,10 +157,100 @@ export default function App() {
     1
   );
 
+  const maiorCategoria =
+    gastosPorCategoria.length > 0
+      ? gastosPorCategoria.reduce((maior, item) =>
+          item.total > maior.total ? item : maior
+        )
+      : null;
+
   const maiorSaldoHistorico = Math.max(
     ...historico.map((item) => Math.abs(Number(item.saldo || 0))),
     1
   );
+
+  const ultimoMes = historico[0];
+  const saldoUltimoMes = ultimoMes ? Number(ultimoMes.saldo || 0) : 0;
+
+  const conquistas = [
+    {
+      titulo: "Primeiro passo",
+      descricao: "Guardou os primeiros R$500.",
+      desbloqueada: totalGuardado >= 500,
+      icone: "🥉",
+    },
+    {
+      titulo: "Investidor iniciante",
+      descricao: "Alcançou 1000 pontos.",
+      desbloqueada: xp >= 1000,
+      icone: "🥈",
+    },
+    {
+      titulo: "Meta pela metade",
+      descricao: "Atingiu 50% da meta financeira.",
+      desbloqueada: progressoMeta >= 50,
+      icone: "🎯",
+    },
+    {
+      titulo: "Meta concluída",
+      descricao: "Concluiu sua meta financeira.",
+      desbloqueada: progressoMeta >= 100,
+      icone: "💎",
+    },
+    {
+      titulo: "Mestre do controle",
+      descricao: "Fechou 3 meses positivos.",
+      desbloqueada: historico.filter((item) => Number(item.saldo) > 0).length >= 3,
+      icone: "🏆",
+    },
+  ];
+
+  const conquistasDesbloqueadas = conquistas.filter((item) => item.desbloqueada).length;
+  const totalConquistas = conquistas.length;
+
+  const alertasInteligentes = [
+    {
+      icone: progresso >= 80 ? "🚨" : "🟢",
+      titulo: progresso >= 80 ? "Atenção ao uso do salário" : "Uso do salário saudável",
+      texto:
+        progresso >= 80
+          ? "Você já comprometeu boa parte da renda do mês."
+          : "Seu mês está saudável até agora.",
+      cor: progresso >= 80 ? "#fff1f2" : "#ecfdf5",
+      textoCor: progresso >= 80 ? "#be123c" : "#047857",
+    },
+    {
+      icone: maiorCategoria ? maiorCategoria.icone : "📊",
+      titulo: maiorCategoria ? `Maior gasto: ${maiorCategoria.categoria}` : "Sem gastos ainda",
+      texto: maiorCategoria
+        ? `Você gastou ${moeda(maiorCategoria.total)} nessa categoria.`
+        : "Adicione gastos para gerar análises.",
+      cor: maiorCategoria ? maiorCategoria.cor : "#f3f4f6",
+      textoCor: maiorCategoria ? maiorCategoria.texto : "#374151",
+    },
+    {
+      icone: "🎯",
+      titulo: "Previsão da meta",
+      texto:
+        faltaMeta <= 0
+          ? "Meta concluída! 🎉"
+          : `Faltam cerca de ${mesesRestantes} meses para concluir sua meta.`,
+      cor: "#eef4ff",
+      textoCor: "#0D47A1",
+    },
+    {
+      icone: saldoUltimoMes > 0 ? "📈" : "📅",
+      titulo: historico.length > 0 ? "Comparativo mensal" : "Histórico em construção",
+      texto:
+        historico.length > 0
+          ? saldoUltimoMes > 0
+            ? `Último mês fechou positivo em ${moeda(saldoUltimoMes)}`
+            : `Último mês fechou em ${moeda(saldoUltimoMes)}`
+          : "Feche o primeiro mês para gerar histórico.",
+      cor: saldoUltimoMes > 0 ? "#ecfdf5" : "#f8fafc",
+      textoCor: saldoUltimoMes > 0 ? "#047857" : "#374151",
+    },
+  ];
 
   async function loginGoogle() {
     try {
@@ -351,7 +437,11 @@ export default function App() {
           borderBottomRightRadius: "38px",
         }}
       >
-        <img src="/logo-horizontal.png" alt="logo" style={{ width: "220px", display: "block", margin: "0 auto 22px" }} />
+        <img
+          src="/logo-horizontal.png"
+          alt="logo"
+          style={{ width: "220px", display: "block", margin: "0 auto 22px" }}
+        />
 
         <h2 style={{ fontSize: "30px", margin: 0 }}>
           👋 Olá{usuario?.nome ? `, ${usuario.nome}` : nome ? `, ${nome}` : ""}!
@@ -402,7 +492,13 @@ export default function App() {
               gap: "10px",
             }}
           >
-            {usuario.foto && <img src={usuario.foto} alt="foto" style={{ width: "38px", height: "38px", borderRadius: "50%" }} />}
+            {usuario.foto && (
+              <img
+                src={usuario.foto}
+                alt="foto"
+                style={{ width: "38px", height: "38px", borderRadius: "50%" }}
+              />
+            )}
 
             <div style={{ flex: 1 }}>
               <p style={{ margin: 0, fontWeight: "bold" }}>{usuario.nome}</p>
@@ -474,6 +570,59 @@ export default function App() {
           </div>
 
           <div style={card}>
+            <h2>🚦 Alertas Inteligentes</h2>
+
+            {alertasInteligentes.map((item, index) => (
+              <div
+                key={index}
+                style={{
+                  background: item.cor,
+                  borderRadius: "20px",
+                  padding: "16px",
+                  marginBottom: "12px",
+                }}
+              >
+                <strong style={{ color: item.textoCor }}>
+                  {item.icone} {item.titulo}
+                </strong>
+
+                <p style={{ marginTop: "8px", color: "#374151", lineHeight: "20px" }}>
+                  {item.texto}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          <div style={card}>
+            <h2>🏅 Progresso de conquistas</h2>
+
+            <p>
+              Você desbloqueou <strong>{conquistasDesbloqueadas}</strong> de{" "}
+              <strong>{totalConquistas}</strong> conquistas.
+            </p>
+
+            <div
+              style={{
+                width: "100%",
+                height: "18px",
+                background: "#e5e7eb",
+                borderRadius: "999px",
+                overflow: "hidden",
+                marginTop: "12px",
+              }}
+            >
+              <div
+                style={{
+                  width: `${(conquistasDesbloqueadas / totalConquistas) * 100}%`,
+                  height: "18px",
+                  background: "linear-gradient(90deg,#FDD835,#f59e0b)",
+                  borderRadius: "999px",
+                }}
+              />
+            </div>
+          </div>
+
+          <div style={card}>
             <h2>{metaVisual.icone} {nomeMeta}</h2>
             <p>Objetivo: <strong>{moeda(valorMetaTotal)}</strong></p>
             <p>Guardado: <strong>{moeda(valorGuardado)}</strong></p>
@@ -503,12 +652,22 @@ export default function App() {
             <h2>💰 Entradas</h2>
 
             <p>Salário</p>
-            <input style={inputStyle} value={ocultarValores ? "•••••" : salario} onChange={(e) => setSalario(e.target.value)} inputMode="decimal" />
+            <input
+              style={inputStyle}
+              value={ocultarValores ? "•••••" : salario}
+              onChange={(e) => setSalario(e.target.value)}
+              inputMode="decimal"
+            />
 
             <div style={{ height: "14px" }} />
 
             <p>Extra</p>
-            <input style={inputStyle} value={ocultarValores ? "•••••" : extra} onChange={(e) => setExtra(e.target.value)} inputMode="decimal" />
+            <input
+              style={inputStyle}
+              value={ocultarValores ? "•••••" : extra}
+              onChange={(e) => setExtra(e.target.value)}
+              inputMode="decimal"
+            />
           </div>
         </div>
       )}
@@ -518,15 +677,30 @@ export default function App() {
           <div style={card}>
             <h2>💸 Gastos</h2>
 
-            <input style={inputStyle} placeholder="Nome do gasto" value={nomeGasto} onChange={(e) => setNomeGasto(e.target.value)} />
+            <input
+              style={inputStyle}
+              placeholder="Nome do gasto"
+              value={nomeGasto}
+              onChange={(e) => setNomeGasto(e.target.value)}
+            />
 
             <div style={{ height: "12px" }} />
 
-            <input style={inputStyle} type="number" placeholder="Valor" value={valorGasto} onChange={(e) => setValorGasto(e.target.value)} />
+            <input
+              style={inputStyle}
+              type="number"
+              placeholder="Valor"
+              value={valorGasto}
+              onChange={(e) => setValorGasto(e.target.value)}
+            />
 
             <div style={{ height: "12px" }} />
 
-            <select style={inputStyle} value={categoriaGasto} onChange={(e) => setCategoriaGasto(e.target.value)}>
+            <select
+              style={inputStyle}
+              value={categoriaGasto}
+              onChange={(e) => setCategoriaGasto(e.target.value)}
+            >
               {Object.keys(categorias).map((cat) => (
                 <option key={cat} value={cat}>
                   {categorias[cat].icone} {cat}
@@ -617,15 +791,30 @@ export default function App() {
           <div style={card}>
             <h2>📄 Contas Fixas</h2>
 
-            <input style={inputStyle} placeholder="Nome da conta" value={nomeConta} onChange={(e) => setNomeConta(e.target.value)} />
+            <input
+              style={inputStyle}
+              placeholder="Nome da conta"
+              value={nomeConta}
+              onChange={(e) => setNomeConta(e.target.value)}
+            />
 
             <div style={{ height: "12px" }} />
 
-            <input style={inputStyle} type="number" placeholder="Valor" value={valorConta} onChange={(e) => setValorConta(e.target.value)} />
+            <input
+              style={inputStyle}
+              type="number"
+              placeholder="Valor"
+              value={valorConta}
+              onChange={(e) => setValorConta(e.target.value)}
+            />
 
             <div style={{ height: "12px" }} />
 
-            <select style={inputStyle} value={categoriaConta} onChange={(e) => setCategoriaConta(e.target.value)}>
+            <select
+              style={inputStyle}
+              value={categoriaConta}
+              onChange={(e) => setCategoriaConta(e.target.value)}
+            >
               {Object.keys(categoriasContas).map((cat) => (
                 <option key={cat} value={cat}>
                   {categoriasContas[cat]} {cat}
@@ -679,7 +868,11 @@ export default function App() {
             </div>
 
             <p>Tipo de meta</p>
-            <select style={inputStyle} value={tipoMeta} onChange={(e) => setTipoMeta(e.target.value)}>
+            <select
+              style={inputStyle}
+              value={tipoMeta}
+              onChange={(e) => setTipoMeta(e.target.value)}
+            >
               <option value="Carro">🚗 Carro</option>
               <option value="Casa">🏠 Casa</option>
               <option value="Viagem">✈️ Viagem</option>
@@ -689,22 +882,42 @@ export default function App() {
             <div style={{ height: "14px" }} />
 
             <p>Nome da meta</p>
-            <input style={inputStyle} value={nomeMeta} onChange={(e) => setNomeMeta(e.target.value)} placeholder="Ex: Comprar meu carro" />
+            <input
+              style={inputStyle}
+              value={nomeMeta}
+              onChange={(e) => setNomeMeta(e.target.value)}
+              placeholder="Ex: Comprar meu carro"
+            />
 
             <div style={{ height: "14px" }} />
 
             <p>Valor total da meta</p>
-            <input style={inputStyle} value={ocultarValores ? "•••••" : valorMetaTotal} onChange={(e) => setValorMetaTotal(e.target.value)} inputMode="decimal" />
+            <input
+              style={inputStyle}
+              value={ocultarValores ? "•••••" : valorMetaTotal}
+              onChange={(e) => setValorMetaTotal(e.target.value)}
+              inputMode="decimal"
+            />
 
             <div style={{ height: "14px" }} />
 
             <p>Quanto deseja guardar por mês?</p>
-            <input style={inputStyle} value={ocultarValores ? "•••••" : meta} onChange={(e) => setMeta(e.target.value)} inputMode="decimal" />
+            <input
+              style={inputStyle}
+              value={ocultarValores ? "•••••" : meta}
+              onChange={(e) => setMeta(e.target.value)}
+              inputMode="decimal"
+            />
 
             <div style={{ height: "14px" }} />
 
             <p>Quanto já guardou?</p>
-            <input style={inputStyle} value={ocultarValores ? "•••••" : valorGuardado} onChange={(e) => setValorGuardado(e.target.value)} inputMode="decimal" />
+            <input
+              style={inputStyle}
+              value={ocultarValores ? "•••••" : valorGuardado}
+              onChange={(e) => setValorGuardado(e.target.value)}
+              inputMode="decimal"
+            />
 
             <div style={{ height: "24px" }} />
 
@@ -814,12 +1027,67 @@ export default function App() {
         </div>
       )}
 
+      {tela === "conquistas" && (
+        <div style={{ padding: "20px" }}>
+          <div style={card}>
+            <h2>🏅 Conquistas</h2>
+
+            <div
+              style={{
+                background: "linear-gradient(135deg,#0D47A1,#1565C0)",
+                color: "white",
+                padding: "18px",
+                borderRadius: "24px",
+                marginBottom: "18px",
+              }}
+            >
+              <p style={{ margin: 0, opacity: 0.9 }}>Seu progresso</p>
+
+              <h2 style={{ margin: "8px 0 0", color: "#FDD835" }}>
+                {conquistasDesbloqueadas}/{totalConquistas} desbloqueadas
+              </h2>
+            </div>
+
+            {conquistas.map((item, index) => (
+              <div
+                key={index}
+                style={{
+                  padding: "18px",
+                  borderRadius: "22px",
+                  marginBottom: "14px",
+                  background: item.desbloqueada ? "#ecfdf5" : "#f3f4f6",
+                  border: item.desbloqueada
+                    ? "2px solid #10b981"
+                    : "2px solid #d1d5db",
+                  opacity: item.desbloqueada ? 1 : 0.6,
+                }}
+              >
+                <h3 style={{ margin: 0 }}>
+                  {item.icone} {item.titulo}
+                </h3>
+
+                <p style={{ marginTop: "8px" }}>{item.descricao}</p>
+
+                <strong style={{ color: item.desbloqueada ? "#059669" : "#6b7280" }}>
+                  {item.desbloqueada ? "✅ Desbloqueada" : "🔒 Bloqueada"}
+                </strong>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {tela === "perfil" && (
         <div style={{ padding: "20px" }}>
           <div style={card}>
             <h2>👤 Perfil</h2>
 
-            <input style={inputStyle} value={nome} onChange={(e) => setNome(e.target.value)} placeholder="Digite seu nome" />
+            <input
+              style={inputStyle}
+              value={nome}
+              onChange={(e) => setNome(e.target.value)}
+              placeholder="Digite seu nome"
+            />
 
             <div style={{ height: "16px" }} />
 
@@ -866,6 +1134,7 @@ export default function App() {
         {navItem("contas", "📄", "Contas")}
         {navItem("metas", "🎯", "Metas")}
         {navItem("historico", "📈", "Hist.")}
+        {navItem("conquistas", "🏅", "Conq.")}
         {navItem("perfil", "👤", "Perfil")}
       </div>
     </div>

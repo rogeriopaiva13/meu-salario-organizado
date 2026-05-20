@@ -264,7 +264,7 @@ export default function App() {
   const alertasInteligentes = [
     {
       icone: progresso >= 80 ? "🚨" : "🟢",
-      titulo: progresso >= 80 ? "Situação financeira" : "Seu mês está saudável",
+     titulo: progresso >= 80 ? "Atenção ao mês" : "Frase do app",
       texto: mensagemPrincipal,
       cor: progresso >= 80 ? "#fff1f2" : "#ecfdf5",
       textoCor: progresso >= 80 ? "#be123c" : "#047857",

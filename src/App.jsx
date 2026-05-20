@@ -13,6 +13,7 @@ import {
   FaArrowDown,
   FaArrowUp,
   FaShieldAlt,
+  FaStar,
 } from "react-icons/fa";
 
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
@@ -661,10 +662,10 @@ export default function App() {
               <h1
                 style={{
                   color: "#FDD835",
-                  fontSize: "42px",
-                  margin: "18px 0 12px",
+                  fontSize: "32px",
+                  margin: "14px 0 10px",
                   fontWeight: "900",
-                  lineHeight: "42px",
+                  lineHeight: "34px",
                 }}
               >
                 {moeda(saldo)}
@@ -692,9 +693,9 @@ export default function App() {
 
             <div
               style={{
-                width: "110px",
-                height: "110px",
-                minWidth: "110px",
+                width: "96px",
+                height: "96px",
+                minWidth: "96px",
                 borderRadius: "50%",
                 background:
                   "conic-gradient(#8cff4f 0% 12%, #FDD835 12% " +
@@ -710,8 +711,8 @@ export default function App() {
             >
               <div
                 style={{
-                  width: "78px",
-                  height: "78px",
+                  width: "70px",
+                  height: "70px",
                   borderRadius: "50%",
                   background: "#0D47A1",
                   display: "flex",
@@ -722,8 +723,8 @@ export default function App() {
                   fontWeight: "bold",
                 }}
               >
-                <span style={{ fontSize: "26px" }}>{progresso.toFixed(0)}%</span>
-                <span style={{ fontSize: "11px", textAlign: "center" }}>do salário usado</span>
+                <span style={{ fontSize: "24px" }}>{progresso.toFixed(0)}%</span>
+                <span style={{ fontSize: "10px", textAlign: "center" }}>do salário usado</span>
               </div>
             </div>
           </div>
@@ -750,7 +751,7 @@ export default function App() {
               <MiniCard titulo="Entradas" valor={moeda(receitas)} icone={<FaArrowDown />} cor="#eefbf5" texto="#059669" />
               <MiniCard titulo="Saídas" valor={moeda(saidas)} icone={<FaArrowUp />} cor="#fff1f2" texto="#e11d48" />
               <MiniCard titulo="Meta" valor={moeda(meta)} icone={<FaBullseye />} cor="#fff8e1" texto="#b7791f" />
-              <MiniCard titulo="Saldo livre" valor={moeda(saldo)} icone={<FaWallet />} cor="#eef4ff" texto="#0D47A1" />
+              <MiniCard titulo="Pontos" valor={`${xp} XP`} icone={<FaStar />} cor="#f3e8ff" texto="#7c3aed" />
             </div>
           </div>
 
@@ -763,6 +764,63 @@ export default function App() {
 
             <div style={{ background: "#eef4ff", padding: "16px", borderRadius: "18px", marginTop: "14px" }}>
               <strong style={{ color: "#0D47A1" }}>Saldo livre: {moeda(saldo)}</strong>
+            </div>
+
+            <div
+              style={{
+                marginTop: "16px",
+                background:
+                  saldo < 0
+                    ? "#fff1f2"
+                    : progresso >= 80
+                    ? "#fff8e1"
+                    : "#ecfdf5",
+                padding: "16px",
+                borderRadius: "18px",
+                border:
+                  saldo < 0
+                    ? "1px solid #fecdd3"
+                    : progresso >= 80
+                    ? "1px solid #fde68a"
+                    : "1px solid #bbf7d0",
+              }}
+            >
+              <h3
+                style={{
+                  marginTop: 0,
+                  marginBottom: "8px",
+                  color:
+                    saldo < 0
+                      ? "#be123c"
+                      : progresso >= 80
+                      ? "#b45309"
+                      : "#047857",
+                }}
+              >
+                {saldo < 0
+                  ? "🔴 Situação crítica"
+                  : progresso >= 80
+                  ? "🟡 Atenção ao mês"
+                  : "🟢 Situação saudável"}
+              </h3>
+
+              <p style={{ margin: 0, color: "#374151" }}>
+                Você ainda tem {Math.max(100 - progresso, 0).toFixed(0)}% do salário disponível.
+              </p>
+
+              <div
+                style={{
+                  marginTop: "14px",
+                  background: "rgba(255,255,255,0.75)",
+                  padding: "14px",
+                  borderRadius: "16px",
+                }}
+              >
+                <strong style={{ color: "#0D47A1" }}>😂 Frase do app</strong>
+                <p style={{ margin: "8px 0 0", color: "#374151", lineHeight: "21px" }}>
+                  {mensagemPrincipal}
+                </p>
+              </div>
             </div>
           </div>
 
@@ -806,33 +864,6 @@ export default function App() {
                   borderRadius: "999px",
                 }}
               />
-            </div>
-          </div>
-
-          <div style={card}>
-            <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
-              <div
-                style={{
-                  width: "52px",
-                  height: "52px",
-                  borderRadius: "18px",
-                  background: "linear-gradient(135deg,#0D47A1,#42A5F5)",
-                  color: "white",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  fontSize: "22px",
-                }}
-              >
-                <FaShieldAlt />
-              </div>
-
-              <div>
-                <h3 style={{ margin: 0 }}>Situação do mês</h3>
-                <p style={{ margin: "6px 0 0", color: "#4b5563" }}>
-                  Você ainda tem {Math.max(100 - progresso, 0).toFixed(0)}% do salário disponível.
-                </p>
-              </div>
             </div>
           </div>
         </div>

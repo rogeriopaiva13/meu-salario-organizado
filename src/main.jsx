@@ -9,14 +9,12 @@ ReactDOM.createRoot(document.getElementById("root")).render(
 );
 
 if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker
-      .register("/service-worker.js")
-      .then(() => {
-        console.log("Service Worker registrado!");
-      })
-      .catch((error) => {
-        console.log("Erro Service Worker:", error);
-      });
+  window.addEventListener("load", async () => {
+    try {
+      await navigator.serviceWorker.register("/service-worker.js");
+      console.log("PWA funcionando");
+    } catch (error) {
+      console.log(error);
+    }
   });
 }

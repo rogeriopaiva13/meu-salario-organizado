@@ -1,21 +1,25 @@
 {
   "name": "meu-salario-organizado",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.0.0",
   "type": "module",
+
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview"
   },
+
   "dependencies": {
-    "firebase": "^11.6.1",
+    "firebase": "^11.0.1",
+    "framer-motion": "^12.0.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "recharts": "^2.15.0"
+    "react-icons": "^5.5.0"
   },
+
   "devDependencies": {
     "@vitejs/plugin-react": "^4.3.4",
-    "vite": "^5.4.10"
+    "vite": "^6.0.1"
   }
 }

@@ -383,7 +383,7 @@ export default function App() {
 
   function removerConta(index) {
     setContas(contas.filter((_, i) => i !== index));
-  }
+  }9
 
   function adicionarValorMetaMensal() {
     const confirmar = window.confirm(`Adicionar ${moeda(meta)} ao valor guardado da meta?`);
@@ -641,84 +641,340 @@ export default function App() {
         </div>
       </div>
 
-      {tela === "inicio" && (
-        <div style={{ padding: "20px", marginTop: "-18px" }}>
-          <div style={card}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "18px" }}>
-              <h2 style={{ margin: 0 }}>🎯 Meu objetivo</h2>
-              <span style={{ background: "#eef4ff", color: "#0D47A1", padding: "8px 14px", borderRadius: "999px", fontWeight: "bold" }}>
-                {tipoMeta} {metaVisual.icone}
-              </span>
-            </div>
+{tela === "inicio" && (
+  <div style={{ padding: "20px", marginTop: "-24px" }}>
 
-            <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
-              <div style={{ width: "78px", height: "78px", borderRadius: "28px", background: metaVisual.cor, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "36px" }}>
-                {metaVisual.icone}
-              </div>
+    <div style={card}>
+      <h2
+        style={{
+          marginTop: 0,
+          marginBottom: "18px",
+          color: "white",
+          fontSize: "20px",
+          letterSpacing: "1px",
+          fontWeight: "900",
+        }}
+      >
+        VISÃO GERAL DO MÊS
+      </h2>
 
-              <div style={{ flex: 1 }}>
-                <h3 style={{ margin: "0 0 8px", fontSize: "22px" }}>{nomeMeta}</h3>
+      <div
+        style={{
+          background: "linear-gradient(180deg,#003da5,#002f80)",
+          borderRadius: "28px",
+          padding: "22px",
+          border: "1px solid rgba(255,255,255,0.08)",
+        }}
+      >
 
-                <div style={{ display: "flex", justifyContent: "space-between", fontWeight: "bold", color: "#0D47A1", marginBottom: "8px" }}>
-                  <span>{progressoMeta.toFixed(0)}% concluído</span>
-                  <span>{moeda(valorGuardado)} / {moeda(valorMetaTotal)}</span>
-                </div>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: "18px",
+          }}
+        >
 
-                <div style={{ width: "100%", height: "12px", background: "#e5e7eb", borderRadius: "999px", overflow: "hidden" }}>
-                  <div style={{ width: `${progressoMeta}%`, height: "12px", background: "#2563eb", borderRadius: "999px" }} />
-                </div>
-              </div>
-            </div>
+          <div
+            style={{
+              textAlign: "center",
+              borderRight: "1px solid rgba(255,255,255,0.12)",
+              paddingRight: "12px",
+            }}
+          >
+            <div style={{ fontSize: "42px" }}>⬇️</div>
 
-            <div style={{ marginTop: "18px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px", borderTop: "1px solid #edf2ff", paddingTop: "16px" }}>
-              <div style={{ background: "#f8fbff", borderRadius: "20px", padding: "14px" }}>
-                <p style={{ margin: 0, color: "#6b7280" }}>Faltam cerca de</p>
-                <strong>{mesesRestantes} meses</strong>
-              </div>
+            <p
+              style={{
+                color: "#7CFFB2",
+                margin: "8px 0 4px",
+                fontWeight: "bold",
+                fontSize: "18px",
+              }}
+            >
+              Entradas
+            </p>
 
-              <div style={{ background: "#f8fbff", borderRadius: "20px", padding: "14px" }}>
-                <p style={{ margin: 0, color: "#6b7280" }}>Falta guardar</p>
-                <strong>{moeda(faltaMeta)}</strong>
-              </div>
+            <h3
+              style={{
+                color: "white",
+                margin: 0,
+                fontSize: "24px",
+              }}
+            >
+              {moeda(receitas)}
+            </h3>
+
+            <div
+              style={{
+                marginTop: "10px",
+                display: "inline-block",
+                background: "rgba(0,255,140,0.15)",
+                color: "#7CFFB2",
+                padding: "6px 12px",
+                borderRadius: "999px",
+                fontSize: "12px",
+                fontWeight: "bold",
+              }}
+            >
+              + receitas
             </div>
           </div>
 
-          <div style={card}>
-            <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
-              <div style={{ width: "58px", height: "58px", borderRadius: "20px", background: "#dbeafe", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "28px" }}>
-                🎓
-              </div>
+          <div style={{ textAlign: "center" }}>
+            <div style={{ fontSize: "42px" }}>⬆️</div>
 
-              <div style={{ flex: 1 }}>
-                <h3 style={{ margin: "0 0 4px" }}>{nivel}</h3>
-                <p style={{ margin: 0, color: "#6b7280", fontSize: "14px" }}>
-                  {xp} XP / {proximoNivel} XP
-                </p>
+            <p
+              style={{
+                color: "#FF8A8A",
+                margin: "8px 0 4px",
+                fontWeight: "bold",
+                fontSize: "18px",
+              }}
+            >
+              Saídas
+            </p>
 
-                <div style={{ width: "100%", height: "9px", background: "#e5e7eb", borderRadius: "999px", overflow: "hidden", marginTop: "9px" }}>
-                  <div style={{ width: `${progressoXp}%`, height: "9px", background: "#2563eb", borderRadius: "999px" }} />
-                </div>
-              </div>
+            <h3
+              style={{
+                color: "white",
+                margin: 0,
+                fontSize: "24px",
+              }}
+            >
+              {moeda(saidas)}
+            </h3>
+
+            <div
+              style={{
+                marginTop: "10px",
+                display: "inline-block",
+                background: "rgba(255,80,80,0.12)",
+                color: "#FF9D9D",
+                padding: "6px 12px",
+                borderRadius: "999px",
+                fontSize: "12px",
+                fontWeight: "bold",
+              }}
+            >
+              despesas
             </div>
           </div>
 
-          <div style={card}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
-              <h2 style={{ margin: 0 }}>🚦 Alertas inteligentes</h2>
-            </div>
+          <div
+            style={{
+              textAlign: "center",
+              borderTop: "1px solid rgba(255,255,255,0.12)",
+              paddingTop: "18px",
+              borderRight: "1px solid rgba(255,255,255,0.12)",
+              paddingRight: "12px",
+            }}
+          >
+            <div style={{ fontSize: "42px" }}>🎯</div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "10px" }}>
-              {alertasInteligentes.slice(0, 3).map((item, index) => (
-                <div key={index} style={{ background: item.cor, borderRadius: "18px", padding: "14px" }}>
-                  <strong style={{ color: item.textoCor }}>{item.icone} {item.titulo}</strong>
-                  <p style={{ margin: "6px 0 0", color: "#374151", lineHeight: "19px", fontSize: "14px" }}>{item.texto}</p>
-                </div>
-              ))}
+            <p
+              style={{
+                color: "#8CC8FF",
+                margin: "8px 0 4px",
+                fontWeight: "bold",
+                fontSize: "18px",
+              }}
+            >
+              Meta
+            </p>
+
+            <h3
+              style={{
+                color: "white",
+                margin: 0,
+                fontSize: "24px",
+              }}
+            >
+              {moeda(meta)}
+            </h3>
+
+            <div
+              style={{
+                marginTop: "10px",
+                display: "inline-block",
+                background: "rgba(66,165,245,0.15)",
+                color: "#8CC8FF",
+                padding: "6px 12px",
+                borderRadius: "999px",
+                fontSize: "12px",
+                fontWeight: "bold",
+              }}
+            >
+              objetivo
+            </div>
+          </div>
+
+          <div
+            style={{
+              textAlign: "center",
+              borderTop: "1px solid rgba(255,255,255,0.12)",
+              paddingTop: "18px",
+            }}
+          >
+            <div style={{ fontSize: "42px" }}>⭐</div>
+
+            <p
+              style={{
+                color: "#E6A8FF",
+                margin: "8px 0 4px",
+                fontWeight: "bold",
+                fontSize: "18px",
+              }}
+            >
+              XP
+            </p>
+
+            <h3
+              style={{
+                color: "white",
+                margin: 0,
+                fontSize: "24px",
+              }}
+            >
+              {xp} XP
+            </h3>
+
+            <div
+              style={{
+                marginTop: "10px",
+                display: "inline-block",
+                background: "rgba(186,104,255,0.15)",
+                color: "#E6A8FF",
+                padding: "6px 12px",
+                borderRadius: "999px",
+                fontSize: "12px",
+                fontWeight: "bold",
+              }}
+            >
+              evolução
             </div>
           </div>
         </div>
-      )}
 
+        <div
+          style={{
+            marginTop: "24px",
+            background: "rgba(255,255,255,0.06)",
+            borderRadius: "22px",
+            padding: "16px",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              marginBottom: "10px",
+              color: "white",
+              fontWeight: "bold",
+            }}
+          >
+            <span>{nivel}</span>
+            <span>{xp} XP</span>
+          </div>
+
+          <div
+            style={{
+              width: "100%",
+              height: "12px",
+              background: "rgba(255,255,255,0.12)",
+              borderRadius: "999px",
+              overflow: "hidden",
+            }}
+          >
+            <div
+              style={{
+                width: `${progressoXp}%`,
+                height: "12px",
+                background: "linear-gradient(90deg,#FDD835,#FFE96B)",
+                borderRadius: "999px",
+              }}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style={card}>
+      <h2 style={{ marginTop: 0 }}>
+        {metaVisual.icone} {nomeMeta}
+      </h2>
+
+      <p>
+        Objetivo: <strong>{moeda(valorMetaTotal)}</strong>
+      </p>
+
+      <p>
+        Guardado: <strong>{moeda(valorGuardado)}</strong>
+      </p>
+
+      <p>
+        Falta: <strong>{moeda(faltaMeta)}</strong>
+      </p>
+
+      <p>
+        <strong>{mensagemMetaEspecial}</strong>
+      </p>
+
+      <div
+        style={{
+          width: "100%",
+          height: "20px",
+          background: "#e5e7eb",
+          borderRadius: "999px",
+          overflow: "hidden",
+          marginTop: "12px",
+        }}
+      >
+        <div
+          style={{
+            width: `${progressoMeta}%`,
+            height: "20px",
+            background: "linear-gradient(90deg,#0D47A1,#42a5f5)",
+            borderRadius: "999px",
+          }}
+        />
+      </div>
+    </div>
+
+    <div style={card}>
+      <h2 style={{ marginTop: 0 }}>
+        🚦 Alertas inteligentes
+      </h2>
+
+      {alertasInteligentes.map((item, index) => (
+        <div
+          key={index}
+          style={{
+            background: item.cor,
+            borderRadius: "18px",
+            padding: "14px",
+            marginBottom: "10px",
+          }}
+        >
+          <strong style={{ color: item.textoCor }}>
+            {item.icone} {item.titulo}
+          </strong>
+
+          <p
+            style={{
+              margin: "6px 0 0",
+              color: "#374151",
+              lineHeight: "20px",
+            }}
+          >
+            {item.texto}
+          </p>
+        </div>
+      ))}
+    </div>
+
+  </div>
+)}
       {tela === "entradas" && (
         <div style={{ padding: "20px" }}>
           <div style={card}>

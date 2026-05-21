@@ -592,54 +592,329 @@ export default function App() {
           )}
         </div>
 
-        <div style={{ marginTop: "26px", padding: "22px", borderRadius: "32px", background: "rgba(0,42,120,0.30)", border: "1px solid rgba(255,255,255,0.18)", boxShadow: "inset 0 0 30px rgba(255,255,255,0.08)" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", gap: "18px", alignItems: "center" }}>
-            <div style={{ flex: 1 }}>
-              <p style={{ margin: 0, fontSize: "15px", fontWeight: "bold" }}>Saldo livre após meta ⓘ</p>
-              <h1 style={{ color: "#FDD835", fontSize: "36px", margin: "14px 0 10px", fontWeight: "900", lineHeight: "38px" }}>
-                {moeda(saldo)}
-              </h1>
+  <div
+  style={{
+    marginTop: "26px",
+    display: "flex",
+    flexDirection: "column",
+    gap: "18px",
+  }}
+>
+  {/* RESUMO SUPERIOR */}
+  <div
+    style={{
+      background: "rgba(0,42,120,0.32)",
+      borderRadius: "30px",
+      padding: "22px",
+      border: "1px solid rgba(255,255,255,0.16)",
+      boxShadow: "inset 0 0 30px rgba(255,255,255,0.06)",
+    }}
+  >
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: "1fr 1fr 1fr",
+        gap: "18px",
+        alignItems: "center",
+      }}
+    >
+      {/* ENTRADAS */}
+      <div style={{ textAlign: "center" }}>
+        <div
+          style={{
+            width: "72px",
+            height: "72px",
+            borderRadius: "50%",
+            background: "#22c55e",
+            margin: "0 auto 14px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: "34px",
+            boxShadow: "0 10px 24px rgba(34,197,94,0.35)",
+          }}
+        >
+          ↓
+        </div>
 
-              <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "rgba(0,150,90,0.55)", padding: "10px 16px", borderRadius: "999px", fontWeight: "bold", color: "#b8ff5c" }}>
-                🟢 {statusLimpo}
-              </div>
-            </div>
+        <h3
+          style={{
+            margin: 0,
+            color: "#86efac",
+            fontSize: "17px",
+          }}
+        >
+          Entradas
+        </h3>
 
-            <div style={{ width: "106px", height: "106px", minWidth: "106px", borderRadius: "50%", background: "conic-gradient(#8cff4f 0% 12%, #FDD835 12% " + progresso + "%, rgba(255,255,255,0.22) " + progresso + "% 100%)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 12px 28px rgba(0,0,0,0.25)" }}>
-              <div style={{ width: "78px", height: "78px", borderRadius: "50%", background: "#0D47A1", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", color: "white", fontWeight: "bold" }}>
-                <span style={{ fontSize: "27px" }}>{progresso.toFixed(0)}%</span>
-                <span style={{ fontSize: "10px", textAlign: "center" }}>do salário usado</span>
-              </div>
-            </div>
+        <h2
+          style={{
+            margin: "10px 0",
+            color: "white",
+            fontSize: "18px",
+            fontWeight: "900",
+          }}
+        >
+          {moeda(receitas)}
+        </h2>
+
+        <div
+          style={{
+            display: "inline-block",
+            background: "rgba(34,197,94,0.20)",
+            color: "#86efac",
+            padding: "8px 16px",
+            borderRadius: "999px",
+            fontSize: "14px",
+            fontWeight: "bold",
+          }}
+        >
+          + receitas
+        </div>
+      </div>
+
+      {/* SAÍDAS */}
+      <div
+        style={{
+          textAlign: "center",
+          borderLeft: "1px solid rgba(255,255,255,0.12)",
+          borderRight: "1px solid rgba(255,255,255,0.12)",
+          padding: "0 12px",
+        }}
+      >
+        <div
+          style={{
+            width: "72px",
+            height: "72px",
+            borderRadius: "50%",
+            background: "#ef4444",
+            margin: "0 auto 14px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: "34px",
+            boxShadow: "0 10px 24px rgba(239,68,68,0.35)",
+          }}
+        >
+          ↑
+        </div>
+
+        <h3
+          style={{
+            margin: 0,
+            color: "#fca5a5",
+            fontSize: "17px",
+          }}
+        >
+          Saídas
+        </h3>
+
+        <h2
+          style={{
+            margin: "10px 0",
+            color: "white",
+            fontSize: "18px",
+            fontWeight: "900",
+          }}
+        >
+          {moeda(saidas)}
+        </h2>
+
+        <div
+          style={{
+            display: "inline-block",
+            background: "rgba(236,72,153,0.18)",
+            color: "#fda4af",
+            padding: "8px 16px",
+            borderRadius: "999px",
+            fontSize: "14px",
+            fontWeight: "bold",
+          }}
+        >
+          despesas
+        </div>
+      </div>
+
+      {/* XP */}
+      <div style={{ textAlign: "center" }}>
+        <div
+          style={{
+            background: "rgba(255,255,255,0.06)",
+            borderRadius: "24px",
+            padding: "14px",
+          }}
+        >
+          <div
+            style={{
+              fontSize: "15px",
+              fontWeight: "bold",
+              marginBottom: "8px",
+            }}
+          >
+            🛡️ NÍVEL 1
           </div>
 
-          <div style={{ marginTop: "24px", border: "1px solid rgba(255,255,255,0.25)", borderRadius: "24px", padding: "14px 8px", display: "grid", gridTemplateColumns: "repeat(4, 1fr)", textAlign: "center" }}>
-            <div>
-              <div style={{ color: "#86efac", fontWeight: "bold", fontSize: "13px" }}>Entradas</div>
-              <div style={{ fontSize: "20px", margin: "5px 0" }}>↓</div>
-              <strong style={{ fontSize: "12px" }}>{moeda(receitas)}</strong>
-            </div>
+          <div
+            style={{
+              fontSize: "20px",
+              fontWeight: "900",
+              marginBottom: "14px",
+            }}
+          >
+            Iniciante
+            <br />
+            Financeiro
+          </div>
 
-            <div style={{ borderLeft: "1px solid rgba(255,255,255,0.22)" }}>
-              <div style={{ color: "#fca5a5", fontWeight: "bold", fontSize: "13px" }}>Saídas</div>
-              <div style={{ fontSize: "20px", margin: "5px 0" }}>↑</div>
-              <strong style={{ fontSize: "12px" }}>{moeda(saidas)}</strong>
-            </div>
+          <div
+            style={{
+              width: "100%",
+              height: "12px",
+              background: "rgba(255,255,255,0.08)",
+              borderRadius: "999px",
+              overflow: "hidden",
+              marginBottom: "10px",
+            }}
+          >
+            <div
+              style={{
+                width: `${progressoXp}%`,
+                height: "12px",
+                background: "#FDD835",
+                borderRadius: "999px",
+              }}
+            />
+          </div>
 
-            <div style={{ borderLeft: "1px solid rgba(255,255,255,0.22)" }}>
-              <div style={{ color: "#93c5fd", fontWeight: "bold", fontSize: "13px" }}>Meta</div>
-              <div style={{ fontSize: "20px", margin: "5px 0" }}>◎</div>
-              <strong style={{ fontSize: "12px" }}>{moeda(meta)}</strong>
-            </div>
-
-            <div style={{ borderLeft: "1px solid rgba(255,255,255,0.22)" }}>
-              <div style={{ color: "#c084fc", fontWeight: "bold", fontSize: "13px" }}>XP</div>
-              <div style={{ fontSize: "20px", margin: "5px 0" }}>⭐</div>
-              <strong style={{ fontSize: "12px" }}>{xp} XP</strong>
-            </div>
+          <div
+            style={{
+              color: "#FDD835",
+              fontWeight: "bold",
+              fontSize: "16px",
+            }}
+          >
+            {xp} XP
           </div>
         </div>
       </div>
+    </div>
+  </div>
+
+  {/* SALDO */}
+  <div
+    style={{
+      background: "rgba(0,42,120,0.32)",
+      borderRadius: "30px",
+      padding: "24px",
+      border: "1px solid rgba(255,255,255,0.16)",
+      boxShadow: "inset 0 0 30px rgba(255,255,255,0.06)",
+    }}
+  >
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+        gap: "18px",
+        alignItems: "center",
+      }}
+    >
+      <div style={{ flex: 1 }}>
+        <p
+          style={{
+            margin: 0,
+            fontSize: "16px",
+            fontWeight: "bold",
+          }}
+        >
+          Saldo livre após meta ⓘ
+        </p>
+
+        <h1
+          style={{
+            color: "#FDD835",
+            fontSize: "56px",
+            margin: "14px 0 14px",
+            fontWeight: "900",
+            lineHeight: "54px",
+          }}
+        >
+          {moeda(saldo)}
+        </h1>
+
+        <div
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "10px",
+            background: "#0b7a75",
+            padding: "14px 20px",
+            borderRadius: "999px",
+            fontWeight: "bold",
+            color: "#d9ff7a",
+            fontSize: "17px",
+          }}
+        >
+          ✅ {statusLimpo}
+        </div>
+      </div>
+
+      <div
+        style={{
+          width: "180px",
+          height: "180px",
+          minWidth: "180px",
+          borderRadius: "50%",
+          background:
+            "conic-gradient(#8cff4f 0% 12%, #60a5fa 12% " +
+            progresso +
+            "%, rgba(255,255,255,0.15) " +
+            progresso +
+            "% 100%)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          boxShadow: "0 12px 28px rgba(0,0,0,0.25)",
+        }}
+      >
+        <div
+          style={{
+            width: "130px",
+            height: "130px",
+            borderRadius: "50%",
+            background: "#0D47A1",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexDirection: "column",
+            color: "white",
+            fontWeight: "bold",
+            textAlign: "center",
+            padding: "12px",
+          }}
+        >
+          <span
+            style={{
+              fontSize: "52px",
+              lineHeight: "52px",
+            }}
+          >
+            {progresso.toFixed(0)}%
+          </span>
+
+          <span
+            style={{
+              fontSize: "16px",
+              marginTop: "6px",
+              opacity: 0.95,
+            }}
+          >
+            do salário usado
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 {tela === "inicio" && (
   <div style={{ padding: "20px", marginTop: "-24px" }}>

@@ -84,7 +84,11 @@ export default function App() {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUsuario(user ? { nome: user.displayName, email: user.email, foto: user.photoURL } : null);
+      setUsuario(
+        user
+          ? { nome: user.displayName, email: user.email, foto: user.photoURL }
+          : null
+      );
     });
 
     return () => unsubscribe();
@@ -118,6 +122,7 @@ export default function App() {
   function removerFotoPerfil() {
     const confirmar = window.confirm("Deseja remover a foto do perfil?");
     if (!confirmar) return;
+
     setFotoPerfil("");
     localStorage.removeItem("fotoPerfil");
   }
@@ -140,8 +145,14 @@ export default function App() {
   const valorTotalMeta = Number(valorMetaTotal) || 0;
   const totalGuardado = Number(valorGuardado) || 0;
   const faltaMeta = Math.max(valorTotalMeta - totalGuardado, 0);
-  const progressoMeta = valorTotalMeta > 0 ? Math.min((totalGuardado / valorTotalMeta) * 100, 100) : 0;
-  const mesesRestantes = Number(meta) > 0 ? Math.ceil(faltaMeta / Number(meta)) : 0;
+  const progressoMeta =
+    valorTotalMeta > 0
+      ? Math.min((totalGuardado / valorTotalMeta) * 100, 100)
+      : 0;
+
+  const mesesRestantes =
+    Number(meta) > 0 ? Math.ceil(faltaMeta / Number(meta)) : 0;
+
   const metaVisual = metasOpcoes[tipoMeta] || metasOpcoes.Outros;
 
   let nivel = "🪙 Estagiário Financeiro";
@@ -226,11 +237,16 @@ export default function App() {
     })
     .filter((item) => item.total > 0);
 
-  const maiorGastoCategoria = Math.max(...gastosPorCategoria.map((item) => item.total), 1);
+  const maiorGastoCategoria = Math.max(
+    ...gastosPorCategoria.map((item) => item.total),
+    1
+  );
 
   const maiorCategoria =
     gastosPorCategoria.length > 0
-      ? gastosPorCategoria.reduce((maior, item) => (item.total > maior.total ? item : maior))
+      ? gastosPorCategoria.reduce((maior, item) =>
+          item.total > maior.total ? item : maior
+        )
       : null;
 
   const ultimoMes = historico[0];
@@ -383,7 +399,7 @@ export default function App() {
 
   function removerConta(index) {
     setContas(contas.filter((_, i) => i !== index));
-  }9
+  }
 
   function adicionarValorMetaMensal() {
     const confirmar = window.confirm(`Adicionar ${moeda(meta)} ao valor guardado da meta?`);
@@ -576,680 +592,133 @@ export default function App() {
           Vamos organizar seu mês?
         </p>
 
-        <div style={{ display: "flex", gap: "12px", marginTop: "18px" }}>
-          <button onClick={() => setOcultarValores(!ocultarValores)} style={{ flex: 1, padding: "14px", borderRadius: "20px", border: "1px solid rgba(255,255,255,0.3)", background: "rgba(255,255,255,0.16)", color: "white", fontWeight: "bold", fontSize: "15px" }}>
+        <div style={{ display: "flex", gap: "10px", marginTop: "18px", maxWidth: "330px" }}>
+          <button onClick={() => setOcultarValores(!ocultarValores)} style={{ flex: 1, padding: "10px", borderRadius: "16px", border: "1px solid rgba(255,255,255,0.25)", background: "rgba(255,255,255,0.14)", color: "white", fontWeight: "bold", fontSize: "13px" }}>
             {ocultarValores ? "👁 Mostrar" : "🙈 Ocultar"}
           </button>
 
           {!usuario ? (
-            <button onClick={loginGoogle} style={{ flex: 1, padding: "14px", borderRadius: "20px", border: "none", background: "white", color: "#0D47A1", fontWeight: "bold", fontSize: "15px" }}>
+            <button onClick={loginGoogle} style={{ flex: 1, padding: "10px", borderRadius: "16px", border: "none", background: "white", color: "#0D47A1", fontWeight: "bold", fontSize: "13px" }}>
               🔐 Google
             </button>
           ) : (
-            <button onClick={logoutGoogle} style={{ flex: 1, padding: "14px", borderRadius: "20px", border: "none", background: "#d32f2f", color: "white", fontWeight: "bold" }}>
+            <button onClick={logoutGoogle} style={{ flex: 1, padding: "10px", borderRadius: "16px", border: "none", background: "#d32f2f", color: "white", fontWeight: "bold", fontSize: "13px" }}>
               Sair
             </button>
           )}
         </div>
 
-  <div
-  style={{
-    marginTop: "26px",
-    display: "flex",
-    flexDirection: "column",
-    gap: "18px",
-  }}
->
-  {/* RESUMO SUPERIOR */}
-  <div
-    style={{
-      background: "rgba(0,42,120,0.32)",
-      borderRadius: "30px",
-      padding: "22px",
-      border: "1px solid rgba(255,255,255,0.16)",
-      boxShadow: "inset 0 0 30px rgba(255,255,255,0.06)",
-    }}
-  >
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: "1fr 1fr 1fr",
-        gap: "18px",
-        alignItems: "center",
-      }}
-    >
-      {/* ENTRADAS */}
-      <div style={{ textAlign: "center" }}>
-        <div
-          style={{
-            width: "72px",
-            height: "72px",
-            borderRadius: "50%",
-            background: "#22c55e",
-            margin: "0 auto 14px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: "34px",
-            boxShadow: "0 10px 24px rgba(34,197,94,0.35)",
-          }}
-        >
-          ↓
-        </div>
+        <div style={{ marginTop: "26px", display: "flex", flexDirection: "column", gap: "16px" }}>
+          <div style={{ background: "rgba(0,42,120,0.32)", borderRadius: "28px", padding: "18px", border: "1px solid rgba(255,255,255,0.16)", boxShadow: "inset 0 0 30px rgba(255,255,255,0.06)" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", gap: "14px", alignItems: "center" }}>
+              <div style={{ flex: 1 }}>
+                <p style={{ margin: 0, fontSize: "14px", fontWeight: "bold" }}>
+                  Saldo livre após meta ⓘ
+                </p>
 
-        <h3
-          style={{
-            margin: 0,
-            color: "#86efac",
-            fontSize: "17px",
-          }}
-        >
-          Entradas
-        </h3>
+                <h1 style={{ color: "#FDD835", fontSize: "30px", margin: "10px 0 10px", fontWeight: "900", lineHeight: "32px" }}>
+                  {moeda(saldo)}
+                </h1>
 
-        <h2
-          style={{
-            margin: "10px 0",
-            color: "white",
-            fontSize: "18px",
-            fontWeight: "900",
-          }}
-        >
-          {moeda(receitas)}
-        </h2>
+                <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "rgba(255,255,255,0.12)", padding: "8px 13px", borderRadius: "999px", fontWeight: "bold", color: "#d9ff7a", fontSize: "13px" }}>
+                  ✅ {statusLimpo}
+                </div>
+              </div>
 
-        <div
-          style={{
-            display: "inline-block",
-            background: "rgba(34,197,94,0.20)",
-            color: "#86efac",
-            padding: "8px 16px",
-            borderRadius: "999px",
-            fontSize: "14px",
-            fontWeight: "bold",
-          }}
-        >
-          + receitas
-        </div>
-      </div>
+              <div style={{ width: "92px", height: "92px", minWidth: "92px", borderRadius: "50%", background: "conic-gradient(#8cff4f 0% 12%, #60a5fa 12% " + progresso + "%, rgba(255,255,255,0.15) " + progresso + "% 100%)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 12px 28px rgba(0,0,0,0.25)" }}>
+                <div style={{ width: "68px", height: "68px", borderRadius: "50%", background: "#0D47A1", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", color: "white", fontWeight: "bold", textAlign: "center" }}>
+                  <span style={{ fontSize: "23px", lineHeight: "23px" }}>
+                    {progresso.toFixed(0)}%
+                  </span>
 
-      {/* SAÍDAS */}
-      <div
-        style={{
-          textAlign: "center",
-          borderLeft: "1px solid rgba(255,255,255,0.12)",
-          borderRight: "1px solid rgba(255,255,255,0.12)",
-          padding: "0 12px",
-        }}
-      >
-        <div
-          style={{
-            width: "72px",
-            height: "72px",
-            borderRadius: "50%",
-            background: "#ef4444",
-            margin: "0 auto 14px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: "34px",
-            boxShadow: "0 10px 24px rgba(239,68,68,0.35)",
-          }}
-        >
-          ↑
-        </div>
-
-        <h3
-          style={{
-            margin: 0,
-            color: "#fca5a5",
-            fontSize: "17px",
-          }}
-        >
-          Saídas
-        </h3>
-
-        <h2
-          style={{
-            margin: "10px 0",
-            color: "white",
-            fontSize: "18px",
-            fontWeight: "900",
-          }}
-        >
-          {moeda(saidas)}
-        </h2>
-
-        <div
-          style={{
-            display: "inline-block",
-            background: "rgba(236,72,153,0.18)",
-            color: "#fda4af",
-            padding: "8px 16px",
-            borderRadius: "999px",
-            fontSize: "14px",
-            fontWeight: "bold",
-          }}
-        >
-          despesas
-        </div>
-      </div>
-
-      {/* XP */}
-      <div style={{ textAlign: "center" }}>
-        <div
-          style={{
-            background: "rgba(255,255,255,0.06)",
-            borderRadius: "24px",
-            padding: "14px",
-          }}
-        >
-          <div
-            style={{
-              fontSize: "15px",
-              fontWeight: "bold",
-              marginBottom: "8px",
-            }}
-          >
-            🛡️ NÍVEL 1
-          </div>
-
-          <div
-            style={{
-              fontSize: "20px",
-              fontWeight: "900",
-              marginBottom: "14px",
-            }}
-          >
-            Iniciante
-            <br />
-            Financeiro
-          </div>
-
-          <div
-            style={{
-              width: "100%",
-              height: "12px",
-              background: "rgba(255,255,255,0.08)",
-              borderRadius: "999px",
-              overflow: "hidden",
-              marginBottom: "10px",
-            }}
-          >
-            <div
-              style={{
-                width: `${progressoXp}%`,
-                height: "12px",
-                background: "#FDD835",
-                borderRadius: "999px",
-              }}
-            />
-          </div>
-
-          <div
-            style={{
-              color: "#FDD835",
-              fontWeight: "bold",
-              fontSize: "16px",
-            }}
-          >
-            {xp} XP
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  {/* SALDO */}
-  <div
-    style={{
-      background: "rgba(0,42,120,0.32)",
-      borderRadius: "30px",
-      padding: "24px",
-      border: "1px solid rgba(255,255,255,0.16)",
-      boxShadow: "inset 0 0 30px rgba(255,255,255,0.06)",
-    }}
-  >
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        gap: "18px",
-        alignItems: "center",
-      }}
-    >
-      <div style={{ flex: 1 }}>
-        <p
-          style={{
-            margin: 0,
-            fontSize: "16px",
-            fontWeight: "bold",
-          }}
-        >
-          Saldo livre após meta ⓘ
-        </p>
-
-        <h1
-          style={{
-            color: "#FDD835",
-            fontSize: "56px",
-            margin: "14px 0 14px",
-            fontWeight: "900",
-            lineHeight: "54px",
-          }}
-        >
-          {moeda(saldo)}
-        </h1>
-
-        <div
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "10px",
-            background: "#0b7a75",
-            padding: "14px 20px",
-            borderRadius: "999px",
-            fontWeight: "bold",
-            color: "#d9ff7a",
-            fontSize: "17px",
-          }}
-        >
-          ✅ {statusLimpo}
-        </div>
-      </div>
-
-      <div
-        style={{
-          width: "180px",
-          height: "180px",
-          minWidth: "180px",
-          borderRadius: "50%",
-          background:
-            "conic-gradient(#8cff4f 0% 12%, #60a5fa 12% " +
-            progresso +
-            "%, rgba(255,255,255,0.15) " +
-            progresso +
-            "% 100%)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          boxShadow: "0 12px 28px rgba(0,0,0,0.25)",
-        }}
-      >
-        <div
-          style={{
-            width: "130px",
-            height: "130px",
-            borderRadius: "50%",
-            background: "#0D47A1",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            flexDirection: "column",
-            color: "white",
-            fontWeight: "bold",
-            textAlign: "center",
-            padding: "12px",
-          }}
-        >
-          <span
-            style={{
-              fontSize: "52px",
-              lineHeight: "52px",
-            }}
-          >
-            {progresso.toFixed(0)}%
-          </span>
-
-          <span
-            style={{
-              fontSize: "16px",
-              marginTop: "6px",
-              opacity: 0.95,
-            }}
-          >
-            do salário usado
-          </span>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-{tela === "inicio" && (
-  <div style={{ padding: "20px", marginTop: "-24px" }}>
-
-    <div style={card}>
-      <h2
-        style={{
-          marginTop: 0,
-          marginBottom: "18px",
-          color: "white",
-          fontSize: "20px",
-          letterSpacing: "1px",
-          fontWeight: "900",
-        }}
-      >
-        VISÃO GERAL DO MÊS
-      </h2>
-
-      <div
-        style={{
-          background: "linear-gradient(180deg,#003da5,#002f80)",
-          borderRadius: "28px",
-          padding: "22px",
-          border: "1px solid rgba(255,255,255,0.08)",
-        }}
-      >
-
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: "18px",
-          }}
-        >
-
-          <div
-            style={{
-              textAlign: "center",
-              borderRight: "1px solid rgba(255,255,255,0.12)",
-              paddingRight: "12px",
-            }}
-          >
-            <div style={{ fontSize: "42px" }}>⬇️</div>
-
-            <p
-              style={{
-                color: "#7CFFB2",
-                margin: "8px 0 4px",
-                fontWeight: "bold",
-                fontSize: "18px",
-              }}
-            >
-              Entradas
-            </p>
-
-            <h3
-              style={{
-                color: "white",
-                margin: 0,
-                fontSize: "24px",
-              }}
-            >
-              {moeda(receitas)}
-            </h3>
-
-            <div
-              style={{
-                marginTop: "10px",
-                display: "inline-block",
-                background: "rgba(0,255,140,0.15)",
-                color: "#7CFFB2",
-                padding: "6px 12px",
-                borderRadius: "999px",
-                fontSize: "12px",
-                fontWeight: "bold",
-              }}
-            >
-              + receitas
+                  <span style={{ fontSize: "9px", marginTop: "3px", opacity: 0.95 }}>
+                    usado
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
 
-          <div style={{ textAlign: "center" }}>
-            <div style={{ fontSize: "42px" }}>⬆️</div>
+          <div style={{ background: "rgba(0,42,120,0.32)", borderRadius: "28px", padding: "16px", border: "1px solid rgba(255,255,255,0.16)", boxShadow: "inset 0 0 30px rgba(255,255,255,0.06)" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+              <div style={{ textAlign: "center", background: "rgba(255,255,255,0.07)", borderRadius: "22px", padding: "14px" }}>
+                <div style={{ width: "46px", height: "46px", borderRadius: "50%", background: "#22c55e", margin: "0 auto 8px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "24px" }}>
+                  ↓
+                </div>
 
-            <p
-              style={{
-                color: "#FF8A8A",
-                margin: "8px 0 4px",
-                fontWeight: "bold",
-                fontSize: "18px",
-              }}
-            >
-              Saídas
-            </p>
+                <p style={{ margin: 0, color: "#86efac", fontWeight: "bold", fontSize: "14px" }}>
+                  Entradas
+                </p>
 
-            <h3
-              style={{
-                color: "white",
-                margin: 0,
-                fontSize: "24px",
-              }}
-            >
-              {moeda(saidas)}
-            </h3>
+                <strong style={{ display: "block", color: "white", marginTop: "6px", fontSize: "14px" }}>
+                  {moeda(receitas)}
+                </strong>
+              </div>
 
-            <div
-              style={{
-                marginTop: "10px",
-                display: "inline-block",
-                background: "rgba(255,80,80,0.12)",
-                color: "#FF9D9D",
-                padding: "6px 12px",
-                borderRadius: "999px",
-                fontSize: "12px",
-                fontWeight: "bold",
-              }}
-            >
-              despesas
+              <div style={{ textAlign: "center", background: "rgba(255,255,255,0.07)", borderRadius: "22px", padding: "14px" }}>
+                <div style={{ width: "46px", height: "46px", borderRadius: "50%", background: "#ef4444", margin: "0 auto 8px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "24px" }}>
+                  ↑
+                </div>
+
+                <p style={{ margin: 0, color: "#fca5a5", fontWeight: "bold", fontSize: "14px" }}>
+                  Saídas
+                </p>
+
+                <strong style={{ display: "block", color: "white", marginTop: "6px", fontSize: "14px" }}>
+                  {moeda(saidas)}
+                </strong>
+              </div>
             </div>
-          </div>
 
-          <div
-            style={{
-              textAlign: "center",
-              borderTop: "1px solid rgba(255,255,255,0.12)",
-              paddingTop: "18px",
-              borderRight: "1px solid rgba(255,255,255,0.12)",
-              paddingRight: "12px",
-            }}
-          >
-            <div style={{ fontSize: "42px" }}>🎯</div>
+            <div style={{ marginTop: "12px", background: "rgba(255,255,255,0.07)", borderRadius: "22px", padding: "14px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
+                <strong>{nivel}</strong>
+                <strong style={{ color: "#FDD835" }}>⭐ {xp} XP</strong>
+              </div>
 
-            <p
-              style={{
-                color: "#8CC8FF",
-                margin: "8px 0 4px",
-                fontWeight: "bold",
-                fontSize: "18px",
-              }}
-            >
-              Meta
-            </p>
-
-            <h3
-              style={{
-                color: "white",
-                margin: 0,
-                fontSize: "24px",
-              }}
-            >
-              {moeda(meta)}
-            </h3>
-
-            <div
-              style={{
-                marginTop: "10px",
-                display: "inline-block",
-                background: "rgba(66,165,245,0.15)",
-                color: "#8CC8FF",
-                padding: "6px 12px",
-                borderRadius: "999px",
-                fontSize: "12px",
-                fontWeight: "bold",
-              }}
-            >
-              objetivo
+              <div style={{ width: "100%", height: "10px", background: "rgba(255,255,255,0.12)", borderRadius: "999px", overflow: "hidden" }}>
+                <div style={{ width: `${progressoXp}%`, height: "10px", background: "#FDD835", borderRadius: "999px" }} />
+              </div>
             </div>
-          </div>
-
-          <div
-            style={{
-              textAlign: "center",
-              borderTop: "1px solid rgba(255,255,255,0.12)",
-              paddingTop: "18px",
-            }}
-          >
-            <div style={{ fontSize: "42px" }}>⭐</div>
-
-            <p
-              style={{
-                color: "#E6A8FF",
-                margin: "8px 0 4px",
-                fontWeight: "bold",
-                fontSize: "18px",
-              }}
-            >
-              XP
-            </p>
-
-            <h3
-              style={{
-                color: "white",
-                margin: 0,
-                fontSize: "24px",
-              }}
-            >
-              {xp} XP
-            </h3>
-
-            <div
-              style={{
-                marginTop: "10px",
-                display: "inline-block",
-                background: "rgba(186,104,255,0.15)",
-                color: "#E6A8FF",
-                padding: "6px 12px",
-                borderRadius: "999px",
-                fontSize: "12px",
-                fontWeight: "bold",
-              }}
-            >
-              evolução
-            </div>
-          </div>
-        </div>
-
-        <div
-          style={{
-            marginTop: "24px",
-            background: "rgba(255,255,255,0.06)",
-            borderRadius: "22px",
-            padding: "16px",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              marginBottom: "10px",
-              color: "white",
-              fontWeight: "bold",
-            }}
-          >
-            <span>{nivel}</span>
-            <span>{xp} XP</span>
-          </div>
-
-          <div
-            style={{
-              width: "100%",
-              height: "12px",
-              background: "rgba(255,255,255,0.12)",
-              borderRadius: "999px",
-              overflow: "hidden",
-            }}
-          >
-            <div
-              style={{
-                width: `${progressoXp}%`,
-                height: "12px",
-                background: "linear-gradient(90deg,#FDD835,#FFE96B)",
-                borderRadius: "999px",
-              }}
-            />
           </div>
         </div>
       </div>
-    </div>
 
-    <div style={card}>
-      <h2 style={{ marginTop: 0 }}>
-        {metaVisual.icone} {nomeMeta}
-      </h2>
+      {tela === "inicio" && (
+        <div style={{ padding: "20px", marginTop: "-18px" }}>
+          <div style={card}>
+            <h2 style={{ marginTop: 0 }}>
+              {metaVisual.icone} {nomeMeta}
+            </h2>
 
-      <p>
-        Objetivo: <strong>{moeda(valorMetaTotal)}</strong>
-      </p>
+            <p>Objetivo: <strong>{moeda(valorMetaTotal)}</strong></p>
+            <p>Guardado: <strong>{moeda(valorGuardado)}</strong></p>
+            <p>Falta: <strong>{moeda(faltaMeta)}</strong></p>
+            <p><strong>{mensagemMetaEspecial}</strong></p>
 
-      <p>
-        Guardado: <strong>{moeda(valorGuardado)}</strong>
-      </p>
+            <div style={{ width: "100%", height: "20px", background: "#e5e7eb", borderRadius: "999px", overflow: "hidden", marginTop: "12px" }}>
+              <div style={{ width: `${progressoMeta}%`, height: "20px", background: "linear-gradient(90deg,#0D47A1,#42a5f5)", borderRadius: "999px" }} />
+            </div>
+          </div>
 
-      <p>
-        Falta: <strong>{moeda(faltaMeta)}</strong>
-      </p>
+          <div style={card}>
+            <h2 style={{ marginTop: 0 }}>🚦 Alertas inteligentes</h2>
 
-      <p>
-        <strong>{mensagemMetaEspecial}</strong>
-      </p>
+            {alertasInteligentes.map((item, index) => (
+              <div key={index} style={{ background: item.cor, borderRadius: "18px", padding: "14px", marginBottom: "10px" }}>
+                <strong style={{ color: item.textoCor }}>
+                  {item.icone} {item.titulo}
+                </strong>
 
-      <div
-        style={{
-          width: "100%",
-          height: "20px",
-          background: "#e5e7eb",
-          borderRadius: "999px",
-          overflow: "hidden",
-          marginTop: "12px",
-        }}
-      >
-        <div
-          style={{
-            width: `${progressoMeta}%`,
-            height: "20px",
-            background: "linear-gradient(90deg,#0D47A1,#42a5f5)",
-            borderRadius: "999px",
-          }}
-        />
-      </div>
-    </div>
-
-    <div style={card}>
-      <h2 style={{ marginTop: 0 }}>
-        🚦 Alertas inteligentes
-      </h2>
-
-      {alertasInteligentes.map((item, index) => (
-        <div
-          key={index}
-          style={{
-            background: item.cor,
-            borderRadius: "18px",
-            padding: "14px",
-            marginBottom: "10px",
-          }}
-        >
-          <strong style={{ color: item.textoCor }}>
-            {item.icone} {item.titulo}
-          </strong>
-
-          <p
-            style={{
-              margin: "6px 0 0",
-              color: "#374151",
-              lineHeight: "20px",
-            }}
-          >
-            {item.texto}
-          </p>
+                <p style={{ margin: "6px 0 0", color: "#374151", lineHeight: "20px" }}>
+                  {item.texto}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
-      ))}
-    </div>
+      )}
 
-  </div>
-)}
       {tela === "entradas" && (
         <div style={{ padding: "20px" }}>
           <div style={card}>

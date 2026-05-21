@@ -9,9 +9,6 @@ import {
   FaMoneyBillWave,
   FaFileInvoiceDollar,
   FaHistory,
-  FaArrowDown,
-  FaArrowUp,
-  FaStar,
 } from "react-icons/fa";
 
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
@@ -114,11 +111,7 @@ export default function App() {
     if (!arquivo) return;
 
     const leitor = new FileReader();
-
-    leitor.onload = () => {
-      setFotoPerfil(leitor.result);
-    };
-
+    leitor.onload = () => setFotoPerfil(leitor.result);
     leitor.readAsDataURL(arquivo);
   }
 
@@ -569,7 +562,7 @@ export default function App() {
 
   return (
     <div style={{ background: "#f3f7ff", minHeight: "100vh", paddingBottom: "125px", fontFamily: "Arial" }}>
-      <div style={{ background: "linear-gradient(160deg,#003c96 0%,#0057c8 48%,#0D47A1 100%)", color: "white", padding: "26px 22px 58px", borderBottomLeftRadius: "42px", borderBottomRightRadius: "42px", boxShadow: "0 18px 45px rgba(13,71,161,0.35)" }}>
+      <div style={{ background: "linear-gradient(160deg,#003c96 0%,#0057c8 48%,#0D47A1 100%)", color: "white", padding: "26px 22px 36px", borderBottomLeftRadius: "42px", borderBottomRightRadius: "42px", boxShadow: "0 18px 45px rgba(13,71,161,0.35)" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "26px" }}>
           <AppLogo />
           <AvatarPerfil />
@@ -603,102 +596,125 @@ export default function App() {
           <div style={{ display: "flex", justifyContent: "space-between", gap: "18px", alignItems: "center" }}>
             <div style={{ flex: 1 }}>
               <p style={{ margin: 0, fontSize: "15px", fontWeight: "bold" }}>Saldo livre após meta ⓘ</p>
-              <h1 style={{ color: "#FDD835", fontSize: "32px", margin: "14px 0 10px", fontWeight: "900", lineHeight: "34px" }}>
+              <h1 style={{ color: "#FDD835", fontSize: "36px", margin: "14px 0 10px", fontWeight: "900", lineHeight: "38px" }}>
                 {moeda(saldo)}
               </h1>
 
               <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "rgba(0,150,90,0.55)", padding: "10px 16px", borderRadius: "999px", fontWeight: "bold", color: "#b8ff5c" }}>
                 🟢 {statusLimpo}
               </div>
-
-              <p style={{ marginTop: "16px", fontSize: "15px", lineHeight: "22px" }}>
-                {mensagemPrincipal}
-              </p>
             </div>
 
-            <div style={{ width: "96px", height: "96px", minWidth: "96px", borderRadius: "50%", background: "conic-gradient(#8cff4f 0% 12%, #FDD835 12% " + progresso + "%, rgba(255,255,255,0.22) " + progresso + "% 100%)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 12px 28px rgba(0,0,0,0.25)" }}>
-              <div style={{ width: "70px", height: "70px", borderRadius: "50%", background: "#0D47A1", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", color: "white", fontWeight: "bold" }}>
-                <span style={{ fontSize: "24px" }}>{progresso.toFixed(0)}%</span>
+            <div style={{ width: "106px", height: "106px", minWidth: "106px", borderRadius: "50%", background: "conic-gradient(#8cff4f 0% 12%, #FDD835 12% " + progresso + "%, rgba(255,255,255,0.22) " + progresso + "% 100%)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 12px 28px rgba(0,0,0,0.25)" }}>
+              <div style={{ width: "78px", height: "78px", borderRadius: "50%", background: "#0D47A1", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", color: "white", fontWeight: "bold" }}>
+                <span style={{ fontSize: "27px" }}>{progresso.toFixed(0)}%</span>
                 <span style={{ fontSize: "10px", textAlign: "center" }}>do salário usado</span>
               </div>
             </div>
           </div>
 
-          <div style={{ marginTop: "22px", borderTop: "1px solid rgba(255,255,255,0.18)", paddingTop: "18px" }}>
-            <strong>🎯 Meu objetivo: </strong>
-            <span style={{ color: "#7dd3fc", fontWeight: "bold" }}>{nomeMeta}</span>
-
-            <div style={{ display: "flex", justifyContent: "space-between", marginTop: "12px", fontSize: "14px", fontWeight: "bold" }}>
-              <span>{progressoMeta.toFixed(0)}% concluído</span>
-              <span>{moeda(valorGuardado)} / {moeda(valorMetaTotal)}</span>
+          <div style={{ marginTop: "24px", border: "1px solid rgba(255,255,255,0.25)", borderRadius: "24px", padding: "14px 8px", display: "grid", gridTemplateColumns: "repeat(4, 1fr)", textAlign: "center" }}>
+            <div>
+              <div style={{ color: "#86efac", fontWeight: "bold", fontSize: "13px" }}>Entradas</div>
+              <div style={{ fontSize: "20px", margin: "5px 0" }}>↓</div>
+              <strong style={{ fontSize: "12px" }}>{moeda(receitas)}</strong>
             </div>
 
-            <div style={{ width: "100%", height: "13px", background: "rgba(0,0,0,0.22)", borderRadius: "999px", overflow: "hidden", marginTop: "10px" }}>
-              <div style={{ width: `${progressoMeta}%`, height: "13px", background: "#42A5F5", borderRadius: "999px" }} />
+            <div style={{ borderLeft: "1px solid rgba(255,255,255,0.22)" }}>
+              <div style={{ color: "#fca5a5", fontWeight: "bold", fontSize: "13px" }}>Saídas</div>
+              <div style={{ fontSize: "20px", margin: "5px 0" }}>↑</div>
+              <strong style={{ fontSize: "12px" }}>{moeda(saidas)}</strong>
+            </div>
+
+            <div style={{ borderLeft: "1px solid rgba(255,255,255,0.22)" }}>
+              <div style={{ color: "#93c5fd", fontWeight: "bold", fontSize: "13px" }}>Meta</div>
+              <div style={{ fontSize: "20px", margin: "5px 0" }}>◎</div>
+              <strong style={{ fontSize: "12px" }}>{moeda(meta)}</strong>
+            </div>
+
+            <div style={{ borderLeft: "1px solid rgba(255,255,255,0.22)" }}>
+              <div style={{ color: "#c084fc", fontWeight: "bold", fontSize: "13px" }}>XP</div>
+              <div style={{ fontSize: "20px", margin: "5px 0" }}>⭐</div>
+              <strong style={{ fontSize: "12px" }}>{xp} XP</strong>
             </div>
           </div>
         </div>
       </div>
 
       {tela === "inicio" && (
-        <div style={{ padding: "20px", marginTop: "-38px" }}>
+        <div style={{ padding: "20px", marginTop: "-18px" }}>
           <div style={card}>
-            <h2 style={{ marginTop: 0 }}>📊 Visão geral do mês</h2>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "18px" }}>
+              <h2 style={{ margin: 0 }}>🎯 Meu objetivo</h2>
+              <span style={{ background: "#eef4ff", color: "#0D47A1", padding: "8px 14px", borderRadius: "999px", fontWeight: "bold" }}>
+                {tipoMeta} {metaVisual.icone}
+              </span>
+            </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "8px", textAlign: "center" }}>
-              <div>
-                <div style={{ color: "#059669", fontWeight: "bold" }}>Entradas</div>
-                <div style={{ fontSize: "20px", margin: "8px 0" }}>↓</div>
-                <strong>{moeda(receitas)}</strong>
+            <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
+              <div style={{ width: "78px", height: "78px", borderRadius: "28px", background: metaVisual.cor, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "36px" }}>
+                {metaVisual.icone}
               </div>
 
-              <div>
-                <div style={{ color: "#e11d48", fontWeight: "bold" }}>Saídas</div>
-                <div style={{ fontSize: "20px", margin: "8px 0" }}>↑</div>
-                <strong>{moeda(saidas)}</strong>
+              <div style={{ flex: 1 }}>
+                <h3 style={{ margin: "0 0 8px", fontSize: "22px" }}>{nomeMeta}</h3>
+
+                <div style={{ display: "flex", justifyContent: "space-between", fontWeight: "bold", color: "#0D47A1", marginBottom: "8px" }}>
+                  <span>{progressoMeta.toFixed(0)}% concluído</span>
+                  <span>{moeda(valorGuardado)} / {moeda(valorMetaTotal)}</span>
+                </div>
+
+                <div style={{ width: "100%", height: "12px", background: "#e5e7eb", borderRadius: "999px", overflow: "hidden" }}>
+                  <div style={{ width: `${progressoMeta}%`, height: "12px", background: "#2563eb", borderRadius: "999px" }} />
+                </div>
+              </div>
+            </div>
+
+            <div style={{ marginTop: "18px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px", borderTop: "1px solid #edf2ff", paddingTop: "16px" }}>
+              <div style={{ background: "#f8fbff", borderRadius: "20px", padding: "14px" }}>
+                <p style={{ margin: 0, color: "#6b7280" }}>Faltam cerca de</p>
+                <strong>{mesesRestantes} meses</strong>
               </div>
 
-              <div>
-                <div style={{ color: "#0D47A1", fontWeight: "bold" }}>Meta</div>
-                <div style={{ fontSize: "20px", margin: "8px 0" }}>◎</div>
-                <strong>{moeda(meta)}</strong>
-              </div>
-
-              <div>
-                <div style={{ color: "#7c3aed", fontWeight: "bold" }}>XP</div>
-                <div style={{ fontSize: "20px", margin: "8px 0" }}>⭐</div>
-                <strong>{xp} XP</strong>
+              <div style={{ background: "#f8fbff", borderRadius: "20px", padding: "14px" }}>
+                <p style={{ margin: 0, color: "#6b7280" }}>Falta guardar</p>
+                <strong>{moeda(faltaMeta)}</strong>
               </div>
             </div>
           </div>
 
           <div style={card}>
-            <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-              <div style={{ width: "70px", height: "70px", borderRadius: "22px", background: "#dbeafe", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "34px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+              <div style={{ width: "58px", height: "58px", borderRadius: "20px", background: "#dbeafe", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "28px" }}>
                 🎓
               </div>
 
               <div style={{ flex: 1 }}>
-                <h3 style={{ margin: "0 0 6px" }}>{nivel}</h3>
-                <p style={{ margin: 0, color: "#6b7280" }}>
-                  {xp} XP / {proximoNivel} XP para próximo nível
+                <h3 style={{ margin: "0 0 4px" }}>{nivel}</h3>
+                <p style={{ margin: 0, color: "#6b7280", fontSize: "14px" }}>
+                  {xp} XP / {proximoNivel} XP
                 </p>
 
-                <div style={{ width: "100%", height: "10px", background: "#e5e7eb", borderRadius: "999px", overflow: "hidden", marginTop: "10px" }}>
-                  <div style={{ width: `${progressoXp}%`, height: "10px", background: "#2563eb", borderRadius: "999px" }} />
+                <div style={{ width: "100%", height: "9px", background: "#e5e7eb", borderRadius: "999px", overflow: "hidden", marginTop: "9px" }}>
+                  <div style={{ width: `${progressoXp}%`, height: "9px", background: "#2563eb", borderRadius: "999px" }} />
                 </div>
               </div>
             </div>
           </div>
 
           <div style={card}>
-            <h2 style={{ marginTop: 0 }}>🚦 Alertas inteligentes</h2>
-            {alertasInteligentes.map((item, index) => (
-              <div key={index} style={{ background: item.cor, borderRadius: "22px", padding: "16px", marginBottom: "12px" }}>
-                <strong style={{ color: item.textoCor }}>{item.icone} {item.titulo}</strong>
-                <p style={{ margin: "8px 0 0", color: "#374151", lineHeight: "20px" }}>{item.texto}</p>
-              </div>
-            ))}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+              <h2 style={{ margin: 0 }}>🚦 Alertas inteligentes</h2>
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "10px" }}>
+              {alertasInteligentes.slice(0, 3).map((item, index) => (
+                <div key={index} style={{ background: item.cor, borderRadius: "18px", padding: "14px" }}>
+                  <strong style={{ color: item.textoCor }}>{item.icone} {item.titulo}</strong>
+                  <p style={{ margin: "6px 0 0", color: "#374151", lineHeight: "19px", fontSize: "14px" }}>{item.texto}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       )}

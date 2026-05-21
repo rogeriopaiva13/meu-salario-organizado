@@ -553,12 +553,7 @@ export default function App() {
 
   const AvatarPerfil = () => (
     <label style={{ cursor: "pointer" }}>
-      <input
-        type="file"
-        accept="image/*"
-        onChange={escolherFoto}
-        style={{ display: "none" }}
-      />
+      <input type="file" accept="image/*" onChange={escolherFoto} style={{ display: "none" }} />
 
       {fotoAtual ? (
         <img
@@ -688,20 +683,14 @@ export default function App() {
       {tela === "inicio" && (
         <div style={{ padding: "20px", marginTop: "-38px" }}>
           <div style={card}>
-            <h2 style={{ marginTop: 0 }}>📊 Resumo do mês</h2>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
+            <h2 style={{ marginTop: 0 }}>📊 Visão geral do mês</h2>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px", marginBottom: "18px" }}>
               <MiniCard titulo="Entradas" valor={moeda(receitas)} icone={<FaArrowDown />} cor="#eefbf5" texto="#059669" />
               <MiniCard titulo="Saídas" valor={moeda(saidas)} icone={<FaArrowUp />} cor="#fff1f2" texto="#e11d48" />
               <MiniCard titulo="Meta" valor={moeda(meta)} icone={<FaBullseye />} cor="#fff8e1" texto="#b7791f" />
-              <MiniCard titulo="Pontos" valor={`${xp} XP`} icone={<FaStar />} cor="#f3e8ff" texto="#7c3aed" />
+              <MiniCard titulo="XP" valor={`${xp} XP`} icone={<FaStar />} cor="#f3e8ff" texto="#7c3aed" />
             </div>
-          </div>
-
-          <div style={card}>
-            <h2 style={{ marginTop: 0 }}>Visão geral do mês</h2>
-            <p>💼 Total de entradas: <strong style={{ color: "#059669" }}>{moeda(receitas)}</strong></p>
-            <p>➖ Total de saídas: <strong style={{ color: "#e11d48" }}>{moeda(saidas)}</strong></p>
-            <p>🎯 Meta reservada: <strong style={{ color: "#b7791f" }}>{moeda(meta)}</strong></p>
 
             <div style={{ background: "#eef4ff", padding: "16px", borderRadius: "18px", marginTop: "14px" }}>
               <strong style={{ color: "#0D47A1" }}>Saldo livre: {moeda(saldo)}</strong>

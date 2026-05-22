@@ -224,9 +224,9 @@ progresso >= 80
 : mensagemAleatoria(mensagensNeutras);
 
 const mensagemMetaEspecial =
-progressoMeta >= 100
-? mensagemAleatoria(mensagensMeta)
-: Faltam cerca de ${mesesRestantes} meses para concluir sua meta.;
+  progressoMeta >= 100
+    ? mensagemAleatoria(mensagensMeta)
+    : `Faltam cerca de ${mesesRestantes} meses para concluir sua meta.`;
 
 const gastosPorCategoria = Object.keys(categorias)
 .map((categoria) => {

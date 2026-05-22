@@ -232,15 +232,17 @@ export default function App() {
     1
   );
 
+  const contasPendentes = contas.filter((item) => !item.pago);
+
   const contasVencendo = contas.filter((item) => {
-    if (!item.vencimento) return false;
+    if (!item.vencimento || item.pago) return false;
     const hoje = new Date().getDate();
     const dias = Number(item.vencimento) - hoje;
     return dias >= 0 && dias <= 3;
   });
 
   const contasAtrasadas = contas.filter((item) => {
-    if (!item.vencimento) return false;
+    if (!item.vencimento || item.pago) return false;
     const hoje = new Date().getDate();
     return hoje > Number(item.vencimento);
   });
@@ -396,6 +398,7 @@ export default function App() {
         valor: Number(valorConta),
         categoria: categoriaConta,
         vencimento: Number(vencimentoConta),
+        pago: false,
       },
     ]);
 
@@ -411,6 +414,19 @@ export default function App() {
 
   function removerConta(index) {
     setContas(contas.filter((_, i) => i !== index));
+  }
+
+  function alternarPagamentoConta(index) {
+    setContas(
+      contas.map((item, i) =>
+        i === index
+          ? {
+              ...item,
+              pago: !item.pago,
+            }
+          : item
+      )
+    );
   }
 
   function adicionarValorMetaMensal() {
@@ -457,13 +473,21 @@ export default function App() {
     localStorage.removeItem("extra");
   }
 
-  function statusConta(vencimento) {
+  function statusConta(vencimento, pago) {
     const hoje = new Date().getDate();
     const dia = Number(vencimento);
 
+    if (pago) {
+      return {
+        texto: "✅ Pago",
+        cor: "#ecfdf5",
+        textoCor: "#047857",
+      };
+    }
+
     if (!dia) {
       return {
-        texto: "Sem vencimento",
+        texto: "Pendente",
         cor: "#f3f4f6",
         textoCor: "#374151",
       };
@@ -494,9 +518,9 @@ export default function App() {
     }
 
     return {
-      texto: "🟢 Em dia",
-      cor: "#ecfdf5",
-      textoCor: "#047857",
+      texto: "🟡 Pendente",
+      cor: "#fefce8",
+      textoCor: "#a16207",
     };
   }
 
@@ -872,8 +896,17 @@ export default function App() {
             <button onClick={adicionarConta} style={primaryButton}>➕ Adicionar conta +5 XP</button>
           </div>
 
+          {contas.length > 0 && (
+            <div style={card}>
+              <h2 style={{ marginTop: 0 }}>📌 Resumo das contas</h2>
+              <p>Pendentes: <strong>{contasPendentes.length}</strong></p>
+              <p>Vencendo: <strong>{contasVencendo.length}</strong></p>
+              <p>Atrasadas: <strong>{contasAtrasadas.length}</strong></p>
+            </div>
+          )}
+
           {contas.map((item, index) => {
-            const status = statusConta(item.vencimento);
+            const status = statusConta(item.vencimento, item.pago);
             const iconeConta = categoriasContas[item.categoria] || "📄";
 
             return (
@@ -885,6 +918,22 @@ export default function App() {
                 <div style={{ background: status.cor, color: status.textoCor, padding: "10px", borderRadius: "14px", fontWeight: "bold", marginBottom: "12px" }}>
                   {status.texto}
                 </div>
+
+                <button
+                  onClick={() => alternarPagamentoConta(index)}
+                  style={{
+                    width: "100%",
+                    padding: "12px",
+                    borderRadius: "16px",
+                    border: "none",
+                    background: item.pago ? "#6b7280" : "#16a34a",
+                    color: "white",
+                    fontWeight: "bold",
+                    marginBottom: "10px",
+                  }}
+                >
+                  {item.pago ? "↩️ Marcar como pendente" : "✅ Marcar como pago"}
+                </button>
 
                 <button onClick={() => removerConta(index)}>Excluir</button>
               </div>

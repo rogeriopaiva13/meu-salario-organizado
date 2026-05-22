@@ -13,11 +13,7 @@ import {
 
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
-import {
-  signInWithPopup,
-  signOut,
-  onAuthStateChanged,
-} from "firebase/auth";
+import { signInWithPopup, signOut, onAuthStateChanged } from "firebase/auth";
 
 import { db, auth, provider } from "./firebase";
 
@@ -28,7 +24,6 @@ export default function App() {
   const [usuario, setUsuario] = useState(null);
 
   const [fotoPerfil, setFotoPerfil] = useState(localStorage.getItem("fotoPerfil") || "");
-
   const [nome, setNome] = useState(localStorage.getItem("nome") || "");
   const [salario, setSalario] = useState(localStorage.getItem("salario") || "");
   const [extra, setExtra] = useState(localStorage.getItem("extra") || "");
@@ -129,6 +124,7 @@ export default function App() {
 
   const moeda = (valor) => {
     if (ocultarValores) return "••••••";
+
     return Number(valor || 0).toLocaleString("pt-BR", {
       style: "currency",
       currency: "BRL",
@@ -145,6 +141,7 @@ export default function App() {
   const valorTotalMeta = Number(valorMetaTotal) || 0;
   const totalGuardado = Number(valorGuardado) || 0;
   const faltaMeta = Math.max(valorTotalMeta - totalGuardado, 0);
+
   const progressoMeta =
     valorTotalMeta > 0
       ? Math.min((totalGuardado / valorTotalMeta) * 100, 100)
@@ -251,6 +248,16 @@ export default function App() {
 
   const ultimoMes = historico[0];
   const saldoUltimoMes = ultimoMes ? Number(ultimoMes.saldo || 0) : 0;
+
+  const maiorValorHistorico = Math.max(
+    ...historico.map((item) =>
+      Math.max(
+        Number(item.entradas || 0),
+        Number(item.gastos || 0) + Number(item.contas || 0)
+      )
+    ),
+    1
+  );
 
   const conquistas = [
     {
@@ -753,6 +760,7 @@ export default function App() {
             <h2>📊 Gastos por categoria</h2>
             {gastosPorCategoria.length === 0 ? <p>Nenhum gasto lançado ainda.</p> : gastosPorCategoria.map((item) => {
               const largura = (item.total / maiorGastoCategoria) * 100;
+
               return (
                 <div key={item.categoria} style={{ marginBottom: "16px" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px" }}>
@@ -769,6 +777,7 @@ export default function App() {
 
           {gastos.map((item, index) => {
             const cat = categorias[item.categoria] || categorias.Outros;
+
             return (
               <div key={index} style={card}>
                 <span style={{ background: cat.cor, color: cat.texto, padding: "7px 13px", borderRadius: "999px", fontWeight: "bold", fontSize: "13px" }}>
@@ -854,7 +863,52 @@ export default function App() {
         <div style={{ padding: "20px" }}>
           <div style={card}>
             <h2>📈 Histórico Financeiro</h2>
+
             {historico.length === 0 && <p>Nenhum mês salvo ainda.</p>}
+
+            {historico.length > 0 && (
+              <div style={{ marginBottom: "24px" }}>
+                <h3 style={{ color: "#0D47A1", marginBottom: "16px" }}>
+                  📊 Entradas x Saídas
+                </h3>
+
+                {historico.map((item, index) => {
+                  const entradasMes = Number(item.entradas || 0);
+                  const saidasMes = Number(item.gastos || 0) + Number(item.contas || 0);
+                  const larguraEntradas = Math.min((entradasMes / maiorValorHistorico) * 100, 100);
+                  const larguraSaidas = Math.min((saidasMes / maiorValorHistorico) * 100, 100);
+
+                  return (
+                    <div key={index} style={{ background: "#f8fbff", padding: "16px", borderRadius: "22px", border: "1px solid #dde7ff", marginBottom: "14px" }}>
+                      <strong style={{ color: "#0D47A1" }}>📅 {item.mes}</strong>
+
+                      <div style={{ marginTop: "14px" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px" }}>
+                          <span style={{ color: "#047857", fontWeight: "bold" }}>💰 Entradas</span>
+                          <strong>{moeda(entradasMes)}</strong>
+                        </div>
+
+                        <div style={{ height: "14px", background: "#e5e7eb", borderRadius: "999px", overflow: "hidden" }}>
+                          <div style={{ width: `${larguraEntradas}%`, height: "14px", background: "#22c55e", borderRadius: "999px" }} />
+                        </div>
+                      </div>
+
+                      <div style={{ marginTop: "12px" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px" }}>
+                          <span style={{ color: "#be123c", fontWeight: "bold" }}>💸 Saídas</span>
+                          <strong>{moeda(saidasMes)}</strong>
+                        </div>
+
+                        <div style={{ height: "14px", background: "#e5e7eb", borderRadius: "999px", overflow: "hidden" }}>
+                          <div style={{ width: `${larguraSaidas}%`, height: "14px", background: "#ef4444", borderRadius: "999px" }} />
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
             {historico.map((item, index) => (
               <div key={index} style={{ background: "#f7faff", padding: "18px", borderRadius: "22px", marginTop: "14px", border: "1px solid #dde7ff" }}>
                 <h3 style={{ color: "#0D47A1" }}>📅 {item.mes}</h3>

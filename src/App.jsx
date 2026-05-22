@@ -494,10 +494,7 @@ boxShadow: "0 10px 24px rgba(13,71,161,0.22)",
 
 const navItem = (id, icon, label) => (
 <button
-onClick={() => {
-setTela(id);
-window.scrollTo({ top: 0, behavior: "smooth" });
-}}
+onClick={() => setTela(id)}
 style={{
 border: "none",
 background: tela === id ? "#0D47A1" : "transparent",

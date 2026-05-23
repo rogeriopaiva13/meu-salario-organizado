@@ -569,29 +569,27 @@ boxShadow: "0 10px 24px rgba(13,71,161,0.22)",
 
 const navItem = (id, icon, label) => (
 <button
-onClick={() => {
-setTela(id);
-setTimeout(() => {
-document.getElementById("conteudo-principal")?.scrollIntoView({
-behavior: "smooth",
-block: "start",
-});
-}, 100);
-}}
-style={{
-border: "none",
-background: tela === id ? "#0D47A1" : "transparent",
-color: tela === id ? "white" : "#6b7280",
-borderRadius: "22px",
-padding: "10px 12px",
-minWidth: "64px",
-fontWeight: "bold",
-fontSize: "11px",
-boxShadow: tela === id ? "0 10px 24px rgba(13,71,161,0.25)" : "none",
-}}
-
-> 
-
+  onClick={() => {
+    setTela(id);
+    setTimeout(() => {
+      document.getElementById("conteudo-principal")?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }, 100);
+  }}
+  style={{
+    border: "none",
+    background: tela === id ? "#0D47A1" : "transparent",
+    color: tela === id ? "white" : "#6b7280",
+    borderRadius: "22px",
+    padding: "10px 12px",
+    minWidth: "64px",
+    fontWeight: "bold",
+    fontSize: "11px",
+    boxShadow: tela === id ? "0 10px 24px rgba(13,71,161,0.25)" : "none",
+  }}
+>
 <div style={{ fontSize: "20px", lineHeight: "20px" }}>{icon}</div>  
 <div style={{ marginTop: "4px" }}>{label}</div>  
 </button>  

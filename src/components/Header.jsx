@@ -1,9 +1,7 @@
-
 export default function Header({
   usuario,
   nome,
   saldo,
-  progresso,
   receitas,
   saidas,
   xp,
@@ -87,7 +85,6 @@ export default function Header({
           background: "rgba(255,255,255,0.12)",
           padding: "18px",
           borderRadius: "24px",
-          backdropFilter: "blur(10px)",
         }}
       >
         <p style={{ margin: 0, opacity: 0.8 }}>Saldo atual</p>
@@ -101,8 +98,6 @@ export default function Header({
             display: "flex",
             justifyContent: "space-between",
             marginTop: "14px",
-            gap: "12px",
-            flexWrap: "wrap",
           }}
         >
           <div>
@@ -135,7 +130,6 @@ export default function Header({
                 width: progressoXp + "%",
                 height: "14px",
                 background: "#FDD835",
-                borderRadius: "999px",
               }}
             />
           </div>

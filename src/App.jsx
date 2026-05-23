@@ -65,8 +65,15 @@ export default function App() {
     JSON.parse(localStorage.getItem("modoFamilia")) || false
   );
 
-  const [gastoLorena, setGastoLorena] = useState(
-    localStorage.getItem("gastoLorena") || "0"
+  const [membrosFamilia, setMembrosFamilia] = useState(
+    JSON.parse(localStorage.getItem("membrosFamilia")) || [
+      {
+        nome: "Lorena",
+        idade: 7,
+        gasto: 0,
+        emoji: "👧",
+      },
+    ]
   );
 
   const [nomeGasto, setNomeGasto] = useState("");
@@ -268,10 +275,10 @@ export default function App() {
 
   useEffect(() => {
     localStorage.setItem(
-      "gastoLorena",
-      gastoLorena
+      "membrosFamilia",
+      JSON.stringify(membrosFamilia)
     );
-  }, [gastoLorena]);
+  }, [membrosFamilia]);
 
   const fotoAtual = fotoPerfil || usuario?.foto || "";
 
@@ -328,18 +335,23 @@ export default function App() {
     0
   );
 
-  const saidas =
-    totalGastos + totalContas;
-
   const totalFamilia = modoFamilia
-    ? Number(gastoLorena || 0)
+    ? membrosFamilia.reduce(
+        (acc, membro) =>
+          acc + Number(membro.gasto || 0),
+        0
+      )
     : 0;
+
+  const saidas =
+    totalGastos +
+    totalContas +
+    totalFamilia;
 
   const saldo =
     receitas -
     saidas -
-    (Number(meta) || 0) -
-    totalFamilia;
+    (Number(meta) || 0);
 
   const progresso =
     receitas > 0
@@ -367,13 +379,6 @@ export default function App() {
             valorTotalMeta) *
             100,
           100
-        )
-      : 0;
-
-  const mesesRestantes =
-    Number(meta) > 0
-      ? Math.ceil(
-          faltaMeta / Number(meta)
         )
       : 0;
 
@@ -414,6 +419,49 @@ export default function App() {
     fontWeight: "bold",
     fontSize: "15px",
   };
+
+  function adicionarMembro() {
+    setMembrosFamilia([
+      ...membrosFamilia,
+      {
+        nome: "Novo membro",
+        idade: 0,
+        gasto: 0,
+        emoji: "🧒",
+      },
+    ]);
+  }
+
+  function removerMembro(index) {
+    const confirmar = window.confirm(
+      "Deseja remover este membro?"
+    );
+
+    if (!confirmar) return;
+
+    setMembrosFamilia(
+      membrosFamilia.filter(
+        (_, i) => i !== index
+      )
+    );
+  }
+
+  function atualizarMembro(
+    index,
+    campo,
+    valor
+  ) {
+    setMembrosFamilia(
+      membrosFamilia.map((membro, i) =>
+        i === index
+          ? {
+              ...membro,
+              [campo]: valor,
+            }
+          : membro
+      )
+    );
+  }
 
   const navItem = (
     id,
@@ -620,9 +668,7 @@ export default function App() {
 
             <button
               onClick={() =>
-                setModoFamilia(
-                  !modoFamilia
-                )
+                setModoFamilia(!modoFamilia)
               }
               style={{
                 ...primaryButton,
@@ -639,42 +685,192 @@ export default function App() {
 
             {modoFamilia && (
               <>
-                <p>
-                  Gasto mensal da Lorena
-                </p>
+                {membrosFamilia.map(
+                  (membro, index) => (
+                    <div
+                      key={index}
+                      style={{
+                        background:
+                          "#f8fbff",
+                        padding: "18px",
+                        borderRadius:
+                          "22px",
+                        marginBottom:
+                          "18px",
+                        border:
+                          "1px solid #dbeafe",
+                      }}
+                    >
+                      <div
+                        style={{
+                          display:
+                            "flex",
+                          justifyContent:
+                            "space-between",
+                          alignItems:
+                            "center",
+                          marginBottom:
+                            "12px",
+                        }}
+                      >
+                        <h3
+                          style={{
+                            margin: 0,
+                          }}
+                        >
+                          {membro.emoji}
+                          {" "}
+                          {membro.nome}
+                        </h3>
 
-                <input
-                  style={inputStyle}
-                  value={gastoLorena}
-                  onChange={(e) =>
-                    setGastoLorena(
-                      e.target.value
-                    )
+                        <button
+                          onClick={() =>
+                            removerMembro(
+                              index
+                            )
+                          }
+                          style={{
+                            border:
+                              "none",
+                            background:
+                              "#ef4444",
+                            color:
+                              "white",
+                            borderRadius:
+                              "12px",
+                            padding:
+                              "8px 12px",
+                            fontWeight:
+                              "bold",
+                          }}
+                        >
+                          ✖
+                        </button>
+                      </div>
+
+                      <p>Nome</p>
+
+                      <input
+                        style={
+                          inputStyle
+                        }
+                        value={
+                          membro.nome
+                        }
+                        onChange={(e) =>
+                          atualizarMembro(
+                            index,
+                            "nome",
+                            e.target
+                              .value
+                          )
+                        }
+                      />
+
+                      <div
+                        style={{
+                          height:
+                            "12px",
+                        }}
+                      />
+
+                      <p>Idade</p>
+
+                      <input
+                        style={
+                          inputStyle
+                        }
+                        type="number"
+                        value={
+                          membro.idade
+                        }
+                        onChange={(e) =>
+                          atualizarMembro(
+                            index,
+                            "idade",
+                            e.target
+                              .value
+                          )
+                        }
+                      />
+
+                      <div
+                        style={{
+                          height:
+                            "12px",
+                        }}
+                      />
+
+                      <p>
+                        Gasto mensal
+                      </p>
+
+                      <input
+                        style={
+                          inputStyle
+                        }
+                        type="number"
+                        value={
+                          membro.gasto
+                        }
+                        onChange={(e) =>
+                          atualizarMembro(
+                            index,
+                            "gasto",
+                            e.target
+                              .value
+                          )
+                        }
+                      />
+                    </div>
+                  )
+                )}
+
+                <button
+                  onClick={
+                    adicionarMembro
                   }
-                  type="number"
-                  placeholder="Ex: 800"
-                />
+                  style={{
+                    ...primaryButton,
+                    marginBottom:
+                      "18px",
+                  }}
+                >
+                  ➕ Adicionar membro
+                </button>
 
                 <div
                   style={{
-                    marginTop: "20px",
                     background:
-                      "#eef4ff",
-                    padding: "18px",
-                    borderRadius: "20px",
+                      "linear-gradient(135deg,#0D47A1,#1976D2)",
+                    color:
+                      "white",
+                    padding: "22px",
+                    borderRadius:
+                      "24px",
                   }}
                 >
-                  <strong>
-                    👧 Lorena
-                  </strong>
-
-                  <h2
+                  <p
                     style={{
-                      color: "#0D47A1",
+                      margin: 0,
+                      opacity: 0.9,
                     }}
                   >
-                    {moeda(gastoLorena)}
-                  </h2>
+                    Total familiar
+                  </p>
+
+                  <h1
+                    style={{
+                      color:
+                        "#FDD835",
+                      marginBottom:
+                        0,
+                    }}
+                  >
+                    {moeda(
+                      totalFamilia
+                    )}
+                  </h1>
                 </div>
               </>
             )}

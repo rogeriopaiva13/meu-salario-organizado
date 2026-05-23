@@ -482,22 +482,25 @@ export default function App() {
         texto: "✅ Pago",
         cor: "#ecfdf5",
         textoCor: "#047857",
+        borda: "2px solid #10b981",
       };
     }
 
     if (!dia) {
       return {
-        texto: "Pendente",
-        cor: "#f3f4f6",
-        textoCor: "#374151",
+        texto: "🟡 Pendente",
+        cor: "#fefce8",
+        textoCor: "#a16207",
+        borda: "2px solid #facc15",
       };
     }
 
     if (hoje > dia) {
       return {
-        texto: "🚨 Conta atrasada",
+        texto: "🚨 Atrasada",
         cor: "#fff1f2",
         textoCor: "#be123c",
+        borda: "2px solid #ef4444",
       };
     }
 
@@ -506,6 +509,7 @@ export default function App() {
         texto: "🔴 Vence hoje",
         cor: "#fff1f2",
         textoCor: "#be123c",
+        borda: "2px solid #ef4444",
       };
     }
 
@@ -514,6 +518,7 @@ export default function App() {
         texto: "⚠️ Vence em breve",
         cor: "#fff7ed",
         textoCor: "#c2410c",
+        borda: "2px solid #f59e0b",
       };
     }
 
@@ -521,6 +526,7 @@ export default function App() {
       texto: "🟡 Pendente",
       cor: "#fefce8",
       textoCor: "#a16207",
+      borda: "2px solid #dbeafe",
     };
   }
 
@@ -870,219 +876,79 @@ export default function App() {
       )}
 
       {tela === "contas" && (
-  <div style={{ padding: "20px" }}>
-    <div style={card}>
-      <h2>📄 Contas Fixas</h2>
-
-      <input
-        style={inputStyle}
-        placeholder="Nome da conta ou cartão"
-        value={nomeConta}
-        onChange={(e) => setNomeConta(e.target.value)}
-      />
-
-      <div style={{ height: "12px" }} />
-
-      <input
-        style={inputStyle}
-        type="number"
-        placeholder="Valor"
-        value={valorConta}
-        onChange={(e) => setValorConta(e.target.value)}
-      />
-
-      <div style={{ height: "12px" }} />
-
-      <select
-        style={inputStyle}
-        value={categoriaConta}
-        onChange={(e) => setCategoriaConta(e.target.value)}
-      >
-        {Object.keys(categoriasContas).map((cat) => (
-          <option key={cat} value={cat}>
-            {categoriasContas[cat]} {cat}
-          </option>
-        ))}
-      </select>
-
-      <div style={{ height: "12px" }} />
-
-      <input
-        style={inputStyle}
-        type="number"
-        min="1"
-        max="31"
-        placeholder="Dia do vencimento. Ex: 10"
-        value={vencimentoConta}
-        onChange={(e) => setVencimentoConta(e.target.value)}
-      />
-
-      <div style={{ height: "16px" }} />
-
-      <button onClick={adicionarConta} style={primaryButton}>
-        ➕ Adicionar conta +5 XP
-      </button>
-    </div>
-
-    {contas.map((item, index) => {
-      const status = statusConta(item.vencimento);
-      const iconeConta = categoriasContas[item.categoria] || "📄";
-
-      return (
-        <div
-          key={index}
-          style={{
-            ...card,
-            border:
-              status.texto.includes("atrasada")
-                ? "2px solid #ef4444"
-                : status.texto.includes("breve")
-                ? "2px solid #f59e0b"
-                : "2px solid #dbeafe",
-            transition: "0.2s",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: "14px",
-              gap: "10px",
-            }}
-          >
-            <div>
-              <h3
-                style={{
-                  margin: 0,
-                  fontSize: "20px",
-                  color: "#0D47A1",
-                }}
-              >
-                {iconeConta} {item.nome}
-              </h3>
-
-              <p
-                style={{
-                  margin: "6px 0 0",
-                  color: "#6b7280",
-                  fontSize: "14px",
-                }}
-              >
-                Conta cadastrada no app
-              </p>
-            </div>
-
-            <div
-              style={{
-                background: status.cor,
-                color: status.textoCor,
-                padding: "10px 14px",
-                borderRadius: "999px",
-                fontWeight: "bold",
-                fontSize: "12px",
-                textAlign: "center",
-                minWidth: "110px",
-              }}
-            >
-              {status.texto}
-            </div>
+        <div style={{ padding: "20px" }}>
+          <div style={card}>
+            <h2>📄 Contas Fixas</h2>
+            <input style={inputStyle} placeholder="Nome da conta ou cartão" value={nomeConta} onChange={(e) => setNomeConta(e.target.value)} />
+            <div style={{ height: "12px" }} />
+            <input style={inputStyle} type="number" placeholder="Valor" value={valorConta} onChange={(e) => setValorConta(e.target.value)} />
+            <div style={{ height: "12px" }} />
+            <select style={inputStyle} value={categoriaConta} onChange={(e) => setCategoriaConta(e.target.value)}>
+              {Object.keys(categoriasContas).map((cat) => (
+                <option key={cat} value={cat}>{categoriasContas[cat]} {cat}</option>
+              ))}
+            </select>
+            <div style={{ height: "12px" }} />
+            <input
+              style={inputStyle}
+              type="number"
+              min="1"
+              max="31"
+              placeholder="Dia do vencimento. Ex: 10"
+              value={vencimentoConta}
+              onChange={(e) => setVencimentoConta(e.target.value)}
+            />
+            <div style={{ height: "16px" }} />
+            <button onClick={adicionarConta} style={primaryButton}>➕ Adicionar conta +5 XP</button>
           </div>
 
-          <div
-            style={{
-              background: "#f8fbff",
-              padding: "16px",
-              borderRadius: "20px",
-              border: "1px solid #dbeafe",
-              marginBottom: "16px",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                marginBottom: "10px",
-              }}
-            >
-              <span
-                style={{
-                  color: "#6b7280",
-                  fontWeight: "bold",
-                }}
-              >
-                💰 Valor
-              </span>
-
-              <strong
-                style={{
-                  color: "#111827",
-                  fontSize: "16px",
-                }}
-              >
-                {moeda(item.valor)}
-              </strong>
+          {contas.length > 0 && (
+            <div style={card}>
+              <h2 style={{ marginTop: 0 }}>📌 Resumo das contas</h2>
+              <p>Pendentes: <strong>{contasPendentes.length}</strong></p>
+              <p>Vencendo: <strong>{contasVencendo.length}</strong></p>
+              <p>Atrasadas: <strong>{contasAtrasadas.length}</strong></p>
             </div>
-
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-              }}
-            >
-              <span
-                style={{
-                  color: "#6b7280",
-                  fontWeight: "bold",
-                }}
-              >
-                📅 Vencimento
-              </span>
-
-              <strong
-                style={{
-                  color: "#111827",
-                }}
-              >
-                Dia {item.vencimento || "-"}
-              </strong>
-            </div>
-          </div>
-
-          <button
-            onClick={() => removerConta(index)}
-            style={{
-              width: "100%",
-              padding: "14px",
-              borderRadius: "18px",
-              border: "none",
-              background: "linear-gradient(135deg,#ef4444,#dc2626)",
-              color: "white",
-              fontWeight: "bold",
-              fontSize: "14px",
-              cursor: "pointer",
-            }}
-          >
-            🗑 Excluir conta
-          </button>
-        </div>
-      );
-    })}
-  </div>
-)}
+          )}
 
           {contas.map((item, index) => {
             const status = statusConta(item.vencimento, item.pago);
             const iconeConta = categoriasContas[item.categoria] || "📄";
 
             return (
-              <div key={index} style={card}>
-                <h3>{iconeConta} {item.nome}</h3>
-                <p><strong>{moeda(item.valor)}</strong></p>
-                <p>📅 Vence dia <strong>{item.vencimento || "-"}</strong></p>
+              <div
+                key={index}
+                style={{
+                  ...card,
+                  border: status.borda,
+                  opacity: item.pago ? 0.72 : 1,
+                }}
+              >
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "10px", marginBottom: "14px" }}>
+                  <div>
+                    <h3 style={{ margin: 0, color: "#0D47A1" }}>
+                      {iconeConta} {item.nome}
+                    </h3>
+                    <p style={{ margin: "6px 0 0", color: "#6b7280", fontSize: "14px" }}>
+                      {item.categoria === "Cartão" ? "Cartão de crédito" : "Conta fixa"}
+                    </p>
+                  </div>
 
-                <div style={{ background: status.cor, color: status.textoCor, padding: "10px", borderRadius: "14px", fontWeight: "bold", marginBottom: "12px" }}>
-                  {status.texto}
+                  <div style={{ background: status.cor, color: status.textoCor, padding: "9px 12px", borderRadius: "999px", fontWeight: "bold", fontSize: "12px", textAlign: "center" }}>
+                    {status.texto}
+                  </div>
+                </div>
+
+                <div style={{ background: "#f8fbff", padding: "16px", borderRadius: "20px", border: "1px solid #dbeafe", marginBottom: "16px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "10px" }}>
+                    <span style={{ color: "#6b7280", fontWeight: "bold" }}>💰 Valor</span>
+                    <strong>{moeda(item.valor)}</strong>
+                  </div>
+
+                  <div style={{ display: "flex", justifyContent: "space-between" }}>
+                    <span style={{ color: "#6b7280", fontWeight: "bold" }}>📅 Vencimento</span>
+                    <strong>Dia {item.vencimento || "-"}</strong>
+                  </div>
                 </div>
 
                 <button
@@ -1101,7 +967,20 @@ export default function App() {
                   {item.pago ? "↩️ Marcar como pendente" : "✅ Marcar como pago"}
                 </button>
 
-                <button onClick={() => removerConta(index)}>Excluir</button>
+                <button
+                  onClick={() => removerConta(index)}
+                  style={{
+                    width: "100%",
+                    padding: "12px",
+                    borderRadius: "16px",
+                    border: "none",
+                    background: "#ef4444",
+                    color: "white",
+                    fontWeight: "bold",
+                  }}
+                >
+                  🗑 Excluir conta
+                </button>
               </div>
             );
           })}

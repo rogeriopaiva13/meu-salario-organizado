@@ -14,7 +14,7 @@ FaHistory,
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { signInWithPopup, signOut, onAuthStateChanged } from "firebase/auth";
 import { db, auth, provider } from "./firebase";
-
+import Header from "./components/Header";
 export default function App() {
 const [loading, setLoading] = useState(true);
 const [tela, setTela] = useState("inicio");

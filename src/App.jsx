@@ -1,3 +1,8 @@
+// ===============================
+// APP COMPLETO - MEU SALÁRIO ORGANIZADO
+// VERSÃO FAMÍLIA + RESTAURADA
+// ===============================
+
 import React, { useState, useEffect } from "react";
 
 import {
@@ -9,13 +14,22 @@ import {
   FaMoneyBillWave,
   FaFileInvoiceDollar,
   FaHistory,
+  FaUsers,
+  FaPlus,
+  FaTrash,
 } from "react-icons/fa";
 
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { signInWithPopup, signOut, onAuthStateChanged } from "firebase/auth";
+
 import { db, auth, provider } from "./firebase";
 
 export default function App() {
+
+  // ===============================
+  // ESTADOS
+  // ===============================
+
   const [loading, setLoading] = useState(true);
   const [tela, setTela] = useState("inicio");
   const [ocultarValores, setOcultarValores] = useState(false);
@@ -61,33 +75,42 @@ export default function App() {
     Number(localStorage.getItem("xp")) || 0
   );
 
-  const [modoFamilia, setModoFamilia] = useState(
-    JSON.parse(localStorage.getItem("modoFamilia")) || false
-  );
+  // ===============================
+  // MODO FAMÍLIA
+  // ===============================
 
-  const [membrosFamilia, setMembrosFamilia] = useState(
+  const [membros, setMembros] = useState(
     JSON.parse(localStorage.getItem("membrosFamilia")) || [
       {
-        nome: "Lorena",
-        idade: 7,
-        gasto: 0,
-        emoji: "👧",
+        nome: "Shirley",
+        salario: 0,
       },
     ]
   );
 
+  const [novoMembro, setNovoMembro] = useState("");
+  const [novoSalarioMembro, setNovoSalarioMembro] = useState("");
+
+  // ===============================
+  // GASTOS
+  // ===============================
+
   const [nomeGasto, setNomeGasto] = useState("");
   const [valorGasto, setValorGasto] = useState("");
-  const [categoriaGasto, setCategoriaGasto] =
-    useState("Alimentação");
+  const [categoriaGasto, setCategoriaGasto] = useState("Alimentação");
+
+  // ===============================
+  // CONTAS
+  // ===============================
 
   const [nomeConta, setNomeConta] = useState("");
   const [valorConta, setValorConta] = useState("");
-  const [categoriaConta, setCategoriaConta] =
-    useState("Luz");
+  const [categoriaConta, setCategoriaConta] = useState("Luz");
+  const [vencimentoConta, setVencimentoConta] = useState("");
 
-  const [vencimentoConta, setVencimentoConta] =
-    useState("");
+  // ===============================
+  // LISTAS
+  // ===============================
 
   const [gastos, setGastos] = useState(
     JSON.parse(localStorage.getItem("gastos")) || []
@@ -101,42 +124,17 @@ export default function App() {
     JSON.parse(localStorage.getItem("historicoFinanceiro")) || []
   );
 
+  // ===============================
+  // CATEGORIAS
+  // ===============================
+
   const categorias = {
-    Alimentação: {
-      icone: "🍔",
-      cor: "#fff3e0",
-      texto: "#e65100",
-    },
-
-    Transporte: {
-      icone: "🚗",
-      cor: "#e3f2fd",
-      texto: "#0D47A1",
-    },
-
-    Casa: {
-      icone: "🏠",
-      cor: "#fff8e1",
-      texto: "#8a6d00",
-    },
-
-    Saúde: {
-      icone: "💊",
-      cor: "#e8f5e9",
-      texto: "#1b5e20",
-    },
-
-    Lazer: {
-      icone: "🎮",
-      cor: "#f3e5f5",
-      texto: "#6a1b9a",
-    },
-
-    Outros: {
-      icone: "🛒",
-      cor: "#e0f2f1",
-      texto: "#00695c",
-    },
+    Alimentação: { icone: "🍔", cor: "#fff3e0", texto: "#e65100" },
+    Transporte: { icone: "🚗", cor: "#e3f2fd", texto: "#0D47A1" },
+    Casa: { icone: "🏠", cor: "#fff8e1", texto: "#8a6d00" },
+    Saúde: { icone: "💊", cor: "#e8f5e9", texto: "#1b5e20" },
+    Lazer: { icone: "🎮", cor: "#f3e5f5", texto: "#6a1b9a" },
+    Outros: { icone: "🛒", cor: "#e0f2f1", texto: "#00695c" },
   };
 
   const categoriasContas = {
@@ -150,36 +148,18 @@ export default function App() {
   };
 
   const metasOpcoes = {
-    Casa: {
-      icone: "🏠",
-      cor: "#e8f1ff",
-      texto: "#0D47A1",
-    },
-
-    Viagem: {
-      icone: "✈️",
-      cor: "#fff8e1",
-      texto: "#b7791f",
-    },
-
-    Carro: {
-      icone: "🚗",
-      cor: "#e8f5e9",
-      texto: "#1b5e20",
-    },
-
-    Outros: {
-      icone: "🎯",
-      cor: "#f3e5f5",
-      texto: "#6a1b9a",
-    },
+    Casa: { icone: "🏠", cor: "#e8f1ff", texto: "#0D47A1" },
+    Viagem: { icone: "✈️", cor: "#fff8e1", texto: "#b7791f" },
+    Carro: { icone: "🚗", cor: "#e8f5e9", texto: "#1b5e20" },
+    Outros: { icone: "🎯", cor: "#f3e5f5", texto: "#6a1b9a" },
   };
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 900);
+  // ===============================
+  // EFFECTS
+  // ===============================
 
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 900);
     return () => clearTimeout(timer);
   }, []);
 
@@ -224,17 +204,11 @@ export default function App() {
   }, [nomeMeta]);
 
   useEffect(() => {
-    localStorage.setItem(
-      "valorMetaTotal",
-      valorMetaTotal
-    );
+    localStorage.setItem("valorMetaTotal", valorMetaTotal);
   }, [valorMetaTotal]);
 
   useEffect(() => {
-    localStorage.setItem(
-      "valorGuardado",
-      valorGuardado
-    );
+    localStorage.setItem("valorGuardado", valorGuardado);
   }, [valorGuardado]);
 
   useEffect(() => {
@@ -246,17 +220,11 @@ export default function App() {
   }, [xp]);
 
   useEffect(() => {
-    localStorage.setItem(
-      "gastos",
-      JSON.stringify(gastos)
-    );
+    localStorage.setItem("gastos", JSON.stringify(gastos));
   }, [gastos]);
 
   useEffect(() => {
-    localStorage.setItem(
-      "contasLista",
-      JSON.stringify(contas)
-    );
+    localStorage.setItem("contasLista", JSON.stringify(contas));
   }, [contas]);
 
   useEffect(() => {
@@ -268,17 +236,14 @@ export default function App() {
 
   useEffect(() => {
     localStorage.setItem(
-      "modoFamilia",
-      JSON.stringify(modoFamilia)
-    );
-  }, [modoFamilia]);
-
-  useEffect(() => {
-    localStorage.setItem(
       "membrosFamilia",
-      JSON.stringify(membrosFamilia)
+      JSON.stringify(membros)
     );
-  }, [membrosFamilia]);
+  }, [membros]);
+
+  // ===============================
+  // FOTO
+  // ===============================
 
   const fotoAtual = fotoPerfil || usuario?.foto || "";
 
@@ -289,26 +254,20 @@ export default function App() {
 
     const leitor = new FileReader();
 
-    leitor.onload = () => {
-      setFotoPerfil(leitor.result);
-    };
+    leitor.onload = () => setFotoPerfil(leitor.result);
 
     leitor.readAsDataURL(arquivo);
   }
 
-  function removerFotoPerfil() {
-    const confirmar = window.confirm(
-      "Deseja remover a foto do perfil?"
-    );
-
-    if (!confirmar) return;
-
-    setFotoPerfil("");
-    localStorage.removeItem("fotoPerfil");
-  }
+  // ===============================
+  // MOEDA
+  // ===============================
 
   const moeda = (valor) => {
-    if (ocultarValores) return "••••••";
+
+    if (ocultarValores) {
+      return "••••••";
+    }
 
     return Number(valor || 0).toLocaleString(
       "pt-BR",
@@ -319,190 +278,128 @@ export default function App() {
     );
   };
 
+  // ===============================
+  // CÁLCULOS
+  // ===============================
+
   const receitas =
     (Number(salario) || 0) +
     (Number(extra) || 0);
 
+  const totalFamilia = membros.reduce(
+    (acc, item) => acc + Number(item.salario || 0),
+    0
+  );
+
   const totalGastos = gastos.reduce(
-    (acc, item) =>
-      acc + Number(item.valor || 0),
+    (acc, item) => acc + Number(item.valor || 0),
     0
   );
 
   const totalContas = contas.reduce(
-    (acc, item) =>
-      acc + Number(item.valor || 0),
+    (acc, item) => acc + Number(item.valor || 0),
     0
   );
-
-  const totalFamilia = modoFamilia
-    ? membrosFamilia.reduce(
-        (acc, membro) =>
-          acc + Number(membro.gasto || 0),
-        0
-      )
-    : 0;
-
-  const saidas =
-    totalGastos +
-    totalContas +
-    totalFamilia;
 
   const saldo =
-    receitas -
-    saidas -
-    (Number(meta) || 0);
+    receitas +
+    totalFamilia -
+    totalGastos -
+    totalContas -
+    Number(meta || 0);
 
-  const progresso =
-    receitas > 0
-      ? Math.min(
-          (saidas / receitas) * 100,
-          100
-        )
-      : 0;
+  // ===============================
+  // FUNÇÕES
+  // ===============================
 
-  const valorTotalMeta =
-    Number(valorMetaTotal) || 0;
-
-  const totalGuardado =
-    Number(valorGuardado) || 0;
-
-  const faltaMeta = Math.max(
-    valorTotalMeta - totalGuardado,
-    0
-  );
-
-  const progressoMeta =
-    valorTotalMeta > 0
-      ? Math.min(
-          (totalGuardado /
-            valorTotalMeta) *
-            100,
-          100
-        )
-      : 0;
-
-  const metaVisual =
-    metasOpcoes[tipoMeta] ||
-    metasOpcoes.Outros;
-
-  const inputStyle = {
-    width: "100%",
-    padding: "16px",
-    borderRadius: "20px",
-    border: "1px solid #d9e2f3",
-    fontSize: "16px",
-    boxSizing: "border-box",
-    outline: "none",
-    background: "#f9fbff",
-  };
-
-  const card = {
-    background: "white",
-    padding: "22px",
-    borderRadius: "30px",
-    marginBottom: "18px",
-    boxShadow:
-      "0 16px 40px rgba(13,71,161,0.10)",
-    border:
-      "1px solid rgba(13,71,161,0.06)",
-  };
-
-  const primaryButton = {
-    width: "100%",
-    padding: "16px",
-    borderRadius: "20px",
-    border: "none",
-    background:
-      "linear-gradient(135deg,#0D47A1,#1976D2)",
-    color: "white",
-    fontWeight: "bold",
-    fontSize: "15px",
-  };
+  function ganharXp(valor) {
+    setXp((prev) => prev + valor);
+  }
 
   function adicionarMembro() {
-    setMembrosFamilia([
-      ...membrosFamilia,
+
+    if (!novoMembro || !novoSalarioMembro) return;
+
+    setMembros([
+      ...membros,
       {
-        nome: "Novo membro",
-        idade: 0,
-        gasto: 0,
-        emoji: "🧒",
+        nome: novoMembro,
+        salario: Number(novoSalarioMembro),
       },
     ]);
+
+    setNovoMembro("");
+    setNovoSalarioMembro("");
+
+    ganharXp(10);
   }
 
   function removerMembro(index) {
-    const confirmar = window.confirm(
-      "Deseja remover este membro?"
-    );
-
-    if (!confirmar) return;
-
-    setMembrosFamilia(
-      membrosFamilia.filter(
-        (_, i) => i !== index
-      )
+    setMembros(
+      membros.filter((_, i) => i !== index)
     );
   }
 
-  function atualizarMembro(
-    index,
-    campo,
-    valor
-  ) {
-    setMembrosFamilia(
-      membrosFamilia.map((membro, i) =>
-        i === index
-          ? {
-              ...membro,
-              [campo]: valor,
-            }
-          : membro
-      )
-    );
+  async function adicionarGasto() {
+
+    if (!nomeGasto || !valorGasto) return;
+
+    const novo = {
+      nome: nomeGasto,
+      valor: Number(valorGasto),
+      categoria: categoriaGasto,
+    };
+
+    setGastos([...gastos, novo]);
+
+    ganharXp(5);
+
+    try {
+
+      await addDoc(collection(db, "gastos"), {
+        ...novo,
+        usuario: usuario?.nome || nome || "Usuário",
+        criadoEm: serverTimestamp(),
+      });
+
+    } catch (error) {
+
+      console.error(error);
+
+    }
+
+    setNomeGasto("");
+    setValorGasto("");
   }
 
-  const navItem = (
-    id,
-    icon,
-    label
-  ) => (
-    <button
-      onClick={() => setTela(id)}
-      style={{
-        border: "none",
-        background:
-          tela === id
-            ? "#0D47A1"
-            : "transparent",
-        color:
-          tela === id
-            ? "white"
-            : "#6b7280",
-        borderRadius: "22px",
-        padding: "10px 12px",
-        minWidth: "64px",
-        fontWeight: "bold",
-        fontSize: "11px",
-      }}
-    >
-      <div
-        style={{
-          fontSize: "20px",
-          lineHeight: "20px",
-        }}
-      >
-        {icon}
-      </div>
+  function adicionarConta() {
 
-      <div style={{ marginTop: "4px" }}>
-        {label}
-      </div>
-    </button>
-  );
+    if (!nomeConta || !valorConta) return;
+
+    setContas([
+      ...contas,
+      {
+        nome: nomeConta,
+        valor: Number(valorConta),
+        categoria: categoriaConta,
+        vencimento: vencimentoConta,
+        pago: false,
+      },
+    ]);
+
+    setNomeConta("");
+    setValorConta("");
+    setVencimentoConta("");
+
+    ganharXp(5);
+  }
+
+  // ===============================
+  // LOADING
+  // ===============================
 
   if (loading) {
+
     return (
       <div
         style={{
@@ -516,422 +413,347 @@ export default function App() {
           fontFamily: "Arial",
         }}
       >
-        <h1>Carregando...</h1>
+        <h1>💰 Meu Salário Organizado</h1>
       </div>
     );
   }
 
+  // ===============================
+  // APP
+  // ===============================
+
   return (
+
     <div
       style={{
         background: "#f3f7ff",
         minHeight: "100vh",
-        paddingBottom: "125px",
+        paddingBottom: "120px",
         fontFamily: "Arial",
       }}
     >
+
+      {/* HEADER */}
+
       <div
         style={{
           background:
             "linear-gradient(160deg,#003c96 0%,#0057c8 48%,#0D47A1 100%)",
           color: "white",
-          padding: "26px 22px 36px",
-          borderBottomLeftRadius: "42px",
-          borderBottomRightRadius: "42px",
+          padding: "24px",
+          borderBottomLeftRadius: "40px",
+          borderBottomRightRadius: "40px",
         }}
       >
-        <h1
-          style={{
-            fontSize: "34px",
-            margin: 0,
-            fontWeight: "900",
-          }}
-        >
-          👋 Olá
-          {usuario?.nome
-            ? ", " + usuario.nome
-            : nome
-            ? ", " + nome
-            : ""}
-          !
-        </h1>
-
-        <p
-          style={{
-            fontSize: "17px",
-            marginTop: "8px",
-          }}
-        >
-          Vamos organizar seu mês?
-        </p>
 
         <div
           style={{
-            marginTop: "20px",
-            background:
-              "rgba(255,255,255,0.12)",
-            padding: "20px",
-            borderRadius: "28px",
+            display: "flex",
+            justifyContent: "space-between",
           }}
         >
-          <p
-            style={{
-              margin: 0,
-              fontWeight: "bold",
-            }}
-          >
-            Saldo livre
-          </p>
+
+          <div>
+            <h1 style={{ margin: 0 }}>
+              👋 Olá {nome || "Usuário"}
+            </h1>
+
+            <p>
+              Vamos organizar sua vida financeira?
+            </p>
+          </div>
+
+          {fotoAtual ? (
+            <img
+              src={fotoAtual}
+              alt="foto"
+              style={{
+                width: "60px",
+                height: "60px",
+                borderRadius: "50%",
+                objectFit: "cover",
+              }}
+            />
+          ) : (
+            <div
+              style={{
+                width: "60px",
+                height: "60px",
+                borderRadius: "50%",
+                background: "rgba(255,255,255,0.2)",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              👤
+            </div>
+          )}
+        </div>
+
+        {/* SALDO */}
+
+        <div
+          style={{
+            background: "rgba(255,255,255,0.12)",
+            borderRadius: "25px",
+            padding: "20px",
+            marginTop: "20px",
+          }}
+        >
+
+          <p>Saldo geral</p>
 
           <h1
             style={{
               color: "#FDD835",
-              fontSize: "32px",
+              fontSize: "36px",
             }}
           >
             {moeda(saldo)}
           </h1>
 
-          {modoFamilia && (
-            <p>
-              👨‍👩‍👧 Família:
-              {" "}
-              <strong>
-                {moeda(totalFamilia)}
-              </strong>
-            </p>
-          )}
         </div>
       </div>
 
-      {tela === "inicio" && (
-        <div style={{ padding: "20px" }}>
-          <div style={card}>
-            <h2>
-              {metaVisual.icone}
-              {" "}
-              {nomeMeta}
-            </h2>
+      {/* CONTEÚDO */}
 
-            <p>
-              Objetivo:
-              {" "}
-              <strong>
-                {moeda(valorMetaTotal)}
-              </strong>
-            </p>
+      <div style={{ padding: "20px" }}>
 
-            <p>
-              Guardado:
-              {" "}
-              <strong>
-                {moeda(valorGuardado)}
-              </strong>
-            </p>
+        {/* FAMÍLIA */}
 
-            <p>
-              Falta:
-              {" "}
-              <strong>
-                {moeda(faltaMeta)}
-              </strong>
-            </p>
+        <div
+          style={{
+            background: "white",
+            padding: "20px",
+            borderRadius: "25px",
+            marginBottom: "20px",
+          }}
+        >
 
-            <div
-              style={{
-                width: "100%",
-                height: "20px",
-                background: "#e5e7eb",
-                borderRadius: "999px",
-                overflow: "hidden",
-                marginTop: "12px",
-              }}
-            >
+          <h2>
+            <FaUsers /> Modo Família
+          </h2>
+
+          <input
+            placeholder="Nome do membro"
+            value={novoMembro}
+            onChange={(e) =>
+              setNovoMembro(e.target.value)
+            }
+            style={{
+              width: "100%",
+              padding: "14px",
+              borderRadius: "14px",
+              marginBottom: "10px",
+            }}
+          />
+
+          <input
+            type="number"
+            placeholder="Salário"
+            value={novoSalarioMembro}
+            onChange={(e) =>
+              setNovoSalarioMembro(e.target.value)
+            }
+            style={{
+              width: "100%",
+              padding: "14px",
+              borderRadius: "14px",
+              marginBottom: "10px",
+            }}
+          />
+
+          <button
+            onClick={adicionarMembro}
+            style={{
+              width: "100%",
+              padding: "14px",
+              borderRadius: "14px",
+              border: "none",
+              background: "#0D47A1",
+              color: "white",
+              fontWeight: "bold",
+            }}
+          >
+            <FaPlus /> Adicionar membro
+          </button>
+
+          <div style={{ marginTop: "20px" }}>
+
+            {membros.map((item, index) => (
+
               <div
+                key={index}
                 style={{
-                  width:
-                    progressoMeta + "%",
-                  height: "20px",
-                  background:
-                    "linear-gradient(90deg,#0D47A1,#42a5f5)",
+                  background: "#f8fbff",
+                  padding: "14px",
+                  borderRadius: "16px",
+                  marginBottom: "10px",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
                 }}
-              />
-            </div>
-          </div>
-        </div>
-      )}
+              >
 
-      {tela === "familia" && (
-        <div style={{ padding: "20px" }}>
-          <div style={card}>
-            <h2>👨‍👩‍👧 Modo Família</h2>
+                <div>
+                  <strong>{item.nome}</strong>
 
-            <button
-              onClick={() =>
-                setModoFamilia(!modoFamilia)
-              }
-              style={{
-                ...primaryButton,
-                marginBottom: "20px",
-                background: modoFamilia
-                  ? "linear-gradient(135deg,#16a34a,#22c55e)"
-                  : "linear-gradient(135deg,#6b7280,#9ca3af)",
-              }}
-            >
-              {modoFamilia
-                ? "✅ Ativado"
-                : "❌ Desativado"}
-            </button>
-
-            {modoFamilia && (
-              <>
-                {membrosFamilia.map(
-                  (membro, index) => (
-                    <div
-                      key={index}
-                      style={{
-                        background:
-                          "#f8fbff",
-                        padding: "18px",
-                        borderRadius:
-                          "22px",
-                        marginBottom:
-                          "18px",
-                        border:
-                          "1px solid #dbeafe",
-                      }}
-                    >
-                      <div
-                        style={{
-                          display:
-                            "flex",
-                          justifyContent:
-                            "space-between",
-                          alignItems:
-                            "center",
-                          marginBottom:
-                            "12px",
-                        }}
-                      >
-                        <h3
-                          style={{
-                            margin: 0,
-                          }}
-                        >
-                          {membro.emoji}
-                          {" "}
-                          {membro.nome}
-                        </h3>
-
-                        <button
-                          onClick={() =>
-                            removerMembro(
-                              index
-                            )
-                          }
-                          style={{
-                            border:
-                              "none",
-                            background:
-                              "#ef4444",
-                            color:
-                              "white",
-                            borderRadius:
-                              "12px",
-                            padding:
-                              "8px 12px",
-                            fontWeight:
-                              "bold",
-                          }}
-                        >
-                          ✖
-                        </button>
-                      </div>
-
-                      <p>Nome</p>
-
-                      <input
-                        style={
-                          inputStyle
-                        }
-                        value={
-                          membro.nome
-                        }
-                        onChange={(e) =>
-                          atualizarMembro(
-                            index,
-                            "nome",
-                            e.target
-                              .value
-                          )
-                        }
-                      />
-
-                      <div
-                        style={{
-                          height:
-                            "12px",
-                        }}
-                      />
-
-                      <p>Idade</p>
-
-                      <input
-                        style={
-                          inputStyle
-                        }
-                        type="number"
-                        value={
-                          membro.idade
-                        }
-                        onChange={(e) =>
-                          atualizarMembro(
-                            index,
-                            "idade",
-                            e.target
-                              .value
-                          )
-                        }
-                      />
-
-                      <div
-                        style={{
-                          height:
-                            "12px",
-                        }}
-                      />
-
-                      <p>
-                        Gasto mensal
-                      </p>
-
-                      <input
-                        style={
-                          inputStyle
-                        }
-                        type="number"
-                        value={
-                          membro.gasto
-                        }
-                        onChange={(e) =>
-                          atualizarMembro(
-                            index,
-                            "gasto",
-                            e.target
-                              .value
-                          )
-                        }
-                      />
-                    </div>
-                  )
-                )}
+                  <p style={{ margin: 0 }}>
+                    {moeda(item.salario)}
+                  </p>
+                </div>
 
                 <button
-                  onClick={
-                    adicionarMembro
+                  onClick={() =>
+                    removerMembro(index)
                   }
                   style={{
-                    ...primaryButton,
-                    marginBottom:
-                      "18px",
+                    border: "none",
+                    background: "#ef4444",
+                    color: "white",
+                    padding: "10px",
+                    borderRadius: "12px",
                   }}
                 >
-                  ➕ Adicionar membro
+                  <FaTrash />
                 </button>
 
-                <div
-                  style={{
-                    background:
-                      "linear-gradient(135deg,#0D47A1,#1976D2)",
-                    color:
-                      "white",
-                    padding: "22px",
-                    borderRadius:
-                      "24px",
-                  }}
-                >
-                  <p
-                    style={{
-                      margin: 0,
-                      opacity: 0.9,
-                    }}
-                  >
-                    Total familiar
-                  </p>
+              </div>
+            ))}
 
-                  <h1
-                    style={{
-                      color:
-                        "#FDD835",
-                      marginBottom:
-                        0,
-                    }}
-                  >
-                    {moeda(
-                      totalFamilia
-                    )}
-                  </h1>
-                </div>
-              </>
-            )}
           </div>
         </div>
-      )}
 
-      {tela === "perfil" && (
-        <div style={{ padding: "20px" }}>
-          <div style={card}>
-            <h2>👤 Perfil</h2>
+        {/* ENTRADAS */}
 
-            <input
-              style={inputStyle}
-              value={nome}
-              onChange={(e) =>
-                setNome(
-                  e.target.value
-                )
-              }
-              placeholder="Digite seu nome"
-            />
-          </div>
+        <div
+          style={{
+            background: "white",
+            padding: "20px",
+            borderRadius: "25px",
+            marginBottom: "20px",
+          }}
+        >
+
+          <h2>💰 Entradas</h2>
+
+          <input
+            placeholder="Salário"
+            value={salario}
+            onChange={(e) =>
+              setSalario(e.target.value)
+            }
+            style={{
+              width: "100%",
+              padding: "14px",
+              borderRadius: "14px",
+              marginBottom: "10px",
+            }}
+          />
+
+          <input
+            placeholder="Renda extra"
+            value={extra}
+            onChange={(e) =>
+              setExtra(e.target.value)
+            }
+            style={{
+              width: "100%",
+              padding: "14px",
+              borderRadius: "14px",
+            }}
+          />
         </div>
-      )}
+
+        {/* GASTOS */}
+
+        <div
+          style={{
+            background: "white",
+            padding: "20px",
+            borderRadius: "25px",
+            marginBottom: "20px",
+          }}
+        >
+
+          <h2>💸 Gastos</h2>
+
+          <input
+            placeholder="Nome do gasto"
+            value={nomeGasto}
+            onChange={(e) =>
+              setNomeGasto(e.target.value)
+            }
+            style={{
+              width: "100%",
+              padding: "14px",
+              borderRadius: "14px",
+              marginBottom: "10px",
+            }}
+          />
+
+          <input
+            type="number"
+            placeholder="Valor"
+            value={valorGasto}
+            onChange={(e) =>
+              setValorGasto(e.target.value)
+            }
+            style={{
+              width: "100%",
+              padding: "14px",
+              borderRadius: "14px",
+              marginBottom: "10px",
+            }}
+          />
+
+          <button
+            onClick={adicionarGasto}
+            style={{
+              width: "100%",
+              padding: "14px",
+              borderRadius: "14px",
+              border: "none",
+              background: "#0D47A1",
+              color: "white",
+              fontWeight: "bold",
+            }}
+          >
+            Adicionar gasto
+          </button>
+
+        </div>
+
+      </div>
+
+      {/* MENU */}
 
       <div
         style={{
           position: "fixed",
-          bottom: "12px",
-          left: "8px",
-          right: "8px",
-          background:
-            "rgba(255,255,255,0.98)",
+          bottom: "10px",
+          left: "10px",
+          right: "10px",
+          background: "white",
+          borderRadius: "24px",
           display: "flex",
-          justifyContent:
-            "space-between",
-          alignItems: "center",
-          padding: "8px",
-          borderRadius: "28px",
-          overflowX: "auto",
+          justifyContent: "space-around",
+          padding: "12px",
+          boxShadow: "0 0 20px rgba(0,0,0,0.1)",
         }}
       >
-        {navItem(
-          "inicio",
-          <FaHome />,
-          "Início"
-        )}
 
-        {navItem(
-          "familia",
-          "👨‍👩‍👧",
-          "Família"
-        )}
+        <FaHome size={22} color="#0D47A1" />
+        <FaWallet size={22} color="#6b7280" />
+        <FaFileInvoiceDollar size={22} color="#6b7280" />
+        <FaBullseye size={22} color="#6b7280" />
+        <FaHistory size={22} color="#6b7280" />
+        <FaTrophy size={22} color="#6b7280" />
+        <FaUser size={22} color="#6b7280" />
 
-        {navItem(
-          "perfil",
-          <FaUser />,
-          "Perfil"
-        )}
       </div>
+
     </div>
   );
 }
